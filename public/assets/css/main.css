@@ -1,0 +1,757 @@
+/* resources/css/custom.css */
+
+/* 1. Définition de votre palette de couleurs en tant que variables CSS */
+:root {
+    --color-fond-ivoire: #FFFFF0;
+    --color-vert-foret: #228B22;
+    --color-marron-titre: #6F4E37; /* Un marron "café" plus doux qu'un marron pur */
+    --color-dore-leger: #D4AF37;
+    --color-vert-fonce-lien: #006400;
+    --color-blanc: #FFFFFF;
+    --color-texte-principal: #333333; /* Un gris foncé pour une meilleure lisibilité */
+}
+
+/* Activer le défilement fluide */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 2. Application globale des styles */
+body {
+    background-color: var(--color-fond-ivoire);
+    color: var(--color-texte-principal);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Police moderne et lisible */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-marron-titre);
+    font-weight: 700;
+}
+
+a {
+    color: var(--color-vert-fonce-lien);
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--color-vert-foret);
+}
+
+/* 3. Style personnalisé pour les composants clés */
+
+/* --- Boutons principaux (Call to Action) --- */
+.btn-brand {
+    background-color: var(--color-vert-foret);
+    color: var(--color-blanc);
+    border: 2px solid var(--color-vert-foret);
+    padding: 10px 25px;
+    font-weight: bold;
+    border-radius: 50px; /* Boutons arrondis, très moderne */
+    transition: all 0.3s ease;
+}
+
+.btn-brand:hover {
+    background-color: var(--color-blanc);
+    color: var(--color-vert-foret);
+    transform: translateY(-2px); /* Petit effet de surélévation */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Cartes avec bordure dorée --- */
+.card-brand {
+    border: 1px solid var(--color-dore-leger);
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-brand:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/*--------------------------------------------------------------
+# Header / Barre de Navigation
+--------------------------------------------------------------*/
+
+/* === 1. Styles structurels et de base (communs à tous) === */
+.header {
+    transition: all 0.5s;
+    z-index: 997;
+    height: 90px;
+}
+.header.scrolled {
+    height: 70px;
+}
+/* ... autres styles de structure qui ne changent pas ... */
+.header .logo .logo-text-container { display: flex; flex-direction: column; line-height: 1; }
+.header .logo h1 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin: 0; padding: 0; }
+.header .logo span { font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.header .logo img { height: 50px; width: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-dore-leger); padding: 3px; margin-right: 12px; transition: transform 0.3s ease; }
+.header .logo:hover img { transform: scale(1.1) rotate(10deg); }
+.navbar { padding: 0; }
+.navbar ul { margin: 0; padding: 0; display: flex; list-style: none; align-items: center; }
+.navbar li { position: relative; }
+.navbar a, .navbar a:focus { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; white-space: nowrap; transition: 0.3s; text-decoration: none; }
+.navbar a::after { content: ''; position: absolute; bottom: 0; left: 15px; right: 15px; height: 2px; background-color: var(--color-dore-leger); transform: scaleX(0); transition: transform 0.3s ease-in-out; }
+.navbar a:hover::after, .navbar .active::after { transform: scaleX(1); }
+
+/* === 2. STYLE PAR DÉFAUT (pour /chambres et autres pages) === */
+/* Ce style s'applique à .header quand il n'a PAS la classe .header-transparent */
+.header:not(.header-transparent) {
+    background-color: rgba(255, 255, 240, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.05);
+}
+.header:not(.header-transparent) .logo h1,
+.header:not(.header-transparent) .mobile-nav-toggle {
+    color: var(--color-marron-titre);
+}
+.header:not(.header-transparent) .logo span,
+.header:not(.header-transparent) .navbar a {
+    color: var(--color-texte-principal);
+}
+.header:not(.header-transparent) .navbar a:hover,
+.header:not(.header-transparent) .navbar .active {
+    color: var(--color-vert-foret);
+}
+.header:not(.header-transparent) .btn-brand {
+    background-color: var(--color-vert-foret);
+    border-color: var(--color-vert-foret);
+    color: var(--color-blanc);
+}
+.header:not(.header-transparent) .btn-brand:hover {
+    background-color: var(--color-blanc);
+    color: var(--color-vert-foret);
+}
+
+
+/* === 3. STYLE POUR LA PAGE D'ACCUEIL (uniquement si .header-transparent est présent) === */
+.header.header-transparent {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.header.header-transparent .logo h1,
+.header.header-transparent .navbar a,
+.header.header-transparent .mobile-nav-toggle {
+    color: var(--color-blanc);
+}
+.header.header-transparent .logo span {
+    color: rgba(255, 255, 255, 0.8);
+}
+.header.header-transparent .navbar a:hover,
+.header.header-transparent .navbar .active {
+    color: var(--color-blanc); /* Survol reste blanc sur transparent */
+}
+.header.header-transparent .btn-brand {
+    background-color: transparent;
+    border-color: var(--color-blanc);
+    color: var(--color-blanc);
+}
+.header.header-transparent .btn-brand:hover {
+    background-color: var(--color-blanc);
+    color: var(--color-marron-titre);
+}
+
+/* === 4. STYLE AU SCROLL SUR LA PAGE D'ACCUEIL === */
+.header.header-transparent.scrolled {
+    background-color: rgba(255, 255, 240, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.05);
+}
+.header.header-transparent.scrolled .logo h1,
+.header.header-transparent.scrolled .mobile-nav-toggle {
+    color: var(--color-marron-titre);
+}
+.header.header-transparent.scrolled .logo span,
+.header.header-transparent.scrolled .navbar a {
+    color: var(--color-texte-principal);
+}
+.header.header-transparent.scrolled .navbar a:hover,
+.header.header-transparent.scrolled .navbar .active {
+    color: var(--color-vert-foret);
+}
+.header.header-transparent.scrolled .btn-brand {
+    background-color: var(--color-vert-foret);
+    border-color: var(--color-vert-foret);
+    color: var(--color-blanc);
+}
+/*--------------------------------------------------------------
+# Navigation Desktop
+--------------------------------------------------------------*/
+.navbar {
+    padding: 0;
+}
+
+.navbar ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    align-items: center;
+}
+
+.navbar li {
+    position: relative;
+}
+
+.navbar a,
+.navbar a:focus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-texte-principal);
+    white-space: nowrap;
+    transition: 0.3s;
+    color: var(--color-blanc);
+}
+
+.header.scrolled .navbar a {
+    color: var(--color-texte-principal);
+}
+.header.scrolled .navbar a:hover,
+.header.scrolled .navbar .active {
+    color: var(--color-vert-foret);
+}
+
+.navbar a:hover,
+.navbar .active,
+.navbar .active:focus {
+    color: var(--color-vert-foret);
+    text-decoration: none;
+}
+
+/* Style de la bordure dorée sous le lien actif/survolé */
+.navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15px;
+    right: 15px;
+    height: 2px;
+    background-color: var(--color-dore-leger);
+    transform: scaleX(0);
+    transition: transform 0.3s ease-in-out;
+}
+
+.navbar a:hover::after,
+.navbar .active::after {
+    transform: scaleX(1);
+}
+
+/*--------------------------------------------------------------
+# Flèche de défilement vers le bas (sur le Hero)
+--------------------------------------------------------------*/
+.hero .scroll-down-arrow {
+    position: absolute;
+    bottom: 40px; /* Positionnement en bas de la section Hero */
+    left: 50%;
+    transform: translateX(-50%); /* Centrage horizontal parfait */
+    z-index: 3;
+    color: rgba(255, 255, 255, 0.7); /* Couleur blanche semi-transparente */
+    font-size: 32px;
+    transition: all 0.3s ease;
+}
+
+.hero .scroll-down-arrow:hover {
+    color: var(--color-blanc); /* Devient blanc opaque au survol */
+    transform: translateX(-50%) translateY(5px); /* Léger mouvement vers le bas au survol */
+}
+
+/* Animation de pulsation pour attirer l'œil */
+@keyframes pulse-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* On applique l'animation à l'icône de la flèche */
+.hero .scroll-down-arrow i {
+    display: inline-block;
+    animation: pulse-animation 2s infinite; /* L'animation se répète à l'infini */
+}
+
+/*--------------------------------------------------------------
+# Navigation Mobile
+--------------------------------------------------------------*/
+.mobile-nav-toggle {
+    color: var(--color-marron-titre);
+    font-size: 28px;
+    cursor: pointer;
+    display: none;
+    line-height: 0;
+    transition: 0.5s;
+}
+
+/* Media query pour les écrans plus petits (tablettes, mobiles) */
+@media (max-width: 991px) {
+    .mobile-nav-toggle {
+        display: block; /* Affiche l'icône hamburger */
+    }
+
+    .navbar ul {
+        display: none; /* Cache la navigation de bureau */
+    }
+}
+
+/* Style du menu quand il est ouvert sur mobile */
+.navbar-mobile {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(20, 20, 20, 0.9); /* Fond sombre semi-transparent */
+    transition: 0.3s;
+    z-index: 999;
+}
+
+.navbar-mobile .mobile-nav-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: var(--color-blanc); /* L'icône "X" sera blanche */
+}
+
+.navbar-mobile ul {
+    display: block;
+    position: absolute;
+    top: 55px;
+    right: 15px;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 0;
+    background-color: var(--color-fond-ivoire);
+    overflow-y: auto;
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.navbar-mobile a,
+.navbar-mobile a:focus {
+    padding: 10px 20px;
+    font-size: 18px;
+    color: var(--color-marron-titre);
+}
+
+.navbar-mobile a:hover,
+.navbar-mobile .active {
+    color: var(--color-vert-foret);
+}
+
+/* Cache le bouton "Réserver" principal sur mobile car il sera dans le menu */
+@media (max-width: 991px) {
+    .header .btn-brand {
+        display: none;
+    }
+}
+
+/*--------------------------------------------------------------
+# Styles Généraux de la Page
+--------------------------------------------------------------*/
+section {
+    padding: 80px 0;
+    overflow: hidden; /* Empêche les débordements des animations */
+}
+
+.section-title {
+    text-align: center;
+    padding-bottom: 40px;
+}
+
+.section-title h2 {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0;
+    margin: 0 0 5px 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-texte-principal);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.section-title h2::after {
+    content: "";
+    width: 120px;
+    height: 1px;
+    display: inline-block;
+    background: var(--color-dore-leger);
+    margin: 4px 10px;
+}
+
+.section-title p {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    font-family: "Playfair Display", serif;
+    color: var(--color-marron-titre);
+}
+
+
+/*--------------------------------------------------------------
+# Section Hero (Image d'accueil)
+--------------------------------------------------------------*/
+.hero {
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.hero:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4); /* Assombrir légèrement l'image pour la lisibilité */
+}
+
+.hero .container {
+    position: relative; /* S'assure que le contenu est au-dessus du voile */
+    z-index: 2;
+}
+
+.hero .hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 60px;
+    color: var(--color-blanc);
+    font-family: "Playfair Display", serif;
+}
+
+.hero p {
+    color: rgba(255, 255, 255, 0.85);
+    margin: 15px 0 30px 0;
+    font-size: 20px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Ajustement pour les petits écrans */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 32px;
+        line-height: 36px;
+    }
+    .hero p {
+        font-size: 18px;
+    }
+}
+
+
+/*--------------------------------------------------------------
+# Section Services / Expériences (Design V3)
+--------------------------------------------------------------*/
+.experience-section {
+    padding: 80px 0;
+    background-color: #fcfbf7;
+}
+
+.experience-card {
+    position: relative;
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+.experience-image {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+}
+
+.experience-image img {
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Ratio d'image classique */
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.experience-content {
+    background-color: var(--color-blanc);
+    padding: 25px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.15);
+    width: 85%;
+    position: absolute;
+    bottom: -60px; /* Commence à moitié caché en bas */
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.4s ease-in-out;
+}
+
+.experience-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: var(--color-marron-titre);
+}
+
+.experience-content p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.btn-read-more {
+    display: inline-block;
+    background-color: var(--color-vert-foret);
+    color: var(--color-blanc);
+    padding: 8px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.btn-read-more:hover {
+    background-color: var(--color-marron-titre);
+    color: var(--color-blanc);
+    text-decoration: none;
+}
+
+/* === Animation au survol === */
+.experience-card:hover {
+    transform: translateY(-15px); /* La carte entière se soulève */
+}
+
+.experience-card:hover .experience-image img {
+    transform: scale(1.1); /* L'image zoome légèrement */
+}
+
+.experience-card:hover .experience-content {
+    bottom: -30px; /* Le bloc de texte remonte */
+    box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.2); /* L'ombre s'intensifie */
+}
+
+/*--------------------------------------------------------------
+# Section "À Propos"
+--------------------------------------------------------------*/
+#about {
+    background-color: #fdfaf6; /* Un ivoire encore plus subtil pour contraster */
+}
+
+#about .img-fluid {
+    border: 5px solid rgba(255, 255, 255, 0.3); /* Bordure blanche pour l'image */
+}
+
+#about ul {
+    list-style: none;
+    padding: 0;
+}
+
+#about ul li {
+    padding-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+}
+
+#about ul i {
+    font-size: 20px;
+    padding-right: 8px;
+    color: var(--color-vert-foret); /* On réutilise la couleur du bouton principal */
+}
+
+/*--------------------------------------------------------------
+# Footer / Pied de Page
+--------------------------------------------------------------*/
+.footer {
+    background-color: var(--color-marron-titre);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+    padding: 60px 0;
+}
+
+.footer .footer-logo-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Style du logo dans le footer */
+.footer .footer-logo-container img {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-dore-leger);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); /* Effet lumineux doré ! */
+    transition: all 0.3s ease-in-out;
+}
+
+.footer .footer-logo-container:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.9); /* Effet lumineux plus intense au survol */
+}
+
+.footer .footer-info .logo {
+    margin-left: 15px; /* Espace entre le logo et le nom */
+}
+
+.footer .footer-info .logo span {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: "Playfair Display", serif;
+    color: var(--color-blanc);
+    text-decoration: none;
+}
+
+.footer .footer-info p {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 0;
+}
+
+.footer h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--color-blanc);
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.footer h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--color-dore-leger);
+}
+
+.footer .footer-links {
+    margin-bottom: 30px;
+}
+
+.footer .footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer .footer-links ul li {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.footer .footer-links ul li:first-child {
+    padding-top: 0;
+}
+
+.footer .footer-links ul a {
+    color: rgba(255, 255, 255, 0.75);
+    transition: 0.3s;
+    display: inline-block;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.footer .footer-links ul a:hover {
+    color: var(--color-dore-leger);
+    text-decoration: none;
+}
+
+.footer .footer-contact p {
+    line-height: 26px;
+}
+
+.footer .footer-contact i {
+    color: var(--color-dore-leger);
+    margin-right: 8px;
+}
+
+.footer .social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: 10px;
+    transition: 0.3s;
+}
+
+.footer .social-links a:hover {
+    color: var(--color-marron-titre);
+    border-color: var(--color-dore-leger);
+    background: var(--color-dore-leger);
+}
+
+.footer .copyright {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer .credits {
+    padding-top: 4px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer .credits a {
+    color: var(--color-dore-leger);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer .credits a:hover {
+    color: var(--color-blanc);
+}
+
+/* Style pour rendre la colonne de la carte cliquable */
+.footer .footer-map .map-link {
+    display: block;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.footer .footer-map .map-link:hover {
+    transform: translateY(-5px); /* Léger effet de soulèvement au survol */
+}
+
+.footer .footer-map .map-link h4 {
+    transition: color 0.3s ease;
+}
+
+.footer .footer-map .map-link:hover h4 {
+    color: var(--color-dore-leger); /* Le titre devient doré au survol */
+}
+
+.footer .footer-map .map-link h4 i {
+    font-size: 14px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
