@@ -10,3 +10,10 @@ services:
       php artisan view:cache
       php artisan migrate --force # Attention: ceci exécute les migrations à chaque build
     startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_KEY
+        generateValue: true # Render va générer une clé pour vous
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
