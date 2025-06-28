@@ -1,5 +1,4 @@
 services:
-  # --- Service Web pour l'application Laravel ---
   - type: web
     name: hotel-le-printemps-app
     runtime: php
@@ -11,11 +10,9 @@ services:
       path: /
     buildCommand: |
       composer install --no-dev --optimize-autoloader
-      php artisan key:generate --force
       php artisan config:cache
       php artisan route:cache
       php artisan view:cache
-      php artisan storage:link
     startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
     envVars:
       - key: APP_URL
@@ -37,7 +34,6 @@ services:
         generateValue: true
 
 databases:
-  # --- Base de Données PostgreSQL ---
   - name: hotel-le-printemps-db
     region: frankfurt
     plan: free
