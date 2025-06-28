@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .btn-primary-auth {
+        @apply inline-flex items-center px-6 py-2 bg-[#228B22] border border-transparent rounded-full font-semibold text-xs text-white uppercase tracking-widest hover:bg-[#006400] focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150;
+    }
+}

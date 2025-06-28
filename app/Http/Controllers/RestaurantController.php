@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Categorie;
+use App\Models\MenuPdf; // <-- Ajoutez l'importation
+
 
 class RestaurantController extends Controller
 {
@@ -11,11 +13,16 @@ class RestaurantController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
-        $categories = Categorie::with('plats')->orderBy('ordre')->get();
-        return view('pages.restaurant', [
-        'categories' => $categories
+{
+    // Récupère les catégories avec leurs plats
+    $categories = Categorie::with('plats')->orderBy('ordre')->get();
+
+    // Récupère le DERNIER menu PDF qui est marqué comme "actif"
+    $menuActif = MenuPdf::where('est_actif', true)->latest()->first();
+
+    return view('pages.restaurant', [
+        'categories' => $categories,
+        'menuActif' => $menuActif, // On passe le menu PDF à la vue
     ]);
     }
 

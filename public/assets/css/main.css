@@ -180,6 +180,137 @@ a:hover {
     border-color: var(--color-vert-foret);
     color: var(--color-blanc);
 }
+
+/*--------------------------------------------------------------
+# Navigation Mobile
+--------------------------------------------------------------*/
+.mobile-nav-toggle {
+    color: var(--color-marron-titre);
+    font-size: 28px;
+    cursor: pointer;
+    display: none; /* Caché par défaut sur grand écran */
+    line-height: 0;
+    transition: 0.5s;
+}
+
+/* On le rend visible sur les petits écrans */
+@media (max-width: 991px) {
+    .mobile-nav-toggle {
+        display: block;
+        z-index: 1001; /* Doit être au-dessus du menu pour pouvoir le fermer */
+    }
+}
+
+/* Le conteneur du menu qui apparaît */
+.navbar-mobile {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(20, 20, 20, 0.9);
+    transition: 0.3s;
+    z-index: 1000;
+    /* Styles par défaut : menu caché */
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Quand on clique sur le hamburger, on ajoute la classe .mobile-nav-active au <body> */
+/* Cette règle rend le menu visible */
+.mobile-nav-active .navbar-mobile {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* La liste des liens à l'intérieur du menu mobile */
+.navbar-mobile ul {
+    display: block;
+    position: absolute;
+    top: 55px;
+    right: 15px;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 0;
+    background-color: var(--color-fond-ivoire);
+    overflow-y: auto;
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.navbar-mobile a,
+.navbar-mobile a:focus {
+    padding: 10px 20px;
+    font-size: 18px;
+    color: var(--color-marron-titre);
+    display: block;
+}
+
+.navbar-mobile a:hover,
+.navbar-mobile .active {
+    color: var(--color-vert-foret);
+}
+
+/* On change l'icône de fermeture quand le menu est actif */
+.mobile-nav-active .mobile-nav-toggle {
+    color: var(--color-blanc); /* Pour que la croix "X" soit visible sur le fond sombre */
+}
+
+/* Le conteneur du menu qui apparaît */
+.navbar-mobile {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(20, 20, 20, 0.9);
+    transition: 0.3s;
+    z-index: 1000;
+    /* Styles par défaut : menu caché */
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Quand le body a la classe .mobile-nav-active, on rend le menu visible */
+.mobile-nav-active .navbar-mobile {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* La liste des liens à l'intérieur du menu mobile */
+.navbar-mobile ul {
+    display: block;
+    position: absolute;
+    top: 55px;
+    right: 15px;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 0;
+    background-color: var(--color-fond-ivoire);
+    overflow-y: auto;
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.navbar-mobile a,
+.navbar-mobile a:focus {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-marron-titre);
+    display: block;
+}
+
+.navbar-mobile a:hover,
+.navbar-mobile .active {
+    color: var(--color-vert-foret);
+}
+
+/* On s'assure que l'icône de fermeture 'X' est visible */
+.mobile-nav-active .mobile-nav-toggle {
+    color: var(--color-blanc); /* Pour que la croix "X" soit visible sur le fond sombre */
+}
+
 /*--------------------------------------------------------------
 # Navigation Desktop
 --------------------------------------------------------------*/
@@ -300,11 +431,16 @@ a:hover {
 /* Media query pour les écrans plus petits (tablettes, mobiles) */
 @media (max-width: 991px) {
     .mobile-nav-toggle {
-        display: block; /* Affiche l'icône hamburger */
+        display: block;
     }
 
     .navbar ul {
-        display: none; /* Cache la navigation de bureau */
+        display: none;
+    }
+
+    /* On cache le bouton "Réserver" principal car on peut le mettre dans le menu mobile si besoin */
+    .header .btn-brand {
+        display: none;
     }
 }
 
@@ -453,11 +589,14 @@ section {
 /* Ajustement pour les petits écrans */
 @media (max-width: 768px) {
     .hero h1 {
-        font-size: 32px;
-        line-height: 36px;
+        font-size: 36px;
+        line-height: 1.2;
     }
     .hero p {
         font-size: 18px;
+    }
+    section {
+        padding: 60px 0;
     }
 }
 
@@ -534,6 +673,18 @@ section {
     text-decoration: none;
 }
 
+/* === Responsive pour les cartes d'expérience === */
+@media (max-width: 768px) {
+    .experience-content {
+        /* On remonte un peu le bloc de texte sur mobile pour qu'il soit plus visible */
+        bottom: -30px; 
+    }
+
+    .experience-card:hover .experience-content {
+        bottom: 0; /* Au survol, il remonte complètement */
+    }
+}
+
 /* === Animation au survol === */
 .experience-card:hover {
     transform: translateY(-15px); /* La carte entière se soulève */
@@ -574,6 +725,105 @@ section {
     font-size: 20px;
     padding-right: 8px;
     color: var(--color-vert-foret); /* On réutilise la couleur du bouton principal */
+}
+
+/* Style pour le nouveau formulaire de réservation */
+.booking-form-wrapper {
+    background: var(--color-blanc);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.form-group-v2 {
+    display: flex;
+    align-items: center;
+    border-right: 1px solid #eee;
+    padding: 10px 20px;
+}
+
+/* === Responsive pour le formulaire de recherche de chambres === */
+@media (max-width: 991.98px) {
+    .form-group-v2 {
+        border-right: none; /* On enlève la bordure verticale */
+        border-bottom: 1px solid #eee; /* On met une bordure horizontale à la place */
+    }
+
+    /* On cible les 4 colonnes et on enlève la bordure du dernier élément */
+    .booking-form-wrapper .col-lg-3:last-of-type .form-group-v2,
+    .booking-form-wrapper .col-md-6:last-of-type .form-group-v2 {
+        border-bottom: none;
+    }
+    
+    .btn-search {
+        border-radius: 0 0 8px 8px; /* On arrondit les coins du bas pour le bouton */
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Sur mobile, on a 2 colonnes par ligne. Il faut remettre la bordure sur le 2ème élément */
+    .booking-form-wrapper .col-md-6:nth-child(2) .form-group-v2 {
+        border-bottom: 1px solid #eee;
+    }
+}
+
+.form-group-v2 .icon {
+    font-size: 24px;
+    color: var(--color-dore-leger);
+    margin-right: 15px;
+}
+
+.form-group-v2 .input-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-v2 label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.form-group-v2 .form-control,
+.form-group-v2 .form-select {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-marron-titre);
+}
+.form-group-v2 .form-control:focus,
+.form-group-v2 .form-select:focus {
+    box-shadow: none;
+}
+/* Pour que le placeholder s'affiche bien */
+.form-group-v2 input::placeholder {
+    color: var(--color-marron-titre);
+    opacity: 0.8;
+}
+
+/* Style du bouton */
+.btn-search {
+    background: var(--color-vert-foret);
+    color: var(--color-blanc);
+    border: none;
+    padding: 25px 30px;
+    font-size: 16px;
+    font-weight: 700;
+    width: 100%;
+    transition: background-color 0.3s ease;
+    border-radius: 0 8px 8px 0; /* Arrondi seulement à droite */
+}
+.btn-search:hover {
+    background-color: var(--color-vert-fonce-lien);
+}
+@media (max-width: 991px) {
+    .btn-search {
+        border-radius: 0 0 8px 8px; /* Sur mobile, arrondi en bas */
+    }
 }
 
 /*--------------------------------------------------------------

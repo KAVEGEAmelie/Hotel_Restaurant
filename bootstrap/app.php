@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // On enregistre notre alias 'admin' ici
+    $middleware->alias([
+        'admin' => \App\Http\Middleware\IsAdmin::class,
+    ]);
+    
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

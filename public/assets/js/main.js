@@ -1,23 +1,12 @@
 (function() {
   "use strict";
 
-  /**
-   * Fonction pour sélectionner facilement des éléments
-   */
-  const select = (el, all = false) => {
-    el = el.trim();
-    if (all) {
-      return [...document.querySelectorAll(el)];
-    } else {
-      return document.querySelector(el);
-    }
-  };
+  // Helper pour sélectionner des éléments
+  const select = (el, all = false) => el.trim() && (all ? [...document.querySelectorAll(el)] : document.querySelector(el));
 
-  /**
-   * Fonction pour attacher des écouteurs d'événements
-   */
+  // Helper pour attacher des écouteurs d'événements
   const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all);
+    const selectEl = select(el, all);
     if (selectEl) {
       if (all) {
         selectEl.forEach(e => e.addEventListener(type, listener));
@@ -28,38 +17,26 @@
   };
 
   /**
-   * Header dynamique : transparent sur le Hero, solide au défilement.
-   * On utilise Intersection Observer pour la performance.
+   * Header dynamique au défilement
    */
   const header = select('#header');
-  const heroSection = select('#hero');
-
-  if (header && heroSection) {
-    const headerObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) { // Quand le Hero n'est plus visible à l'écran
-            header.classList.add('scrolled');
-          } else { // Quand le Hero est visible
-            header.classList.remove('scrolled');
-          }
-        });
-      }, { rootMargin: "-90px 0px 0px 0px" } // Se déclenche 90px avant que le Hero ne sorte de l'écran
-    );
-    headerObserver.observe(heroSection);
+  if (header) {
+    const handleScroll = () => window.scrollY > 100 ? header.classList.add('scrolled') : header.classList.remove('scrolled');
+    window.addEventListener('load', handleScroll);
+    document.addEventListener('scroll', handleScroll);
   }
 
   /**
-   * Gestion du menu de navigation mobile
+   * Gestion du menu mobile (Hamburger)
    */
   on('click', '.mobile-nav-toggle', function(e) {
     select('body').classList.toggle('mobile-nav-active');
-    this.classList.toggle('bi-list');
-    this.classList.toggle('bi-x');
+    select('.mobile-nav-show').classList.toggle('d-none');
+    select('.mobile-nav-hide').classList.toggle('d-none');
   });
 
   /**
-   * Animation au défilement (AOS)
+   * Initialisation des animations au défilement (AOS)
    */
   window.addEventListener('load', () => {
     AOS.init({

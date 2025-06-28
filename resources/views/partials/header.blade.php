@@ -2,15 +2,13 @@
 <header id="header" class="header fixed-top d-flex align-items-center @if(Request::is('/')) header-transparent @endif">    
     <div class="container d-flex align-items-center justify-content-between">
 
-        <a href="{{ url('/') }}" class="logo d-flex align-items-center me-auto me-lg-0">
+        <a href="{{ route('home') }}" class="logo d-flex align-items-center me-auto me-lg-0">
             <img src="{{ asset('assets/img/logo.jpg') }}" alt="Logo Hôtel Le Printemps">
             <div class="logo-text-container">
                 <span>Hôtel Restaurant</span>
                 <h1>Le Printemps</h1>
             </div>
         </a>
-
-        {{-- Dans resources/views/partials/_header.blade.php --}}
 
         <nav id="navbar" class="navbar">
             <ul>
@@ -23,6 +21,8 @@
         </nav><!-- .navbar -->
 
         <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
+
+        <!-- Icônes pour le menu mobile -->
         <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
         <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
 

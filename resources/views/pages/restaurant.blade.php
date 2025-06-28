@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Restaurant - Hôtel Le Printemps')
+@section('title', 'Restaurant & Ambiance - Hôtel Le Printemps')
 
 @section('content')
 
@@ -14,234 +14,175 @@
         </div>
     </section>
 
-    <!-- ======= Section Ambiance ======= -->
-    <section id="ambiance" class="ambiance-section py-5">
+    <!-- ======= Section Ambiance (Nouveau Design) ======= -->
+    <section id="ambiance" class="ambiance-section-v2 py-5">
         <div class="container">
-            <div class="row align-items-center">
+            <div class="row align-items-center g-5">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <img src="{{ asset('assets/img/bar-ambiance.jpg') }}" class="img-fluid rounded-custom" alt="Ambiance chaleureuse du restaurant">
+                    <div class="ambiance-image-wrapper">
+                        <img src="{{ asset('assets/img/salle-interieure.jpg') }}" class="img-main" alt="Salle de restaurant principale">
+                        <img src="{{ asset('assets/img/bar-ambiance.jpg') }}" class="img-secondary" alt="Ambiance chaleureuse du bar">
+                    </div>
                 </div>
-                <div class="col-lg-6 ps-lg-5 mt-4 mt-lg-0" data-aos="fade-left">
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
                     <div class="section-title text-start">
                         <h2>L'Ambiance</h2>
                         <p>Chaleur & Convivialité</p>
                     </div>
                     <p class="fst-italic">
-                        Notre salle de restaurant est un espace de partage où le bois noble rencontre un design moderne et confortable.
+                        Notre salle est un espace de partage où le bois noble rencontre un design moderne et confortable.
                     </p>
                     <p>
                         Que ce soit pour un dîner romantique, un repas d'affaires ou un moment en famille, notre cadre chaleureux et notre atmosphère "Zen" sont la promesse d'une expérience mémorable.
                     </p>
-                    <div class="horaires">
-                        <i class="bi bi-clock"></i>
-                        <strong>Horaires d'ouverture :</strong> 12h00 - 15h00 | 19h00 - 22h00
+                    <div class="horaires mt-4">
+                        <i class="bi bi-clock-history"></i>
+                        <div>
+                            <strong>Horaires d'ouverture</strong>
+                            <span>12h00 - 15h00  |  19h00 - 22h00</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-<!-- ======= Section Menu Dynamique ======= -->
-<section id="menu" class="menu-section py-5" style="background-color: #fcfbf7;">
-    <div class="container" data-aos="fade-up">
-
-        <div class="section-title">
-            <h2>Notre Carte</h2>
-            <p>Découvrez nos spécialités</p>
-        </div>
-
-        <!-- Navigation des Onglets -->
-        <ul class="nav nav-tabs justify-content-center" id="menuTab" role="tablist" data-aos="fade-up" data-aos-delay="100">
-            @foreach($categories as $categorie)
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $loop->first ? 'active' : '' }}" id="tab-{{ $categorie->id }}" data-bs-toggle="tab" data-bs-target="#content-{{ $categorie->id }}" type="button" role="tab" aria-controls="content-{{ $categorie->id }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                        {{ $categorie->nom }}
-                    </button>
-                </li>
-            @endforeach
-        </ul>
-
-        <!-- Contenu des Onglets -->
-        <div class="tab-content" id="menuTabContent" data-aos="fade-up" data-aos-delay="200">
-            @foreach($categories as $categorie)
-                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="content-{{ $categorie->id }}" role="tabpanel" aria-labelledby="tab-{{ $categorie->id }}">
-                    <div class="row gy-4 mt-2">
-                        @forelse($categorie->plats as $plat)
-                            <div class="col-lg-6 menu-item-v2">
-                                {{-- <img src="{{ asset('storage/'.$plat->image) }}" class="menu-img" alt=""> --}}
-                                <div class="menu-content">
-                                    <h4>{{ $plat->nom }}</h4>
-                                    <p class="ingredients">{{ $plat->description }}</p>
-                                </div>
-                                <div class="menu-prices">
-                                    @if($plat->prix_simple)
-                                        <div class="price-tag">
-                                            <span>SIMPLE</span>
-                                            <strong>{{ number_format($plat->prix_simple, 0, ',', ' ') }} F</strong>
-                                        </div>
-                                    @endif
-                                    @if($plat->prix_menu)
-                                         <div class="price-tag">
-                                            <span>MENU</span>
-                                            <strong>{{ number_format($plat->prix_menu, 0, ',', ' ') }} F</strong>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-center">Aucun plat dans cette catégorie pour le moment.</p>
-                        @endforelse
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-    </div>
-</section>
-
-    <!-- ======= Section Appel à l'Action (Réserver une table) ======= -->
-    <section id="cta-booking-table" class="cta-booking-section">
-        <div class="container" data-aos="fade-up">
-            <div class="row">
-                <div class="col-lg-9 text-center text-lg-start">
-                    <h3>Prêt pour une expérience culinaire ?</h3>
-                    <p>Réservez votre table dès maintenant pour garantir votre place et profiter d'un moment d'exception dans notre restaurant.</p>
-                </div>
-                <div class="col-lg-3 cta-btn-container text-center">
-                    <a class="cta-btn align-middle" href="#">Réserver une table</a>
-                </div>
-            </div>
+    <!-- ======= Section Télécharger le Menu PDF ======= -->
+    @if($menuActif)
+    <section id="menu-download" class="menu-download-section">
+        <div class="container text-center" data-aos="fade-up">
+            <h2 class="text-white">{{ $menuActif->titre }}</h2>
+            <p class="text-white-50 mx-auto" style="max-width: 600px;">
+                Consultez notre carte complète pour découvrir l'ensemble de nos créations, des sandwichs gourmands aux assiettes généreuses.
+            </p>
+            <a href="{{ asset('storage/' . $menuActif->fichier_pdf) }}" download class="btn-download mt-3">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Télécharger le Menu
+            </a>
         </div>
     </section>
+    @else
+    {{-- On peut afficher un message si aucun menu PDF n'est uploadé --}}
+    <section class="py-5 bg-light">
+        <div class="container text-center">
+            <p class="lead">Le menu détaillé sera bientôt disponible.</p>
+        </div>
+    </section>
+    @endif
 
 </main>
-
 @endsection
 
+
 @push('styles')
-{{-- On ajoute le style spécifique à cette page --}}
+{{-- Styles spécifiques pour cette nouvelle page Restaurant --}}
 <style>
-    .rounded-custom {
-        border-radius: 15px;
+    /* ======= Section Ambiance (Nouveau Design) ======= */
+    .ambiance-section-v2 {
+        background: #fdfaf6;
     }
-    .ambiance-section .horaires {
-        margin-top: 20px;
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--color-texte-principal);
+    .ambiance-image-wrapper {
+        position: relative;
+        height: 450px;
     }
-    .ambiance-section .horaires i {
-        color: var(--color-vert-foret);
-        margin-right: 8px;
+    .ambiance-image-wrapper .img-main {
+        width: 80%;
+        height: 80%;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 2;
+        transition: transform 0.5s ease;
+    }
+    .ambiance-image-wrapper .img-secondary {
+        width: 50%;
+        height: 50%;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: 5px solid white;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 3;
+        transition: all 0.5s ease;
+    }
+    .ambiance-image-wrapper:hover .img-main {
+        transform: scale(1.05);
+    }
+    .ambiance-image-wrapper:hover .img-secondary {
+        transform: scale(1.1) rotate(3deg);
+    }
+    @media (max-width: 991px) {
+        .ambiance-image-wrapper {
+            height: auto; /* Hauteur auto sur mobile */
+        }
+        .ambiance-image-wrapper .img-main,
+        .ambiance-image-wrapper .img-secondary {
+            position: relative;
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .ambiance-image-wrapper .img-secondary {
+            display: none; /* On cache la 2eme image sur mobile pour plus de clarté */
+        }
     }
 
-    .menu-section {
-        padding: 80px 0;
-    }
-    .menu-section .menu-category {
-        margin-bottom: 30px;
-    }
-    .menu-section .menu-category h4 {
-        font-family: 'Playfair Display', serif;
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--color-marron-titre);
-        padding-bottom: 10px;
-        border-bottom: 2px solid var(--color-dore-leger);
-        margin-bottom: 20px;
-    }
-    .menu-section .menu-item {
+    .ambiance-section-v2 .horaires {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
-    .menu-section .item-name {
-        font-weight: 600;
+    .ambiance-section-v2 .horaires i {
+        font-size: 32px;
+        color: var(--color-vert-foret);
+        margin-right: 15px;
+    }
+    .ambiance-section-v2 .horaires div {
+        display: flex;
+        flex-direction: column;
+    }
+    .ambiance-section-v2 .horaires strong {
         font-size: 16px;
         font-family: 'Montserrat', sans-serif;
-        color: var(--color-texte-principal);
     }
-    .menu-section .item-price {
-        font-weight: 700;
-        color: var(--color-vert-foret);
-    }
-    .menu-section .item-description {
-        font-size: 14px;
-        color: #666;
-        margin-top: 5px;
-        font-style: italic;
+    .ambiance-section-v2 .horaires span {
+        font-size: 15px;
+        color: #555;
     }
 
-    /* Style pour les onglets du menu */
-.menu-section .nav-tabs {
-    border: 0;
-}
-.menu-section .nav-link {
-    margin: 0 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-texte-principal);
-    border: 0;
-    border-bottom: 2px solid #eee;
-    transition: 0.3s;
-    border-radius: 0;
-}
-.menu-section .nav-link.active {
-    color: var(--color-vert-foret);
-    border-color: var(--color-vert-foret);
-    background: transparent;
-}
-.menu-section .nav-link:hover {
-    color: var(--color-vert-foret);
-}
-
-/* Style pour les items du menu (V2) */
-.menu-item-v2 {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-}
-.menu-item-v2 .menu-content {
-    flex-grow: 1;
-}
-.menu-item-v2 .menu-content h4 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    margin-bottom: 5px;
-    color: var(--color-marron-titre);
-}
-.menu-item-v2 .menu-content .ingredients {
-    font-style: italic;
-    font-size: 14px;
-    color: #555;
-    margin: 0;
-}
-.menu-item-v2 .menu-prices {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-left: 20px;
-}
-.menu-item-v2 .price-tag {
-    background: var(--color-vert-foret);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    text-align: center;
-    margin-bottom: 5px;
-    min-width: 120px;
-}
-.menu-item-v2 .price-tag span {
-    display: block;
-    font-size: 12px;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-.menu-item-v2 .price-tag strong {
-    font-size: 16px;
-}
+    /* ======= Section Téléchargement PDF ======= */
+    .menu-download-section {
+        background: linear-gradient(rgba(40,40,40,0.8), rgba(40,40,40,0.8)), url('{{ asset('assets/img/cta-bg.jpg') }}') center center fixed;
+        background-size: cover;
+        padding: 100px 0;
+    }
+    .btn-download {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 1px;
+        display: inline-block;
+        padding: 12px 40px;
+        border-radius: 50px;
+        transition: 0.5s;
+        margin: 10px;
+        border: 2px solid var(--color-dore-leger);
+        color: var(--color-blanc);
+        text-decoration: none;
+    }
+    .btn-download:hover {
+        background: var(--color-dore-leger);
+        color: var(--color-marron-titre);
+    }
+    .btn-download i {
+        margin-right: 8px;
+        font-size: 20px;
+        vertical-align: middle;
+    }
 </style>
 @endpush

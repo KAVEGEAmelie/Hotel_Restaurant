@@ -16,13 +16,14 @@
                 <div class="hero-content" data-aos="fade-up">
                     <h1 class="text-white mb-4">Votre havre de paix au cœur de Kpalimé</h1>
                     <p class="text-white-50 mb-4">Découvrez le charme authentique de notre hôtel-restaurant, où confort et tradition se rencontrent.</p>
-                    <a href="#features" class="btn btn-brand btn-lg">Découvrir nos chambres</a>
+                    {{-- CORRIGÉ : Ce bouton pointe maintenant vers la page des chambres --}}
+                    <a href="{{ route('chambres.index') }}" class="btn btn-brand btn-lg">Découvrir nos chambres</a>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- La flèche pour défiler vers le bas --}}
+    {{-- La flèche pour défiler vers le bas (ne change pas) --}}
     <a href="#features" class="scroll-down-arrow">
         <i class="bi bi-chevron-down"></i>
     </a>
@@ -52,6 +53,7 @@
                     <div class="experience-content">
                         <h3>Nuits Sereines</h3>
                         <p>Plongez dans le confort de nos chambres climatisées au design unique.</p>
+                        {{-- DÉJÀ CORRECT : Ce lien pointe bien vers la page des chambres --}}
                         <a href="{{ route('chambres.index') }}" class="btn-read-more">Découvrir</a>
                     </div>
                 </div>
@@ -66,6 +68,7 @@
                     <div class="experience-content">
                         <h3>Saveurs Authentiques</h3>
                         <p>Dégustez une cuisine qui célèbre les trésors du terroir togolais.</p>
+                        {{-- DÉJÀ CORRECT : Ce lien pointe bien vers la page du restaurant --}}
                         <a href="{{ route('restaurant.index') }}" class="btn-read-more">Explorer</a>
                     </div>
                 </div>
@@ -80,7 +83,8 @@
                     <div class="experience-content">
                         <h3>Cadre d'Exception</h3>
                         <p>Admirez des panoramas à couper le souffle depuis nos balcons.</p>
-                        <a href="#" class="btn-read-more">Découvrir</a>
+                        {{-- CORRIGÉ : Ce bouton "Découvrir" pointe maintenant vers la page des chambres --}}
+                        <a href="{{ route('chambres.index') }}" class="btn-read-more">Découvrir</a>
                     </div>
                 </div>
             </div>
@@ -97,13 +101,13 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
-                {{-- TODO: Remplacer par une image locale: {{ asset('assets/img/hotel-facade.jpg') }} --}}
-                <img src="assets/img/1.jpg" class="img-fluid rounded shadow-lg" alt="Façade de l'hôtel Le Printemps">
+                {{-- J'ai corrigé le chemin de l'image ici, il manquait le nom du dossier 'img' --}}
+                <img src="{{ asset('assets/img/1.jpg') }}" class="img-fluid rounded shadow-lg" alt="Façade de l'hôtel Le Printemps">
             </div>
             <div class="col-lg-6 ps-lg-5 mt-4 mt-lg-0" data-aos="fade-left">
                 <div class="section-title">
                     <h2>Notre Histoire</h2>
-                    <p>l'âme de l'hôtel Le Printemps</p>
+                    <p>L'âme de l'hôtel Le Printemps</p>
                 </div>
                 <p class="fst-italic">
                     Niché dans le cadre verdoyant de Kpalimé, notre établissement est plus qu'un simple hôtel : c'est une invitation au voyage et à la détente.
@@ -113,7 +117,8 @@
                     <li><i class="bi bi-check-circle-fill text-success"></i> Un engagement pour la promotion de la culture et des produits locaux.</li>
                     <li><i class="bi bi-check-circle-fill text-success"></i> Un confort moderne respectueux de son environnement.</li>
                 </ul>
-                <a href="#" class="btn btn-brand">En savoir plus</a>
+                {{-- CORRIGÉ : Ce bouton pointe maintenant vers la page "À Propos" --}}
+                <a href="{{ route('about') }}" class="btn btn-brand">En savoir plus</a>
             </div>
         </div>
     </div>

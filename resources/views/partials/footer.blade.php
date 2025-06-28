@@ -23,7 +23,7 @@
                     <li><a href="{{ route('home') }}">Accueil</a></li>
                     <li><a href="{{ route('chambres.index') }}">Nos Chambres</a></li>
                     <li><a href="{{ route('restaurant.index') }}">Le Restaurant</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('contact')}}">Contact</a></li>
                 </ul>
             </div>
 
