@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: hotel-le-printemps-app
+    env: php
+    plan: free # Ou le plan que vous utilisez
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+      php artisan migrate --force # Attention: ceci exécute les migrations à chaque build
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
