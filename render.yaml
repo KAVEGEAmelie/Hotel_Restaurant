@@ -1,19 +1,41 @@
 services:
+  # === Service Web pour l'application Laravel ===
   - type: web
     name: hotel-le-printemps-app
-    env: php
-    plan: free # Ou le plan que vous utilisez
-    buildCommand: |
+    runtime: php # La clé est 'runtime', pas 'env'
+    plan: free
+    region: frankfurt
+    branch: master
+    phpVersion: '8.2' # Spécifie la version de PHP
+    buildCommand: | # Le pipe | permet d'écrire des commandes sur plusieurs lignes
       composer install --no-dev --optimize-autoloader
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-      php artisan migrate --force # Attention: ceci exécute les migrations à chaque build
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+      php artisan key:generate --force
+      php artisan storage:link
+      php artisan migrate --force
+    startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
+    healthCheck:
+      path: /
     envVars:
-      - key: APP_KEY
-        generateValue: true # Render va générer une clé pour vous
+      - key: APP_URL
+        fromService:
+          type: web
+          name: hotel-le-printemps-app
+          property: url
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hotel-le-printemps-db # Le nom de votre base de données sur Render
+          property: internalConnectionString
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: APP_KEY # Render va générer la clé la première fois
+        generateValue: true
+
+databases:
+  # === Base de Données PostgreSQL ===
+  - name: hotel-le-printemps-db
+    region: frankfurt
+    plan: free
