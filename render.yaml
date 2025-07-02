@@ -1,6 +1,4 @@
-# Version corrigée pour Render
 services:
-  # --- Service Web pour Laravel ---
   - type: web
     name: printemp
     env: php
@@ -18,8 +16,7 @@ services:
           name: printemp
           property: url
       - key: DATABASE_URL
-        fromService:
-          type: postgres
+        fromDatabase:
           name: printemp-db
           property: connectionString
       - key: APP_KEY
@@ -31,9 +28,10 @@ services:
       - key: DB_CONNECTION
         value: pgsql
 
-  # --- Service de Base de Données PostgreSQL ---
-  - type: postgres
-    name: printemp-db
-    databaseName: printemp_db
-    user: printemp_db_user
+databases:
+  - name: printemp-db
+    postgresMajorVersion: '16'
+    region: frankfurt
     plan: free
+    databaseName: printemp_db
+    user: printemp_user
