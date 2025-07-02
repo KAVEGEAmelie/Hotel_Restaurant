@@ -3,7 +3,7 @@ services:
   # --- Service Web pour Laravel ---
   - type: web
     name: printemp
-    env: php  # LA LIGNE LA PLUS IMPORTANTE : Force l'environnement PHP
+    env: php  # Force l'environnement PHP
     plan: free
     buildCommand: |
       composer install --no-dev --optimize-autoloader
@@ -19,8 +19,8 @@ services:
           property: url
       - key: DATABASE_URL
         fromService:
-          type: psql
-          name: printemp-db # Pointeur vers le nom de la BDD
+          type: postgres
+          name: printemp-db
           property: connectionString
       - key: APP_KEY
         generateValue: true
@@ -28,12 +28,12 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: DB_CONNECTION # Dire à Laravel d'utiliser PostgreSQL
+      - key: DB_CONNECTION
         value: pgsql
 
   # --- Service de Base de Données PostgreSQL ---
-  - type: psql
-    name: printemp-db # Nom unique pour la BDD
+  - type: postgres
+    name: printemp-db
     databaseName: laravel_db
     user: laravel_user
     plan: free
