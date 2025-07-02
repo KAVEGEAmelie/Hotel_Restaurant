@@ -1,32 +1,24 @@
 services:
   - type: web
     name: printemp
-    env: php
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan key:generate --force
-      php artisan storage:link
-      php artisan migrate --force
-    startCommand: heroku-php-apache2 public/
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: APP_URL
-        fromService:
-          type: web
-          name: printemp
-          property: url
-      - key: DATABASE_URL
-        fromDatabase:
-          name: printemp-db
-          property: connectionString
-      - key: APP_KEY
-        generateValue: true
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://printemp.onrender.com
       - key: DB_CONNECTION
         value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: printemp-db
+          property: connectionString
 
 databases:
   - name: printemp-db
