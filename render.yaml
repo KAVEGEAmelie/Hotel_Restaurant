@@ -1,8 +1,9 @@
+# Version finale et correcte pour Render
 services:
-  # Le service web pour ton application Laravel
+  # --- Service Web pour Laravel ---
   - type: web
     name: printemp
-    env: php
+    env: php  # LA LIGNE LA PLUS IMPORTANTE : Force l'environnement PHP
     plan: free
     buildCommand: |
       composer install --no-dev --optimize-autoloader
@@ -18,8 +19,8 @@ services:
           property: url
       - key: DATABASE_URL
         fromService:
-          type: psql # Le type correct est bien psql
-          name: printemp-db # Pointeur vers le nom UNIQUE du service de BDD
+          type: psql
+          name: printemp-db # Pointeur vers le nom de la BDD
           property: connectionString
       - key: APP_KEY
         generateValue: true
@@ -27,14 +28,12 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: DB_CONNECTION
+      - key: DB_CONNECTION # Dire à Laravel d'utiliser PostgreSQL
         value: pgsql
-      - key: LOG_CHANNEL
-        value: stderr
 
-  # Le service de base de données PostgreSQL
-  - type: psql # Le type correct est bien psql
-    name: printemp-db # Nom UNIQUE pour le service de base de données
+  # --- Service de Base de Données PostgreSQL ---
+  - type: psql
+    name: printemp-db # Nom unique pour la BDD
     databaseName: laravel_db
     user: laravel_user
     plan: free
