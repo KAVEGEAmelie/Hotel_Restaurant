@@ -1,6 +1,5 @@
 FROM php:8.2-apache
 
-# Installer les dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libonig-dev \
@@ -11,22 +10,19 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install pdo pdo_pgsql zip
 
-# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier les fichiers de l'application
 COPY . /var/www/html
 
-# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les dépendances PHP Laravel
 RUN composer install --no-dev --optimize-autoloader \
     && php artisan key:generate \
     && php artisan storage:link
 
-# Donner les bons droits
 RUN chown -R www-data:www-data /var/www/html/storage
 
-# Exposer le port Apache
+# **Ajout important pour que Apache serve Laravel correctement**
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 80
