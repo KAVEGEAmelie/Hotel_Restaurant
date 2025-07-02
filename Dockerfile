@@ -1,28 +1,36 @@
+# Stage 1: Installer les dépendances avec Composer
+FROM composer:lts as vendor
+
+WORKDIR /app
+COPY database/ database/
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+RUN composer install --no-dev --no-interaction --optimize-autoloader
+
+# Stage 2: Construire l'image finale avec Apache et PHP
 FROM php:8.2-apache
 
+# Installer les extensions PHP nécessaires pour Laravel
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    libonig-dev \
     libzip-dev \
     unzip \
-    git \
-    curl \
-    zip \
-    && docker-php-ext-install pdo pdo_pgsql zip
+    && pecl install zip \
+    && docker-php-ext-enable zip \
+    && docker-php-ext-install pdo pdo_pgsql
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Configurer Apache pour pointer vers le dossier public de Laravel
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN a2enmod rewrite
 
-COPY . /var/www/html
+# Copier les fichiers de l'application
+COPY . .
 
-WORKDIR /var/www/html
+# Copier les dépendances installées à l'étape 1
+COPY --from=vendor /app/vendor/ vendor/
 
-RUN composer install --no-dev --optimize-autoloader \
-    && php artisan key:generate \
-    && php artisan storage:link
+# Définir les permissions correctes pour Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-RUN chown -R www-data:www-data /var/www/html/storage
-
-# **Ajout important pour que Apache serve Laravel correctement**
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
+# Exposer le port 80
 EXPOSE 80
