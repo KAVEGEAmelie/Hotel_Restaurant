@@ -1,7 +1,7 @@
 services:
   # Le service web pour ton application Laravel
   - type: web
-    name: mon-app-laravel   # Choisis un nom unique
+    name: printemp
     env: php
     plan: free
     buildCommand: |
@@ -15,12 +15,12 @@ services:
       - key: APP_URL
         fromService:
           type: web
-          name: mon-app-laravel # IMPORTANT: Doit être le même nom que ce service
+          name: printemp # IMPORTANT: Doit être le même nom que ce service
           property: url
       - key: DATABASE_URL # Laravel lit cette variable pour la connexion à la BDD
         fromService:
           type: psql
-          name: ma-db-laravel # IMPORTANT: Doit être le même nom que le service de BDD ci-dessous
+          name: printemp # IMPORTANT: Doit être le même nom que le service de BDD ci-dessous
           property: connectionString
       
       # ---- Variables de configuration de Laravel ----
@@ -37,7 +37,7 @@ services:
 
   # Le service de base de données PostgreSQL
   - type: psql
-    name: ma-db-laravel # Choisis un nom pour ta base de données
+    name: printemp # Choisis un nom pour ta base de données
     databaseName: laravel_db
     user: laravel_user
     plan: free # Le plan gratuit de Render. Pas de carte bancaire requise.
