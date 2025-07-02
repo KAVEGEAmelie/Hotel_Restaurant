@@ -1,9 +1,12 @@
+# Version Docker finale et correcte
 services:
   - type: web
     name: printemp
     plan: free
-    runtime: docker
+    # On dit à Render comment construire et démarrer l'image Docker
     dockerfilePath: ./Dockerfile
+    dockerCommand: ./start.sh # Commande pour démarrer le conteneur
+
     envVars:
       - key: APP_ENV
         value: production
@@ -12,7 +15,10 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        value: https://printemp.onrender.com
+        fromService: # Plus dynamique que de mettre l'URL en dur
+          type: web
+          name: printemp
+          property: url
       - key: DB_CONNECTION
         value: pgsql
       - key: DATABASE_URL
@@ -22,8 +28,34 @@ services:
 
 databases:
   - name: printemp-db
-    postgresMajorVersion: '16'
-    region: frankfurt
+    plan: free# Version Docker finale et correcte
+services:
+  - type: web
+    name: printemp
     plan: free
-    databaseName: printemp_db
-    user: printemp_user
+    # On dit à Render comment construire et démarrer l'image Docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ./start.sh # Commande pour démarrer le conteneur
+
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService: # Plus dynamique que de mettre l'URL en dur
+          type: web
+          name: printemp
+          property: url
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: printemp-db
+          property: connectionString
+
+databases:
+  - name: printemp-db
+    plan: free
