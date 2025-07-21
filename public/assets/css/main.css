@@ -71,6 +71,107 @@ a:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
+/*--------------------------------------------------------------
+# Navigation Mobile (Design Panneau Glissant)
+--------------------------------------------------------------*/
+.mobile-nav-toggle {
+    font-size: 28px;
+    cursor: pointer;
+    display: none;
+    line-height: 0;
+    z-index: 1001; /* Doit être au-dessus du menu */
+}
+
+/* Le conteneur du menu (panneau glissant) */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Commence caché */
+    width: 320px;
+    max-width: 90%;
+    height: 100vh;
+    background: var(--color-marron-titre); /* Utilise la couleur de votre marque */
+    color: var(--color-blanc);
+    z-index: 1000;
+    transition: right 0.4s ease;
+    padding: 2rem 1.5rem;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+}
+
+/* Le body reçoit cette classe via JS pour activer le menu */
+body.mobile-nav-active {
+    overflow: hidden; /* Empêche de scroller derrière */
+}
+body.mobile-nav-active .mobile-nav {
+    right: 0; /* Fait glisser le menu en position */
+}
+
+/* En-tête du menu mobile */
+.mobile-nav .mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.mobile-nav .logo-text {
+    font-family: 'Playfair Display', serif;
+    color: var(--color-blanc);
+    font-size: 24px;
+}
+.mobile-nav .mobile-nav-header i { /* La croix pour fermer */
+    color: var(--color-blanc);
+    font-size: 24px;
+}
+
+/* Liste des liens */
+.mobile-nav ul {
+    list-style: none;
+    padding: 0;
+}
+.mobile-nav ul li {
+    margin-bottom: 0.5rem;
+}
+.mobile-nav ul li a {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: block;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s;
+    border-radius: 6px;
+}
+.mobile-nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-blanc);
+}
+
+/* Bouton "Réserver" dans le menu */
+.mobile-nav .btn-mobile-reserve {
+    display: block;
+    text-align: center;
+    background-color: var(--color-vert-foret);
+    border: 2px solid var(--color-vert-foret);
+    color: var(--color-blanc);
+    padding: 0.75rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
+.mobile-nav .btn-mobile-reserve:hover {
+    background-color: var(--color-dore-leger);
+    border-color: var(--color-dore-leger);
+    color: var(--color-marron-titre);
+}
+
+
+/* Media query qui active le mode mobile */
+@media (max-width: 991px) {
+    .navbar { display: none; }
+    .mobile-nav-toggle { display: block; }
+    .header .btn-brand { display: none; }
+}
+
 
 /*--------------------------------------------------------------
 # Header / Barre de Navigation
@@ -191,6 +292,8 @@ a:hover {
     display: none; /* Caché par défaut sur grand écran */
     line-height: 0;
     transition: 0.5s;
+    z-index: 1001;
+
 }
 
 /* On le rend visible sur les petits écrans */
@@ -215,6 +318,48 @@ a:hover {
     opacity: 0;
     visibility: hidden;
 }
+
+/* === MENU MOBILE === */
+@media (max-width: 991px) {
+  #navbar {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 999;
+  }
+
+  #navbar.active {
+    display: flex;
+  }
+
+  .mobile-nav-toggle {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #333;
+  }
+
+  .mobile-nav-show {
+    display: inline-block;
+  }
+
+  .mobile-nav-hide {
+    display: none;
+  }
+
+  body.mobile-nav-active .mobile-nav-hide {
+    display: inline-block !important;
+  }
+
+  body.mobile-nav-active .mobile-nav-show {
+    display: none !important;
+  }
+}
+
 
 /* Quand on clique sur le hamburger, on ajoute la classe .mobile-nav-active au <body> */
 /* Cette règle rend le menu visible */
@@ -677,7 +822,7 @@ section {
 @media (max-width: 768px) {
     .experience-content {
         /* On remonte un peu le bloc de texte sur mobile pour qu'il soit plus visible */
-        bottom: -30px; 
+        bottom: -30px;
     }
 
     .experience-card:hover .experience-content {
@@ -754,7 +899,7 @@ section {
     .booking-form-wrapper .col-md-6:last-of-type .form-group-v2 {
         border-bottom: none;
     }
-    
+
     .btn-search {
         border-radius: 0 0 8px 8px; /* On arrondit les coins du bas pour le bouton */
     }

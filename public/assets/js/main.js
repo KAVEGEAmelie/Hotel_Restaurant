@@ -1,10 +1,15 @@
 (function() {
   "use strict";
 
-  // Helper pour sélectionner des éléments
-  const select = (el, all = false) => el.trim() && (all ? [...document.querySelectorAll(el)] : document.querySelector(el));
+  const select = (el, all = false) => {
+    el = el.trim();
+    if (all) {
+      return [...document.querySelectorAll(el)];
+    } else {
+      return document.querySelector(el);
+    }
+  };
 
-  // Helper pour attacher des écouteurs d'événements
   const on = (type, el, listener, all = false) => {
     const selectEl = select(el, all);
     if (selectEl) {
@@ -16,9 +21,7 @@
     }
   };
 
-  /**
-   * Header dynamique au défilement
-   */
+  /** Header dynamique au défilement */
   const header = select('#header');
   if (header) {
     const handleScroll = () => window.scrollY > 100 ? header.classList.add('scrolled') : header.classList.remove('scrolled');
@@ -26,18 +29,14 @@
     document.addEventListener('scroll', handleScroll);
   }
 
-  /**
-   * Gestion du menu mobile (Hamburger)
-   */
+  /** Gestion du menu mobile (hamburger + croix) */
   on('click', '.mobile-nav-toggle', function(e) {
-    select('body').classList.toggle('mobile-nav-active');
+    document.body.classList.toggle('mobile-nav-active');
     select('.mobile-nav-show').classList.toggle('d-none');
     select('.mobile-nav-hide').classList.toggle('d-none');
   });
 
-  /**
-   * Initialisation des animations au défilement (AOS)
-   */
+  /** AOS (Animations au scroll) */
   window.addEventListener('load', () => {
     AOS.init({
       duration: 1000,

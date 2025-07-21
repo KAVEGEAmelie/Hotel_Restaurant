@@ -15,6 +15,7 @@
 
     <!-- VOTRE FICHIER CSS PERSONNALISÉ - CHEMIN CORRIGÉ -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Favicons -->
   <link href="{{ asset('assets/img/logo.pjg') }}" rel="icon">
@@ -22,6 +23,8 @@
 
   <!-- ... autres balises link ... -->
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">

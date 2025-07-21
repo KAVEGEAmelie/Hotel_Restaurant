@@ -8,7 +8,7 @@
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
     @php
-        $isPublicPage = !isset($header); 
+        $isPublicPage = !isset($header);
     @endphp
 
     @if($isPublicPage)
@@ -21,15 +21,17 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-        
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
         <!-- Vendor CSS Files -->
         <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
         <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
-        
+
         <!-- CSS pour Leaflet (la carte) -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-        
+
         <!-- Votre fichier CSS Principal -->
         <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
@@ -59,10 +61,10 @@
         <!-- Vendor JS Files -->
         <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
-        
+
         <!-- Votre fichier JS Principal -->
         <script src="{{ asset('assets/js/main.js') }}"></script>
-    
+
         <!-- SCRIPT pour Leaflet (la carte) -->
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
