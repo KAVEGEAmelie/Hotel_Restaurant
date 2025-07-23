@@ -1,5 +1,8 @@
-@extends('layouts.app')
+@php
+    $makeHeaderTransparent = true;
+@endphp
 
+@extends('layouts.app')
 @section('title', 'Restaurant & Ambiance - Hôtel Le Printemps')
 
 @section('content')
@@ -7,12 +10,12 @@
 <main id="main">
 
     <!-- ======= Section Titre de Page ======= -->
-    <section class="page-title-section" style="background-image: url('{{ asset('assets/img/restaurant-bg.jpg') }}');">
-        <div class="container text-center" data-aos="fade-up">
-            <h1>Notre Restaurant</h1>
-            <p class="text-white-50">Une invitation au voyage des saveurs</p>
-        </div>
-    </section>
+    <section class="page-header-section" style="background-image: url('{{ asset('assets/img/restaurant-bg.jpg') }}');">
+    <div class="container text-center" data-aos="fade-up">
+        <h1>Notre Restaurant</h1>
+        <p class="text-white-50">Une invitation au voyage des saveurs</p>
+    </div>
+</section>
 
     <!-- ======= Section Ambiance (Nouveau Design) ======= -->
     <section id="ambiance" class="ambiance-section-v2 py-5">

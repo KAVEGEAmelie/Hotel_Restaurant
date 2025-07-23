@@ -27,25 +27,35 @@
             </div>
 
             <nav class="mt-4">
-                {{-- Lien vers le Tableau de Bord --}}
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.dashboard') ? 'bg-gray-900' : '' }}">
-                    <i class="bi bi-speedometer2 mr-3"></i> Tableau de Bord
-                </a>
+    {{-- Lien vers le Tableau de Bord --}}
+    <a href="{{ route('admin.dashboard') }}" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.dashboard') ? 'bg-gray-900 font-semibold' : '' }}">
+        <i class="bi bi-speedometer2 mr-3"></i> Tableau de Bord
+    </a>
 
-                {{-- Lien vers la Gestion des Chambres --}}
-                <a href="{{ route('admin.chambres.index') }}" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.chambres.*') ? 'bg-gray-900' : '' }}">
-                    <i class="bi bi-door-open-fill mr-3"></i> Gestion Chambres
-                </a>
+    {{-- Lien vers la Gestion des Chambres --}}
+    <a href="{{ route('admin.chambres.index') }}" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.chambres.*') ? 'bg-gray-900 font-semibold' : '' }}">
+        <i class="bi bi-door-open-fill mr-3"></i> Gestion Chambres
+    </a>
 
-                {{-- C'est ici que vous ajouterez les nouveaux liens --}}
-                {{-- Exemple pour les réservations : --}}
-                {{-- 
-                <a href="#" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white">
-                    <i class="bi bi-journal-text mr-3"></i> Réservations
-                </a>
-                --}}
-                 
-            </nav>
+    {{-- Lien vers la Gestion des Réservations --}}
+    <a href="{{ route('admin.reservations.index') }}" class="flex items-center mt-4 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.reservations.*') ? 'bg-gray-900 font-semibold' : '' }}">
+        <i class="bi bi-journal-text mr-3"></i> Réservations
+    </a>
+    
+    {{-- Séparateur pour la section Restaurant --}}
+    <p class="px-6 mt-6 mb-2 text-xs uppercase text-gray-400">Restaurant</p>
+
+    {{-- Lien vers la Gestion des Plats --}}
+    <a href="{{ route('admin.plats.index') }}" class="flex items-center py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.plats.*') ? 'bg-gray-900 font-semibold' : '' }}">
+        <i class="bi bi-egg-fried mr-3"></i> Plats
+    </a>
+
+    {{-- Lien vers la Gestion des Catégories --}}
+    <a href="{{ route('admin.categories.index') }}" class="flex items-center mt-2 py-2 px-6 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.categories.*') ? 'bg-gray-900 font-semibold' : '' }}">
+        <i class="bi bi-tags-fill mr-3"></i> Catégories
+    </a>
+    
+</nav>
         </aside>
 
 

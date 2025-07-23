@@ -4,63 +4,54 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plat;
+use App\Models\Categorie;
 use Illuminate\Http\Request;
 
 class PlatController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $plats = Plat::with('categorie')->latest()->paginate(15);
+        return view('admin.plats.index', compact('plats'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $categories = Categorie::orderBy('nom')->get();
+        return view('admin.plats.form', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix_simple' => 'nullable|numeric',
+            'prix_menu' => 'nullable|numeric',
+            'categorie_id' => 'required|exists:categories,id',
+            // 'image' => 'nullable|image' // Si vous ajoutez des images de plats
+        ]);
+
+        Plat::create($validated);
+        return redirect()->route('admin.plats.index')->with('success', 'Plat créé avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Plat $plat)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Plat $plat)
     {
-        //
+        $categories = Categorie::orderBy('nom')->get();
+        return view('admin.plats.form', compact('plat', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Plat $plat)
     {
-        //
+        // ... (Logique de validation et de mise à jour similaire à store) ...
+        $plat->update($request->all());
+        return redirect()->route('admin.plats.index')->with('success', 'Plat mis à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Plat $plat)
     {
-        //
+        $plat->delete();
+        return redirect()->route('admin.plats.index')->with('success', 'Plat supprimé avec succès.');
     }
 }

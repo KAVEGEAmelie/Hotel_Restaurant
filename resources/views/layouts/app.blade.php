@@ -44,16 +44,14 @@
 <body class="font-sans antialiased">
 
     @if($isPublicPage)
-        {{-- === STRUCTURE DU SITE PUBLIC === --}}
-        @include('partials.header')
-        <main>
-            @yield('content')
-        </main>
-        @include('partials.footer')
-    @else
-        {{-- === STRUCTURE DU BACK-OFFICE (DASHBOARD) === --}}
-        {{-- ... Votre code pour le back-office ... --}}
-    @endif
+    {{-- On inclut le header en lui passant une variable --}}
+    @include('partials.header', ['transparent' => isset($makeHeaderTransparent) && $makeHeaderTransparent])
+
+    <main>
+        @yield('content')
+    </main>
+    @include('partials.footer')
+@endif
 
 
     {{-- On charge les scripts JS uniquement pour les pages publiques --}}

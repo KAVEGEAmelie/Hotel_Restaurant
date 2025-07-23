@@ -1,15 +1,10 @@
 (function() {
   "use strict";
 
-  const select = (el, all = false) => {
-    el = el.trim();
-    if (all) {
-      return [...document.querySelectorAll(el)];
-    } else {
-      return document.querySelector(el);
-    }
-  };
-
+  // Helper pour sélectionner des éléments
+  const select = (el, all = false) => el.trim() && (all ? [...document.querySelectorAll(el)] : document.querySelector(el));
+  
+  // Helper pour attacher des écouteurs d'événements
   const on = (type, el, listener, all = false) => {
     const selectEl = select(el, all);
     if (selectEl) {
@@ -21,19 +16,34 @@
     }
   };
 
-  /** Header dynamique au défilement */
+  /**
+   * Header : Cacher en scrollant vers le bas, montrer en scrollant vers le haut
+   */
+  let lastScrollTop = 0;
   const header = select('#header');
   if (header) {
-    const handleScroll = () => window.scrollY > 100 ? header.classList.add('scrolled') : header.classList.remove('scrolled');
-    window.addEventListener('load', handleScroll);
-    document.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', function() {
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
+        header.classList.add('header-hidden'); // Ajoute la classe pour cacher
+      } else {
+        header.classList.remove('header-hidden'); // Enlève la classe pour montrer
+      }
+      // Logique pour le changement de style au scroll (classe .scrolled)
+      if (scrollTop > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    }, false);
   }
 
-  /** Gestion du menu mobile (hamburger + croix) */
+  /**
+   * Logique pour le menu mobile (Panneau glissant)
+   */
   on('click', '.mobile-nav-toggle', function(e) {
-    document.body.classList.toggle('mobile-nav-active');
-    select('.mobile-nav-show').classList.toggle('d-none');
-    select('.mobile-nav-hide').classList.toggle('d-none');
+    select('body').classList.toggle('mobile-nav-active');
   });
 
   /** AOS (Animations au scroll) */
@@ -46,4 +56,10 @@
     });
   });
 
+  // Logique pour la carte Leaflet (déplacée ici pour centralisation)
+  const contactMapDiv = select('#contact-map');
+  if (contactMapDiv) {
+    // ... votre code de carte Leaflet ...
+  }
+  
 })();

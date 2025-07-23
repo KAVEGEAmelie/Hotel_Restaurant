@@ -1,5 +1,8 @@
-@extends('layouts.app') {{-- On dit à Laravel d'utiliser notre layout principal --}}
+@php
+    $makeHeaderTransparent = true;
+@endphp
 
+@extends('layouts.app')
 @section('title', 'Accueil - Hôtel Le Printemps de Kpalimé') {{-- On définit le titre pour cette page --}}
 
 @section('content') {{-- Tout ce qui suit sera placé dans le @yield('content') du layout --}}

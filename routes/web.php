@@ -81,8 +81,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
     Route::resource('chambres', AdminChambreController::class);
-    Route::resource('reservations', AdminReservationController::class);
-    Route::resource('plats', AdminPlatController::class);
+// On définit manuellement la route pour la liste, en la faisant pointer vers notre nouvelle méthode
+Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
+
+// On peut garder 'resource' pour les autres actions (comme destroy), mais en excluant 'index'
+Route::resource('reservations', AdminReservationController::class)->except(['index']);    Route::resource('plats', AdminPlatController::class);
     Route::resource('categories', AdminCategorieController::class);
 
 });
