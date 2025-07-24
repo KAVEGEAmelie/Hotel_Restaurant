@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash; 
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,15 +13,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // === 1. Création de l'utilisateur ADMINISTRATEUR ===
+        // On utilise firstOrCreate pour éviter les erreurs si l'admin existe déjà.
+        User::firstOrCreate(
+            ['email' => 'admin@hotel.com'],
+            [
+                'name' => 'Admin Le Printemps',
+                'password' => Hash::make('password'),
+                'is_admin' => true,
+            ]
+        );
+
+        // === 2. (Optionnel) Création d'un utilisateur CLIENT de test ===
+        User::firstOrCreate(
+            ['email' => 'client@test.com'],
+            [
+                'name' => 'Client Test',
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        // === 3. Appel de vos autres seeders ===
         $this->call([
             MenuSeeder::class,
-            ]);
-
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
         ]);
     }
 }

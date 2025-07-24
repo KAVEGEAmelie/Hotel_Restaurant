@@ -76,7 +76,7 @@
 
         // Ajout du marqueur sur la carte
         L.marker([lat, lng]).addTo(map)
-            .bindPopup('<b>Auberge Le Printemps</b><br>Nous sommes ici !')
+            .bindPopup('<b>Hotel Le Printemps</b><br>Nous sommes ici !')
             .openPopup();
     }
 </script>
