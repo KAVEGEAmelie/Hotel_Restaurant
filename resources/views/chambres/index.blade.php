@@ -83,7 +83,7 @@
                                     <div class="my-3">
                                         <strong>{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} FCFA</strong> / nuit
                                     </div>
-                                    <a href="{{ route('chambres.show', ['chambre' => $chambre, 'checkin_date' => request('checkin_date'), 'checkout_date' => request('checkout_date'), 'guests' => request('guests')]) }}" 
+                                    <a href="{{ route('chambres.show', ['chambre' => $chambre, 'checkin_date' => request('checkin_date'), 'checkout_date' => request('checkout_date'), 'guests' => request('guests')]) }}"
                                        class="btn btn-outline-custom mt-auto align-self-center">
                                        Détails & Réservation →
                                     </a>

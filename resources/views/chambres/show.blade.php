@@ -20,7 +20,7 @@
                 <!-- Colonne de gauche : Image + Description -->
                 <div class="col-lg-7">
                     <div class="room-main-content" data-aos="fade-up">
-                        
+
                         <!-- Image -->
                         <div class="room-gallery-final mb-4">
                             <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="img-fluid" alt="Image principale de la chambre {{ $chambre->nom }}">
@@ -45,7 +45,7 @@
                                 <div class="price">{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} FCFA</div>
                                 <span>par nuit</span>
                             </div>
-                            
+
                             <form action="{{ route('reservation.create') }}" method="POST" class="p-4">
                                 @csrf
                                 <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
@@ -55,9 +55,9 @@
                                     <div class="col-12"><input type="date" name="checkin_date" class="form-control" required value="{{ request('checkin_date', now()->format('Y-m-d')) }}"></div>
                                     <div class="col-12"><input type="date" name="checkout_date" class="form-control" required value="{{ request('checkout_date', now()->addDay()->format('Y-m-d')) }}"></div>
                                 </div>
-                                
+
                                 <hr class="my-4">
-                                
+
                                 <h4 class="form-title">Vos informations</h4>
                                 <div class="row g-3">
                                     <div class="col-md-6"><input type="text" name="client_nom" class="form-control" placeholder="Nom" required value="{{ old('client_nom') }}"></div>
