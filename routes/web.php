@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\ChambreController as AdminChambreController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\PlatController as AdminPlatController;
 use App\Http\Controllers\Admin\CategorieController as AdminCategorieController;
-
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +53,7 @@ Route::post('/paiement/{reservation}', [PaymentController::class, 'process'])->n
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Dashboard de base pour un utilisateur normal
  Route::get('/dashboard', function () {
     if (Auth::check() && Auth::user()->is_admin) {
@@ -77,12 +77,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    
+
     Route::resource('chambres', AdminChambreController::class);
 // On définit manuellement la route pour la liste, en la faisant pointer vers notre nouvelle méthode
 Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
+    Route::resource('utilisateurs', AdminUserController::class);
 
 // On peut garder 'resource' pour les autres actions (comme destroy), mais en excluant 'index'
 Route::resource('reservations', AdminReservationController::class)->except(['index']);    Route::resource('plats', AdminPlatController::class);

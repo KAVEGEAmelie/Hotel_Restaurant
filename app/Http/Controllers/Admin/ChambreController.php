@@ -15,7 +15,7 @@ class ChambreController extends Controller
      */
     public function index()
     {
-        $chambres = Chambre::latest()->paginate(10); // Récupère 10 chambres par page
+        $chambres = Chambre::latest()->paginate(10);
         return view('admin.chambres.index', compact('chambres'));
     }
 
@@ -42,10 +42,10 @@ class ChambreController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
-        
-        // Gérer l'upload de l'image
+
         if ($request->hasFile('image_principale')) {
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
+            // CORRECTION : On ne spécifie plus le disque 'public'. Laravel utilisera le disque par défaut.
+            $validated['image_principale'] = $request->file('image_principale')->store('chambres');
         }
 
         Chambre::create($validated);
@@ -72,18 +72,18 @@ class ChambreController extends Controller
             'description_longue' => 'nullable|string',
             'prix_par_nuit' => 'required|numeric|min:0',
             'capacite' => 'required|integer|min:1',
-            'image_principale' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Nullable pour ne pas forcer le changement d'image
+            'image_principale' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
 
         if ($request->hasFile('image_principale')) {
-            // Supprimer l'ancienne image si elle existe
             if ($chambre->image_principale) {
-                Storage::disk('public')->delete($chambre->image_principale);
+                // CORRECTION : On ne spécifie plus le disque. Laravel utilisera le disque par défaut.
+                Storage::delete($chambre->image_principale);
             }
-            // Uploader la nouvelle image
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
+            // CORRECTION : On ne spécifie plus le disque.
+            $validated['image_principale'] = $request->file('image_principale')->store('chambres');
         }
 
         $chambre->update($validated);
@@ -96,11 +96,11 @@ class ChambreController extends Controller
      */
     public function destroy(Chambre $chambre)
     {
-        // Supprimer l'image associée
         if ($chambre->image_principale) {
-            Storage::disk('public')->delete($chambre->image_principale);
+            // CORRECTION : On ne spécifie plus le disque. Laravel utilisera le disque par défaut.
+            Storage::delete($chambre->image_principale);
         }
-        
+
         $chambre->delete();
 
         return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');

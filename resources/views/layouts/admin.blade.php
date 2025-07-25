@@ -39,6 +39,11 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('admin.utilisateurs.*') ? 'active' : '' }}" href="{{ route('admin.utilisateurs.index') }}">
+            <i class="bi bi-people-fill"></i> Gestion Utilisateurs
+        </a>
+    </li>
                 <li class="nav-heading mt-4">Restaurant</li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.plats.*') ? 'active' : '' }}" href="{{ route('admin.plats.index') }}">
@@ -60,18 +65,21 @@
                 </button>
 
                 <div class="dropdown ms-auto">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-fill me-2"></i>{{ Auth::user()->name }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Déconnexion</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="bi bi-person-fill me-2"></i>{{ Auth::user()->name }}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+        {{-- Lien vers le profil --}}
+        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Mon Profil</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="dropdown-item">Déconnexion</button>
+            </form>
+        </li>
+    </ul>
+</div>
             </header>
 
             <main class="p-4">
