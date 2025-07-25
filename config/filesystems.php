@@ -47,7 +47,13 @@ return [
             'report' => false,
         ],
 
-        
+        'uploads' => [
+        'driver' => 'local',
+        'root' => public_path('uploads'), // Le dossier sera public/uploads
+        'url' => env('APP_URL').'/uploads',
+        'visibility' => 'public',
+    ],
+
 
         's3' => [
             'driver' => 's3',

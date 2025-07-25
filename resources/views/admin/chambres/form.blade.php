@@ -63,7 +63,7 @@
                         @if(isset($chambre) && $chambre->image_principale)
                             <div class="mt-3">
                                 <p class="small text-muted">Image actuelle :</p>
-                                <img src="{{ asset('storage/' . $chambre->image_principale) }}" alt="Image actuelle" class="img-thumbnail" style="max-height: 150px;">
+                                <img src="{{ asset('uploads/' . $chambre->image_principale) }}" alt="Image actuelle" class="img-thumbnail" style="max-height: 150px;">
                             </div>
                         @endif
                     </div>

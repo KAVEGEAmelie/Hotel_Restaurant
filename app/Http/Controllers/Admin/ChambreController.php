@@ -45,7 +45,7 @@ class ChambreController extends Controller
 
         // Gérer l'upload de l'image
         if ($request->hasFile('image_principale')) {
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
+            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'uploads');
         }
 
         Chambre::create($validated);
@@ -80,10 +80,10 @@ class ChambreController extends Controller
         if ($request->hasFile('image_principale')) {
             // Supprimer l'ancienne image si elle existe
             if ($chambre->image_principale) {
-                Storage::disk('public')->delete($chambre->image_principale);
+                Storage::disk('uploads')->delete($chambre->image_principale);
             }
             // Uploader la nouvelle image
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
+            $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'uploads');
         }
 
         $chambre->update($validated);
@@ -98,7 +98,7 @@ class ChambreController extends Controller
     {
         // Supprimer l'image associée
         if ($chambre->image_principale) {
-            Storage::disk('public')->delete($chambre->image_principale);
+            Storage::disk('uploads')->delete($chambre->image_principale);
         }
 
         $chambre->delete();
