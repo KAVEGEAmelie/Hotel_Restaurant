@@ -146,3 +146,44 @@ body {
     .main-content { width: 100%; }
     #wrapper.sidebar-toggled .sidebar { margin-left: 0; }
 }
+
+/*--------------------------------------------------------------
+# Cartes de Statistiques (Dashboard) - Design Corrigé
+--------------------------------------------------------------*/
+.stat-card-v2 {
+    transition: all 0.3s ease;
+    border: 1px solid var(--admin-border-color);
+    border-left-width: 4px; /* On définit l'épaisseur de la bordure gauche */
+}
+
+.stat-card-v2:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.stat-card-v2 .card-subtitle {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--admin-text-secondary); /* Texte secondaire gris clair, très lisible */
+}
+
+.stat-card-v2 .h2 {
+    color: var(--admin-text-primary); /* Texte principal blanc cassé */
+    font-weight: 700;
+}
+
+.stat-card-v2 .stat-icon {
+    font-size: 3rem;
+    opacity: 0.4;
+}
+
+/* On définit nos propres couleurs pour les bordures et les icônes */
+.stat-card-v2.border-success { border-left-color: var(--admin-primary-color) !important; }
+.stat-card-v2 .icon-success { color: var(--admin-primary-color) !important; }
+
+.stat-card-v2.border-info { border-left-color: #0dcaf0 !important; }
+.stat-card-v2 .icon-info { color: #0dcaf0 !important; }
+
+.stat-card-v2.border-warning { border-left-color: #ffc107 !important; }
+.stat-card-v2 .icon-warning { color: #ffc107 !important; }
