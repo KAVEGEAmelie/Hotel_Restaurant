@@ -10,7 +10,6 @@
 
     <!-- Notre CSS Admin (qui charge aussi Bootstrap) -->
     <link href="{{ asset('assets/css/admin.css') }}" rel="stylesheet">
-<link href="{{ secure_asset('assets/css/admin.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body>
