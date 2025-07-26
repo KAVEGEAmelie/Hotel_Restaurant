@@ -78,7 +78,8 @@
                         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
                             <div class="room-card-compact">
                                 <div class="room-card-image-wrapper">
-                                    <img src="{{ asset('uploads/' . $chambre->image_principale) }}" class="img-fluid" alt="{{ $chambre->nom }}">
+                                    <img src="<img src="/storage/uploads/chambres/Wb6GolmGqjh9TKxUeKTXyn4JkxyxKEaiXp0mKM4B.jpg" class="img-fluid" alt="CHAMBRE 002">
+                                     {{ asset('uploads/' . $chambre->image_principale) }}" class="img-fluid" alt="{{ $chambre->nom }}">
                                     <div class="price-badge">{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} F / nuit</div>
                                 </div>
                                 <div class="room-card-body">
