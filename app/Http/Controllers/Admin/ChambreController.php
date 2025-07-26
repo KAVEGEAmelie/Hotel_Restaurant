@@ -44,9 +44,12 @@ class ChambreController extends Controller
         $validated['slug'] = Str::slug($validated['nom']);
 
         if ($request->hasFile('image_principale')) {
-            // CORRECTION : On ne spécifie plus le disque. Laravel utilisera le disque par défaut ('uploads').
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres');
-        }
+        $image = $request->file('image_principale');
+        $nomImage = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        // Déplace dans public/uploads/chambres
+        $image->move(public_path('uploads/chambres'), $nomImage);
+        $validated['image_principale'] = $nomImage; // stocke juste le nom
+    }
 
         Chambre::create($validated);
 
@@ -78,13 +81,16 @@ class ChambreController extends Controller
         $validated['slug'] = Str::slug($validated['nom']);
 
         if ($request->hasFile('image_principale')) {
-            if ($chambre->image_principale) {
-                // CORRECTION : On ne spécifie plus le disque.
-                Storage::delete($chambre->image_principale);
-            }
-            // CORRECTION : On ne spécifie plus le disque.
-            $validated['image_principale'] = $request->file('image_principale')->store('chambres');
+        // Supprimer l’ancienne image si elle existe
+        $ancienImage = public_path('uploads/chambres/' . $chambre->image_principale);
+        if (file_exists($ancienImage)) {
+            unlink($ancienImage);
         }
+        $image = $request->file('image_principale');
+        $nomImage = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads/chambres'), $nomImage);
+        $validated['image_principale'] = $nomImage;
+    }
 
         $chambre->update($validated);
 
@@ -95,14 +101,17 @@ class ChambreController extends Controller
      * Supprime une chambre de la base de données.
      */
     public function destroy(Chambre $chambre)
-    {
-        if ($chambre->image_principale) {
-            // CORRECTION : On ne spécifie plus le disque.
-            Storage::delete($chambre->image_principale);
+{
+    if ($chambre->image_principale) {
+        $ancienImage = public_path('uploads/chambres/' . $chambre->image_principale);
+        if (file_exists($ancienImage)) {
+            unlink($ancienImage);
         }
-
-        $chambre->delete();
-
-        return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
     }
+
+    $chambre->delete();
+
+    return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
+}
+
 }
