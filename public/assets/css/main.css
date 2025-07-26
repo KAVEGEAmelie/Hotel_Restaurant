@@ -498,6 +498,90 @@ section {
 }
 
 /*--------------------------------------------------------------
+# Style pour la liste des chambres (Carte Verticale Compacte)
+--------------------------------------------------------------*/
+.room-card-compact {
+    background: var(--color-blanc);
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.room-card-compact:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+}
+
+/* Image */
+.room-card-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
+}
+.room-card-image-wrapper img {
+    height: 220px; /* HAUTEUR D'IMAGE RÉDUITE */
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.room-card-compact:hover .room-card-image-wrapper img {
+    transform: scale(1.1);
+}
+
+/* Badge de prix */
+.price-badge {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(34, 139, 34, 0.9); /* Vert forêt semi-transparent */
+    color: var(--color-blanc);
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    backdrop-filter: blur(5px);
+}
+
+/* Contenu */
+.room-card-body {
+    padding: 25px;
+    text-align: center;
+    flex-grow: 1; /* Pousse le bouton vers le bas */
+    display: flex;
+    flex-direction: column;
+}
+.room-card-body .room-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+.room-card-body .room-description {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1; /* Prend l'espace disponible */
+}
+.room-card-body .btn-details {
+    color: var(--color-vert-fonce-lien);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.room-card-body .btn-details:hover {
+    color: var(--color-vert-foret);
+}
+.room-card-body .btn-details i {
+    transition: transform 0.3s;
+    vertical-align: middle;
+}
+.room-card-body .btn-details:hover i {
+    transform: translateX(5px);
+}
+
+/*--------------------------------------------------------------
 # Footer / Pied de Page
 --------------------------------------------------------------*/
 .footer {

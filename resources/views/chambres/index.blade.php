@@ -9,13 +9,13 @@
 
     <main id="main">
 
-        <!-- ======= Section Titre de Page (Nouveau Style) ======= -->
+        <!-- ======= Section Titre de Page ======= -->
         <section class="page-header-section" style="background-image: url('{{ asset('assets/img/chambres-bg.jpg') }}');">
             <div class="container text-center" data-aos="fade-up">
                 <h1>Nos Chambres & Suites</h1>
                 <p class="text-white-50">Trouvez l'espace parfait pour un séjour inoubliable</p>
             </div>
-        </section><!-- Fin Section Titre de Page -->
+        </section>
 
         <!-- ======= Section Formulaire de Réservation ======= -->
         <section class="booking-form-section" style="background-color: #f8f6f0; padding: 50px 0;">
@@ -69,23 +69,24 @@
             </div>
         </section><!-- Fin Formulaire de Réservation -->
 
-        <!-- ======= Section Liste des Chambres ======= -->
+        <!-- ======= Section Liste des Chambres (Design Vertical Compact) ======= -->
         <section id="chambres-list" class="chambres-list-section py-5">
             <div class="container">
                 <div class="row g-4">
+
                     @forelse($chambres as $chambre)
                         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
-                            <div class="card card-brand h-100">
-                                <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="card-img-top" alt="{{ $chambre->nom }}" style="height: 250px; object-fit: cover;">
-                                <div class="card-body text-center d-flex flex-column">
-                                    <h5 class="card-title">{{ $chambre->nom }}</h5>
-                                    <p class="card-text">{{ $chambre->description_courte }}</p>
-                                    <div class="my-3">
-                                        <strong>{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} FCFA</strong> / nuit
-                                    </div>
+                            <div class="room-card-compact">
+                                <div class="room-card-image-wrapper">
+                                    <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="img-fluid" alt="{{ $chambre->nom }}">
+                                    <div class="price-badge">{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} F / nuit</div>
+                                </div>
+                                <div class="room-card-body">
+                                    <h3 class="room-title">{{ $chambre->nom }}</h3>
+                                    <p class="room-description">{{ Str::limit($chambre->description_courte, 90) }}</p>
                                     <a href="{{ route('chambres.show', ['chambre' => $chambre, 'checkin_date' => request('checkin_date'), 'checkout_date' => request('checkout_date'), 'guests' => request('guests')]) }}"
-                                       class="btn btn-outline-custom mt-auto align-self-center">
-                                       Détails & Réservation →
+                                       class="btn-details">
+                                       Détails & Réservation <i class="bi bi-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -98,9 +99,10 @@
                             </div>
                         </div>
                     @endforelse
+
                 </div>
             </div>
-        </section><!-- Fin Liste des Chambres -->
+        </section>
 
     </main>
 @endsection
