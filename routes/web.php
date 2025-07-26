@@ -86,4 +86,5 @@ Route::resource('plats-galerie', AdminPlatGalerieController::class)->parameters(
     Route::resource('utilisateurs', AdminUserController::class)->parameters([
         'utilisateurs' => 'user' // Force le paramètre à s'appeler 'user'
     ]);
+    
 });

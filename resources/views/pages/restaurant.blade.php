@@ -11,13 +11,13 @@
 
     <!-- ======= Section Titre de Page ======= -->
     <section class="page-header-section" style="background-image: url('{{ asset('assets/img/restaurant-bg.jpg') }}');">
-    <div class="container text-center" data-aos="fade-up">
-        <h1>Notre Restaurant</h1>
-        <p class="text-white-50">Une invitation au voyage des saveurs</p>
-    </div>
-</section>
+        <div class="container text-center" data-aos="fade-up">
+            <h1>Notre Restaurant</h1>
+            <p class="text-white-50">Une invitation au voyage des saveurs</p>
+        </div>
+    </section>
 
-    <!-- ======= Section Ambiance (Nouveau Design) ======= -->
+    <!-- ======= Section Ambiance ======= -->
     <section id="ambiance" class="ambiance-section-v2 py-5">
         <div class="container">
             <div class="row align-items-center g-5">
@@ -50,7 +50,7 @@
         </div>
     </section>
 
-    <!-- ======= Section Menu & Spécialités (Nouveau Design) ======= -->
+    <!-- ======= Section Menu & Spécialités (Design Interactif) ======= -->
     <section id="menu" class="menu-section-v3 py-5" style="background-color: #fcfbf7;">
         <div class="container">
             <!-- Titre et téléchargement du PDF -->
@@ -97,7 +97,7 @@
 </main>
 
 <!-- ======= Fenêtre Modale pour les Plats ======= -->
-<div class="modal fade" id="platModal" tabindex="-1">
+<div class="modal fade" id="platModal" tabindex="-1" aria-labelledby="platModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body p-0">
@@ -107,7 +107,7 @@
                     </div>
                     <div class="col-lg-6 d-flex flex-column">
                         <div class="p-4">
-                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
                             <h3 id="modalPlatNom" class="modal-title"></h3>
                             <p id="modalPlatDescription" class="modal-description"></p>
                             <div id="modalPlatPrix" class="modal-price"></div>
@@ -123,6 +123,42 @@
 </div>
 
 @endsection
+
+@push('styles')
+<style>
+    /* Styles pour la section Ambiance */
+    .ambiance-section-v2 { background: #fdfaf6; }
+    .ambiance-image-wrapper { position: relative; height: 450px; }
+    .ambiance-image-wrapper .img-main { width: 80%; height: 80%; object-fit: cover; border-radius: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); position: relative; z-index: 2; transition: transform 0.5s ease; }
+    .ambiance-image-wrapper .img-secondary { width: 50%; height: 50%; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 5px solid white; position: absolute; bottom: 0; right: 0; z-index: 3; transition: all 0.5s ease; }
+    .ambiance-image-wrapper:hover .img-main { transform: scale(1.05); }
+    .ambiance-image-wrapper:hover .img-secondary { transform: scale(1.1) rotate(3deg); }
+    @media (max-width: 991px) {
+        .ambiance-image-wrapper { height: auto; }
+        .ambiance-image-wrapper .img-secondary { display: none; }
+    }
+    .ambiance-section-v2 .horaires { display: flex; align-items: center; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .ambiance-section-v2 .horaires i { font-size: 32px; color: var(--color-vert-foret); margin-right: 15px; }
+
+    /* Styles pour la section Menu V3 */
+    .btn-download-v3 { display: inline-block; background-color: transparent; border: 2px solid var(--color-marron-titre); color: var(--color-marron-titre); padding: 10px 30px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: all 0.3s; }
+    .btn-download-v3:hover { background-color: var(--color-marron-titre); color: var(--color-blanc); }
+    .plat-gallery-item { position: relative; cursor: pointer; overflow: hidden; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .plat-gallery-item img { aspect-ratio: 1 / 1; object-fit: cover; width: 100%; transition: transform 0.4s ease; }
+    .plat-gallery-item:hover img { transform: scale(1.1); }
+    .plat-gallery-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.4s ease; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .plat-gallery-item:hover .plat-gallery-overlay { opacity: 1; }
+    .overlay-content i { font-size: 2rem; }
+    .overlay-content span { display: block; font-weight: 600; margin-top: 5px; }
+
+    /* Styles pour la Fenêtre Modale */
+    .modal-content { border: none; border-radius: 10px; overflow: hidden; }
+    .modal-image { width: 100%; height: 100%; object-fit: cover; min-height: 400px; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--color-marron-titre); margin-top: 10px; }
+    .modal-description { color: #555; margin: 15px 0; }
+    .modal-price { font-size: 24px; font-weight: 700; color: var(--color-vert-foret); }
+</style>
+@endpush
 
 @push('scripts')
 <script>
@@ -144,162 +180,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-@endpush
-{{-- Styles spécifiques pour cette nouvelle page Restaurant --}}
-<style>
-    /* ======= Section Ambiance (Nouveau Design) ======= */
-    .ambiance-section-v2 {
-        background: #fdfaf6;
-    }
-    .ambiance-image-wrapper {
-        position: relative;
-        height: 450px;
-    }
-    .ambiance-image-wrapper .img-main {
-        width: 80%;
-        height: 80%;
-        object-fit: cover;
-        border-radius: 10px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        position: relative;
-        z-index: 2;
-        transition: transform 0.5s ease;
-    }
-    .ambiance-image-wrapper .img-secondary {
-        width: 50%;
-        height: 50%;
-        object-fit: cover;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        border: 5px solid white;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 3;
-        transition: all 0.5s ease;
-    }
-    .ambiance-image-wrapper:hover .img-main {
-        transform: scale(1.05);
-    }
-    .ambiance-image-wrapper:hover .img-secondary {
-        transform: scale(1.1) rotate(3deg);
-    }
-    @media (max-width: 991px) {
-        .ambiance-image-wrapper {
-            height: auto; /* Hauteur auto sur mobile */
-        }
-        .ambiance-image-wrapper .img-main,
-        .ambiance-image-wrapper .img-secondary {
-            position: relative;
-            width: 100%;
-            height: auto;
-            margin-bottom: 15px;
-        }
-        .ambiance-image-wrapper .img-secondary {
-            display: none; /* On cache la 2eme image sur mobile pour plus de clarté */
-        }
-    }
-
-    .ambiance-section-v2 .horaires {
-        display: flex;
-        align-items: center;
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-    .ambiance-section-v2 .horaires i {
-        font-size: 32px;
-        color: var(--color-vert-foret);
-        margin-right: 15px;
-    }
-    .ambiance-section-v2 .horaires div {
-        display: flex;
-        flex-direction: column;
-    }
-    .ambiance-section-v2 .horaires strong {
-        font-size: 16px;
-        font-family: 'Montserrat', sans-serif;
-    }
-    .ambiance-section-v2 .horaires span {
-        font-size: 15px;
-        color: #555;
-    }
-
-    /* ======= Section Téléchargement PDF ======= */
-    .menu-download-section {
-        background: linear-gradient(rgba(40,40,40,0.8), rgba(40,40,40,0.8)), url('{{ asset('assets/img/cta-bg.jpg') }}') center center fixed;
-        background-size: cover;
-        padding: 100px 0;
-    }
-    .btn-download {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 600;
-        font-size: 16px;
-        letter-spacing: 1px;
-        display: inline-block;
-        padding: 12px 40px;
-        border-radius: 50px;
-        transition: 0.5s;
-        margin: 10px;
-        border: 2px solid var(--color-dore-leger);
-        color: var(--color-blanc);
-        text-decoration: none;
-    }
-    .btn-download:hover {
-        background: var(--color-dore-leger);
-        color: var(--color-marron-titre);
-    }
-    .btn-download i {
-        margin-right: 8px;
-        font-size: 20px;
-        vertical-align: middle;
-    }
-
-     /* ======= NOUVEAU STYLE : Section Plats en Vedette ======= */
-    .plats-galerie-section {
-        padding: 80px 0;
-    }
-    .plat-card {
-        background: var(--color-blanc);
-        border-radius: 10px;
-        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-    .plat-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-    }
-    .plat-card-img {
-        overflow: hidden;
-        border-radius: 10px 10px 0 0;
-    }
-    .plat-card-img img {
-        height: 250px;
-        width: 100%;
-        object-fit: cover;
-    }
-    .plat-card-body {
-        padding: 25px;
-        text-align: center;
-    }
-    .plat-card-body h4 {
-        font-family: 'Playfair Display', serif;
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: var(--color-marron-titre);
-    }
-    .plat-card-body p {
-        font-size: 15px;
-        color: #555;
-        min-height: 70px; /* Assure une hauteur minimale pour l'alignement */
-    }
-    .plat-card-body .price {
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--color-vert-foret);
-    }
-</style>
 @endpush
