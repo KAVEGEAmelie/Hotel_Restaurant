@@ -762,6 +762,67 @@ section {
 }
 
 /*--------------------------------------------------------------
+# Page Restaurant - Section Menu V3
+--------------------------------------------------------------*/
+
+.btn-download-v3 {
+    display: inline-block;
+    background-color: transparent;
+    border: 2px solid var(--color-marron-titre);
+    color: var(--color-marron-titre);
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.btn-download-v3:hover {
+    background-color: var(--color-marron-titre);
+    color: var(--color-blanc);
+}
+
+.plat-gallery-item {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.plat-gallery-item img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.4s ease;
+}
+.plat-gallery-item:hover img {
+    transform: scale(1.1);
+}
+.plat-gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+}
+.plat-gallery-item:hover .plat-gallery-overlay {
+    opacity: 1;
+}
+.overlay-content i { font-size: 2rem; }
+.overlay-content span { display: block; font-weight: 600; margin-top: 5px; }
+
+/* Styles pour la Fenêtre Modale */
+.modal-content { border: none; border-radius: 10px; overflow: hidden; }
+.modal-image { width: 100%; height: 100%; object-fit: cover; min-height: 400px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--color-marron-titre); margin-top: 10px; }
+.modal-description { color: #555; margin: 15px 0; }
+.modal-price { font-size: 24px; font-weight: 700; color: var(--color-vert-foret); }
+
+/*--------------------------------------------------------------
 # Styles pour la Page "À Propos"
 --------------------------------------------------------------*/
 .philosophy-section .section-title p,

@@ -9,12 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void {
-    Schema::create('menus_pdf', function (Blueprint $table) {
+   public function up(): void
+{
+    Schema::create('plat_galeries', function (Blueprint $table) {
         $table->id();
-        $table->string('titre');
-        $table->string('fichier');
-        $table->boolean('est_actif')->default(false);
+        $table->string('nom');
+        $table->text('description');
+        $table->integer('prix');
+        $table->string('image');
         $table->timestamps();
     });
 }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menu_pdfs');
+        Schema::dropIfExists('plats_galerie');
     }
 };

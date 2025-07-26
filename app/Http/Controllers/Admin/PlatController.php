@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -26,12 +25,10 @@ class PlatController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'prix_simple' => 'nullable|numeric',
-            'prix_menu' => 'nullable|numeric',
+            'prix_simple' => 'nullable|numeric|min:0',
+            'prix_menu' => 'nullable|numeric|min:0',
             'categorie_id' => 'required|exists:categories,id',
-            // 'image' => 'nullable|image' // Si vous ajoutez des images de plats
         ]);
-
         Plat::create($validated);
         return redirect()->route('admin.plats.index')->with('success', 'Plat créé avec succès.');
     }
@@ -44,8 +41,14 @@ class PlatController extends Controller
 
     public function update(Request $request, Plat $plat)
     {
-        // ... (Logique de validation et de mise à jour similaire à store) ...
-        $plat->update($request->all());
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix_simple' => 'nullable|numeric|min:0',
+            'prix_menu' => 'nullable|numeric|min:0',
+            'categorie_id' => 'required|exists:categories,id',
+        ]);
+        $plat->update($validated);
         return redirect()->route('admin.plats.index')->with('success', 'Plat mis à jour avec succès.');
     }
 

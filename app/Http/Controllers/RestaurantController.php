@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Categorie;
 use App\Models\MenuPdf; // <-- Ajoutez l'importation
+use App\Models\PlatGalerie;
 
 
 class RestaurantController extends Controller
@@ -18,11 +19,13 @@ class RestaurantController extends Controller
     $categories = Categorie::with('plats')->orderBy('ordre')->get();
 
     // Récupère le DERNIER menu PDF qui est marqué comme "actif"
-    $menuActif = MenuPdf::where('est_actif', true)->latest()->first();
+$menuActif = MenuPdf::where('est_actif', true)->latest()->first();
+    $platsGalerie = PlatGalerie::latest()->take(6)->get();
 
     return view('pages.restaurant', [
         'categories' => $categories,
-        'menuActif' => $menuActif, // On passe le menu PDF à la vue
+        'menuActif' => $menuActif,
+        'platsGalerie' => $platsGalerie,
     ]);
     }
 

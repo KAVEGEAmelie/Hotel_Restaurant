@@ -13,7 +13,7 @@ class MenuPdf extends Model
 
     protected $fillable = [
         'titre',
-        'fichier_pdf',
+        'fichier',
         'est_actif',
     ];
 }

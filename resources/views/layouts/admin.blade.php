@@ -45,16 +45,18 @@
         </a>
     </li>
                 <li class="nav-heading mt-4">Restaurant</li>
+                
+
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.plats.*') ? 'active' : '' }}" href="{{ route('admin.plats.index') }}">
-                        <i class="bi bi-egg-fried"></i> Plats
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
-                        <i class="bi bi-tags-fill"></i> Catégories
-                    </a>
-                </li>
+    <a class="nav-link {{ request()->routeIs('admin.menus-pdf.*') ? 'active' : '' }}" href="{{ route('admin.menus-pdf.index') }}">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Gérer les Menus (PDF)
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('admin.plats-galerie.*') ? 'active' : '' }}" href="{{ route('admin.plats-galerie.index') }}">
+        <i class="bi bi-images"></i> Plats en Galerie
+    </a>
+</li>
             </ul>
         </nav>
 

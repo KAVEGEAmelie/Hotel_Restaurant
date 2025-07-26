@@ -21,26 +21,32 @@ class CategorieController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate(['nom' => 'required|string|unique:categories,nom', 'ordre' => 'required|integer']);
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255|unique:categories,nom',
+            'ordre' => 'required|integer',
+        ]);
         Categorie::create($validated);
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie créée avec succès.');
     }
 
-    public function edit(Categorie $categorie)
+    public function edit(Categorie $category) // Laravel 11 utilise 'category' par défaut
     {
-        return view('admin.categories.form', compact('categorie'));
+        return view('admin.categories.form', ['categorie' => $category]);
     }
 
-    public function update(Request $request, Categorie $categorie)
+    public function update(Request $request, Categorie $category)
     {
-        $validated = $request->validate(['nom' => 'required|string|unique:categories,nom,' . $categorie->id, 'ordre' => 'required|integer']);
-        $categorie->update($validated);
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255|unique:categories,nom,' . $category->id,
+            'ordre' => 'required|integer',
+        ]);
+        $category->update($validated);
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie mise à jour avec succès.');
     }
 
-    public function destroy(Categorie $categorie)
+    public function destroy(Categorie $category)
     {
-        $categorie->delete();
+        $category->delete();
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie supprimée avec succès.');
     }
 }

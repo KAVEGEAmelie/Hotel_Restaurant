@@ -16,7 +16,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        // On ne veut pas que l'admin actuel apparaisse dans la liste pour éviter qu'il se supprime
         $users = User::where('id', '!=', Auth::id())->latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
@@ -53,32 +52,31 @@ class UserController extends Controller
     /**
      * Affiche le formulaire de modification.
      */
-    public function edit(User $utilisateur)
+    public function edit(User $user) // CORRIGÉ
     {
-        return view('admin.users.form', ['user' => $utilisateur]);
+        return view('admin.users.form', compact('user')); // CORRIGÉ
     }
 
     /**
      * Met à jour un utilisateur.
      */
-    public function update(Request $request, User $utilisateur)
+    public function update(Request $request, User $user) // CORRIGÉ
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$utilisateur->id],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()], // Le mot de passe est optionnel
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$user->id], // CORRIGÉ
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $utilisateur->name = $request->name;
-        $utilisateur->email = $request->email;
-        $utilisateur->is_admin = $request->has('is_admin');
+        $user->name = $request->name; // CORRIGÉ
+        $user->email = $request->email; // CORRIGÉ
+        $user->is_admin = $request->has('is_admin'); // CORRIGÉ
 
-        // On ne met à jour le mot de passe que s'il a été rempli
         if ($request->filled('password')) {
-            $utilisateur->password = Hash::make($request->password);
+            $user->password = Hash::make($request->password); // CORRIGÉ
         }
 
-        $utilisateur->save();
+        $user->save(); // CORRIGÉ
 
         return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur mis à jour avec succès.');
     }
@@ -86,14 +84,13 @@ class UserController extends Controller
     /**
      * Supprime un utilisateur.
      */
-    public function destroy(User $utilisateur)
-{
-    // Ligne corrigée
-    if (Auth::id() == $utilisateur->id) {
-        return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
-    }
+    public function destroy(User $user) // CORRIGÉ
+    {
+        if (Auth::id() == $user->id) { // CORRIGÉ
+            return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+        }
 
-    $utilisateur->delete();
-    return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur supprimé avec succès.');
-}
+        $user->delete(); // CORRIGÉ
+        return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur supprimé avec succès.');
+    }
 }
