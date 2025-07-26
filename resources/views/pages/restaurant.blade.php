@@ -51,17 +51,16 @@
     </section>
 
     <!-- ======= Section Menu & Spécialités (Design Interactif) ======= -->
-    <section id="menu" class="menu-section-v3 py-5" style="background-color: #fcfbf7;">
+   <section id="menu" class="menu-section-v4 py-5" style="background-color: #fcfbf7;">
         <div class="container">
-            <!-- Titre et téléchargement du PDF -->
             <div class="row justify-content-center" data-aos="fade-up">
                 <div class="col-lg-8 text-center">
                     <div class="section-title">
                         <h2>Notre Carte</h2>
-                        <p>Une Cuisine Authentique & Raffinée</p>
+                        <p>Un Aperçu de nos Saveurs</p>
                     </div>
-                    <p class="mb-4">Découvrez ci-dessous un aperçu de nos plats signatures, ou téléchargez notre menu complet pour explorer l'étendue de notre offre culinaire.</p>
                     @if($menuActif)
+                        <p class="mb-4">Explorez quelques-unes de nos créations ci-dessous. Pour une vue complète de notre offre, n'hésitez pas à télécharger notre menu détaillé.</p>
                         <a href="{{ asset('uploads/' . $menuActif->fichier) }}" download class="btn-download-v3">
                             <i class="bi bi-download me-2"></i> Télécharger le Menu Complet
                         </a>
@@ -69,23 +68,16 @@
                 </div>
             </div>
 
-            <!-- Galerie de plats interactive -->
             @if($platsGalerie->isNotEmpty())
-                <div class="row gy-4 mt-5">
+                <div class="gallery-wrapper mt-5">
                     @foreach($platsGalerie as $plat)
-                        <div class="col-lg-3 col-md-4 col-6">
-                            <div class="plat-gallery-item" data-bs-toggle="modal" data-bs-target="#platModal"
-                                 data-nom="{{ $plat->nom }}"
-                                 data-prix="{{ number_format($plat->prix, 0, ',', ' ') }} FCFA"
-                                 data-description="{{ $plat->description }}"
-                                 data-image="{{ asset('uploads/' . $plat->image) }}">
-                                <img src="{{ asset('uploads/' . $plat->image) }}" alt="{{ $plat->nom }}" class="img-fluid">
-                                <div class="plat-gallery-overlay">
-                                    <div class="overlay-content">
-                                        <i class="bi bi-eye-fill"></i>
-                                        <span>Voir Détails</span>
-                                    </div>
-                                </div>
+                        <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ $loop->iteration * 50 }}"
+                             data-bs-toggle="modal" data-bs-target="#platModal"
+                             data-nom="{{ $plat->nom }}" data-prix="{{ number_format($plat->prix, 0, ',', ' ') }} FCFA"
+                             data-description="{{ $plat->description }}" data-image="{{ asset('uploads/' . $plat->image) }}">
+                            <img src="{{ asset('uploads/' . $plat->image) }}" alt="{{ $plat->nom }}" class="img-fluid">
+                            <div class="gallery-item-info">
+                                <h3>{{ $plat->nom }}</h3>
                             </div>
                         </div>
                     @endforeach
@@ -151,6 +143,56 @@
     .overlay-content i { font-size: 2rem; }
     .overlay-content span { display: block; font-weight: 600; margin-top: 5px; }
 
+    .gallery-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Crée une grille flexible */
+        gap: 1.5rem; /* Espace entre les images */
+    }
+
+    .gallery-item {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        aspect-ratio: 1 / 1; /* Force les images à être carrées */
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease, filter 0.5s ease;
+    }
+
+    .gallery-item .gallery-item-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px 15px;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+        color: white;
+        transform: translateY(100%);
+        transition: transform 0.5s ease;
+    }
+
+    .gallery-item .gallery-item-info h3 {
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Animation au survol */
+    .gallery-item:hover img {
+        transform: scale(1.1);
+        filter: brightness(0.8);
+    }
+
+    .gallery-item:hover .gallery-item-info {
+        transform: translateY(0);
+    }
     /* Styles pour la Fenêtre Modale */
     .modal-content { border: none; border-radius: 10px; overflow: hidden; }
     .modal-image { width: 100%; height: 100%; object-fit: cover; min-height: 400px; }

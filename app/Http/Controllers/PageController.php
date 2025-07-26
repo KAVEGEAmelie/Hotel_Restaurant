@@ -15,7 +15,7 @@ class PageController extends Controller
     {
         return view('pages.contact');
     }
-    
+
     public function handleContactForm(Request $request)
 {
     // 1. Valider les données
@@ -28,7 +28,7 @@ class PageController extends Controller
 
     // 2. Envoyer l'e-mail
     // Remplacez 'votre-email@domaine.com' par l'adresse où vous voulez recevoir les messages
-    Mail::to('votre-email@domaine.com')->send(new ContactFormMail($validated));
+    Mail::to('hotelrestaurantleprintemps@yahoo.com')->send(new ContactFormMail($validated));
 
     // 3. Rediriger avec un message de succès
     return redirect()->back()->with('success', 'Votre message a bien été envoyé ! Nous vous répondrons dès que possible.');

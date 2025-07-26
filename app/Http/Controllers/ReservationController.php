@@ -15,7 +15,7 @@ class ReservationController extends Controller
      */
     public function create(Request $request)
     {
-        // 1. Valider TOUTES les données qui viennent du formulaire
+         // 1. Valider toutes les données du formulaire
         $validatedData = $request->validate([
             'chambre_id' => 'required|exists:chambres,id',
             'client_nom' => 'required|string|max:255',
@@ -27,7 +27,7 @@ class ReservationController extends Controller
             'nombre_invites' => 'required|integer|min:1',
         ]);
 
-        $chambre = Chambre::findOrFail($validatedData['chambre_id']);
+         $chambre = Chambre::findOrFail($validatedData['chambre_id']);
         $checkin = Carbon::parse($validatedData['checkin_date']);
         $checkout = Carbon::parse($validatedData['checkout_date']);
 
@@ -47,15 +47,19 @@ class ReservationController extends Controller
             return redirect()->back()->with('error', 'Le nombre d\'invités dépasse la capacité de cette chambre.');
         }
 
-        // 3. On prépare TOUTES les données pour la création
-        $dataToCreate = $validatedData;
+         // 3. Préparer le tableau de données complet pour la création
+        $dataToCreate = $validatedData; // On commence avec toutes les données validées
 
-        // On ajoute les données que le serveur doit calculer
+        // On y ajoute les informations calculées par le serveur
         $nbNuits = $checkin->diffInDays($checkout);
         $dataToCreate['user_id'] = Auth::check() ? Auth::id() : null;
         $dataToCreate['prix_total'] = $nbNuits * $chambre->prix_par_nuit;
         $dataToCreate['statut'] = 'pending';
 
+        // Corriger les noms de champs pour la BDD
+$dataToCreate['check_in_date'] = $validatedData['checkin_date'];
+$dataToCreate['check_out_date'] = $validatedData['checkout_date'];
+unset($dataToCreate['checkin_date'], $dataToCreate['checkout_date']);
         // 4. On crée la réservation avec le tableau de données COMPLET
         $reservation = Reservation::create($dataToCreate);
 

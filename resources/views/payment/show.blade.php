@@ -54,46 +54,26 @@
                 <!-- Colonne de droite : Formulaire de paiement -->
                 <div class="col-lg-7 order-lg-1" data-aos="fade-right">
                     <div class="payment-form-card">
-                        <h4><i class="bi bi-shield-check"></i> Paiement 100% Sécurisé</h4>
-                        <p>Choisissez votre méthode de paiement préférée.</p>
-                        
-                        {{-- C'EST ICI QUE VOUS METTREZ LE CODE DE VOTRE PASSERELLE DE PAIEMENT --}}
-                        {{-- Exemple de simulation de formulaire --}}
-                        <form action="{{ route('payment.process', $reservation) }}" method="POST">
-                            @csrf
-                            <div class="payment-methods mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="card" checked>
-                                    <label class="form-check-label" for="card">Carte de crédit (Visa, MasterCard)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="mobile">
-                                    <label class="form-check-label" for="mobile">Mobile Money</label>
-                                </div>
-                            </div>
+    <h4><i class="bi bi-shield-check"></i> Paiement 100% Sécurisé</h4>
+    <p>Vous allez être redirigé vers la plateforme sécurisée de notre partenaire CashPay pour finaliser votre paiement.</p>
 
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label for="card_number">Numéro de carte</label>
-                                    <input type="text" class="form-control" id="card_number" placeholder="XXXX XXXX XXXX XXXX">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="expiry_date">Date d'expiration (MM/AA)</label>
-                                    <input type="text" class="form-control" id="expiry_date" placeholder="MM/AA">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="cvc">CVC</label>
-                                    <input type="text" class="form-control" id="cvc" placeholder="123">
-                                </div>
-                            </div>
-                            
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-brand btn-lg">Payer {{ number_format($reservation->prix_total, 0, ',', ' ') }} FCFA</button>
-                            </div>
-                        </form>
-                        {{-- FIN DE LA ZONE DE SIMULATION --}}
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-                    </div>
+    <form action="{{ route('payment.process', $reservation) }}" method="POST">
+        @csrf
+        <div class="alert alert-info">
+            En cliquant sur "Procéder au paiement", vous confirmez les détails de votre séjour.
+        </div>
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-brand btn-lg">
+                Procéder au paiement de {{ number_format($reservation->prix_total, 0, ',', ' ') }} FCFA
+            </button>
+        </div>
+    </form>
+</div>
                 </div>
 
             </div>
@@ -107,7 +87,7 @@
 @push('styles')
 <style>
     .payment-title { font-family: 'Playfair Display', serif; }
-    
+
     /* Carte de récapitulatif */
     .order-summary-card {
         background: #f8f6f0;
@@ -139,7 +119,7 @@
         font-size: 24px;
         color: var(--color-vert-foret);
     }
-    
+
     /* Carte de formulaire de paiement */
     .payment-form-card {
         background: white;

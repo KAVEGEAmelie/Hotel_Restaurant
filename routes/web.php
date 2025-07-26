@@ -37,7 +37,9 @@ Route::post('/contact', [PageController::class, 'handleContactForm'])->name('con
 Route::post('/reservation/creer', [ReservationController::class, 'create'])->name('reservation.create');
 Route::get('/paiement/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
 Route::post('/paiement/{reservation}', [PaymentController::class, 'process'])->name('payment.process');
-
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 /*
 |--------------------------------------------------------------------------
@@ -86,5 +88,5 @@ Route::resource('plats-galerie', AdminPlatGalerieController::class)->parameters(
     Route::resource('utilisateurs', AdminUserController::class)->parameters([
         'utilisateurs' => 'user' // Force le paramètre à s'appeler 'user'
     ]);
-    
+
 });
