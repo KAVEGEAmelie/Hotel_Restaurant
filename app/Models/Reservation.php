@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,10 @@ class Reservation extends Model
     public function chambre()
 {
     return $this->belongsTo(Chambre::class);
+}
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
 
 protected $fillable = [
