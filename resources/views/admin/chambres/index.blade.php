@@ -35,7 +35,7 @@
                             @forelse($chambres as $chambre)
                                 <tr>
                                     <td>
-                                        <img src="{{ asset('public/' . $chambre->image_principale) }}" alt="{{ $chambre->nom }}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                        <img src="{{ asset('uploads/' . $chambre->image_principale) }}" alt="{{ $chambre->nom }}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
                                     </td>
                                     <td class="fw-bold">{{ $chambre->nom }}</td>
                                     <td>{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} FCFA</td>
