@@ -11,15 +11,19 @@ use Firebase\JWT\Key;
 
 class PaymentController extends Controller
 {
-    public function show(Reservation $reservation)
-    {
-            $reservation->load('chambre');
+   // Dans PaymentController.php
 
-        if ($reservation->statut !== 'pending') {
-            return redirect()->route('home')->with('error', 'Cette réservation n\'est plus valide.');
-        }
-        return view('payment.show', compact('reservation'));
+public function show(Reservation $reservation)
+{
+    // On charge la relation 'chambre' pour être sûr de pouvoir l'utiliser
+    $reservation->load('chambre');
+
+    if ($reservation->statut !== 'pending') {
+        return redirect()->route('home')->with('error', 'Cette réservation n\'est plus valide.');
     }
+
+    return view('payment.show', compact('reservation'));
+}
 
     public function process(Request $request, Reservation $reservation)
     {
