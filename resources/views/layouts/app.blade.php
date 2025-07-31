@@ -35,6 +35,9 @@
         <!-- Votre fichier CSS Principal -->
         <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
+        <!-- Alpine.js pour le menu hamburger -->
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
         @stack('styles')
     @else
         {{-- === ASSETS POUR LE BACK-OFFICE (DASHBOARD) === --}}

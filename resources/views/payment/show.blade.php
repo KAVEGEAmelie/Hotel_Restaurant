@@ -31,6 +31,38 @@
 
                         <form action="{{ route('payment.process', $reservation) }}" method="POST">
                             @csrf
+
+                            <!-- Choix de la méthode de paiement -->
+                            <div class="payment-method-selection mb-4">
+                                <h5 class="mb-3">Choisissez votre méthode de paiement</h5>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="payment-method-option">
+                                            <input type="radio" id="card" name="payment_method" value="card" class="payment-method-input" checked>
+                                            <label for="card" class="payment-method-label">
+                                                <i class="bi bi-credit-card-fill"></i>
+                                                <span>Carte Bancaire</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <div class="payment-method-option">
+                                            <input type="radio" id="mobile_money" name="payment_method" value="mobile_money" class="payment-method-input">
+                                            <label for="mobile_money" class="payment-method-label">
+                                                <i class="bi bi-phone-fill"></i>
+                                                <span>Mobile Money</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @error('payment_method')
+                                    <div class="text-danger mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="payment-notice">
                                 <i class="bi bi-info-circle-fill"></i>
                                 En cliquant sur "Procéder au paiement", vous acceptez nos <a href="#">conditions de réservation</a>.
@@ -102,6 +134,39 @@
     .payment-notice { background: #e9f7ef; color: #1e6643; padding: 15px; border-radius: 8px; display: flex; align-items: center; font-size: 14px; }
     .payment-notice i { font-size: 20px; margin-right: 10px; }
     .payment-notice a { color: #1e6643; font-weight: 600; text-decoration: underline; }
+
+    /* Sélection de méthode de paiement */
+    .payment-method-selection h5 { color: #333; font-weight: 600; }
+    .payment-method-option { position: relative; }
+    .payment-method-input { display: none; }
+    .payment-method-label {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    .payment-method-label:hover { border-color: var(--color-vert-foret); }
+    .payment-method-label i {
+        font-size: 24px;
+        margin-right: 12px;
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
+    .payment-method-label span {
+        font-weight: 500;
+        color: #495057;
+        transition: color 0.3s ease;
+    }
+    .payment-method-input:checked + .payment-method-label {
+        border-color: var(--color-vert-foret);
+        background: #f8f9fa;
+    }
+    .payment-method-input:checked + .payment-method-label i { color: var(--color-vert-foret); }
+    .payment-method-input:checked + .payment-method-label span { color: var(--color-vert-foret); font-weight: 600; }
 
     /* Carte de récapitulatif v2 */
     .order-summary-card-v2 { background: var(--color-blanc); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: sticky; top: 120px; }

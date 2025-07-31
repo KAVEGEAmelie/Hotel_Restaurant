@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // On enregistre notre alias 'admin' ici
     $middleware->alias([
         'admin' => \App\Http\Middleware\IsAdmin::class,
+        'cashpay.config' => \App\Http\Middleware\CheckCashPayConfig::class,
     ]);
     
     })

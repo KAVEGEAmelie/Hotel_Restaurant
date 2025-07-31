@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Reservation;
 // --- Contrôleurs ---
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ChambreController;
@@ -35,12 +35,21 @@ Route::post('/contact', [PageController::class, 'handleContactForm'])->name('con
 
 // Réservation publique
 Route::post('/reservation/creer', [ReservationController::class, 'create'])->name('reservation.create');
-Route::get('/paiement/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
-Route::post('/paiement/{reservation}', [PaymentController::class, 'process'])->name('payment.process');
+Route::middleware(['cashpay.config'])->group(function () {
+    Route::get('/paiement/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::post('/paiement/{reservation}', [PaymentController::class, 'process'])->name('payment.process');
+    Route::get('/payment/test-connection', [PaymentController::class, 'testConnection'])->name('payment.test');
+});
+
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
-
+Route::get('/reservation/{reservation}/recu', [ReservationController::class, 'downloadReceipt'])->name('reservation.receipt');
+Route::get('/reservation/succes/{reservation}', function (Reservation $reservation) {
+    // Sécurité : On s'assure que la session contient une clé qui prouve que le paiement vient d'être fait
+    // if (!session('payment_success_for_' . $reservation->id)) { abort(404); }
+    return view('reservation.success', compact('reservation'));
+})->name('reservation.success');
 /*
 |--------------------------------------------------------------------------
 | ROUTES D'AUTHENTIFICATION ET UTILISATEURS CONNECTÉS

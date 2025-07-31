@@ -21,7 +21,7 @@
 
         <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
 
-        <!-- Icône pour OUVRIR/FERMER le menu mobile -->
+        <!-- Icône pour OUVRIR le menu mobile -->
         <i class="mobile-nav-toggle bi bi-list"></i>
 
     </div>
@@ -31,7 +31,8 @@
 <div class="mobile-nav">
     <div class="mobile-nav-header">
         <h5 class="logo-text">Menu</h5>
-        <i class="mobile-nav-toggle bi bi-x"></i>
+        <!-- Icône pour FERMER le menu mobile (sélecteur différent) -->
+        <i class="mobile-nav-close bi bi-x"></i>
     </div>
     <div class="mobile-nav-body">
         <ul>

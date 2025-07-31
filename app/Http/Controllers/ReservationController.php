@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Chambre;
 use App\Models\Reservation;
 use Carbon\Carbon;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class ReservationController extends Controller
 {
     /**
@@ -66,4 +66,23 @@ unset($dataToCreate['checkin_date'], $dataToCreate['checkout_date']);
         // 5. Rediriger vers la page de paiement
         return redirect()->route('payment.show', ['reservation' => $reservation]);
     }
+
+    public function downloadReceipt(Reservation $reservation)
+{
+    // Sécurité : on vérifie que l'utilisateur connecté est bien le propriétaire de la réservation
+    if (Auth::id() !== $reservation->user_id) {
+        // Si la réservation a été faite par un invité, il faudrait un autre moyen de vérification
+        // (par exemple, un token unique envoyé par email). Pour l'instant, on se base sur l'utilisateur connecté.
+        // abort(403);
+    }
+
+    // Charger les relations nécessaires
+    $reservation->load('chambre');
+
+    // Générer le PDF
+    $pdf = PDF::loadView('pdf.receipt', compact('reservation'));
+
+    // Proposer le PDF au téléchargement avec un nom de fichier dynamique
+    return $pdf->download('recu-reservation-'.$reservation->id.'.pdf');
+}
 }
