@@ -39,7 +39,7 @@
                     @if(isset($menu_pdf) && $menu_pdf->fichier)
                         <div class="mt-3">
                             <p class="small text-muted">Fichier actuel :
-                                <a href="{{ asset('uploads/' . $menu_pdf->fichier) }}" target="_blank">Voir le fichier</a>
+                                <a href="{{ asset('storage/' . $menu_pdf->fichier) }}" target="_blank">Voir le fichier</a>
                             </p>
                         </div>
                     @endif

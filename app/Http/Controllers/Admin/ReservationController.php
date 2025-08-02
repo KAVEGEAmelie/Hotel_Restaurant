@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use PDF;
 
 class ReservationController extends Controller
 {
@@ -45,11 +46,23 @@ class ReservationController extends Controller
     /**
      * Supprime une réservation.
      */
+
     public function destroy(Reservation $reservation)
     {
         $reservation->delete();
         return redirect()->route('admin.reservations.index')->with('success', 'Réservation supprimée avec succès.');
     }
+
+    public function downloadPoliceForm(Reservation $reservation)
+{
+    // Charger les relations pour avoir le nom de la chambre
+    $reservation->load('chambre');
+    
+    $pdf = PDF::loadView('pdf.fiche_police', compact('reservation'));
+    
+    // On affiche le PDF dans le navigateur au lieu de le télécharger directement
+    return $pdf->stream('fiche-police-'.$reservation->client_nom.'.pdf');
+}
 
     // Vous ajouterez les autres méthodes (show, update, etc.) ici plus tard
 }

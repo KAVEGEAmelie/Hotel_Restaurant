@@ -86,6 +86,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
     Route::resource('reservations', AdminReservationController::class)->except(['index']);
 
+    Route::get('/reservations/{reservation}/fiche-police', [AdminReservationController::class, 'downloadPoliceForm'])->name('reservations.police_form');
+
     Route::resource('plats', AdminPlatController::class);
     Route::resource('categories', AdminCategorieController::class);
 

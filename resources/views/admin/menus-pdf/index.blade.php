@@ -40,7 +40,7 @@
                                 <tr>
                                     <td class="fw-bold">{{ $menu->titre }}</td>
                                     <td>
-                                        <a href="{{ asset('uploads/'.$menu->fichier) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <a href="{{ asset('storage/'.$menu->fichier) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-eye-fill"></i> Voir le fichier
                                         </a>
                                     </td>

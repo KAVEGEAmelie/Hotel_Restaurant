@@ -10,26 +10,17 @@ use Illuminate\Support\Facades\Storage;
 
 class ChambreController extends Controller
 {
-    /**
-     * Affiche la liste de toutes les chambres.
-     */
     public function index()
     {
         $chambres = Chambre::latest()->paginate(10);
         return view('admin.chambres.index', compact('chambres'));
     }
 
-    /**
-     * Affiche le formulaire pour créer une nouvelle chambre.
-     */
     public function create()
     {
         return view('admin.chambres.form');
     }
 
-    /**
-     * Enregistre une nouvelle chambre dans la base de données.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,31 +33,23 @@ class ChambreController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
-
+        
         if ($request->hasFile('image_principale')) {
-        $image = $request->file('image_principale');
-        $nomImage = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-        // Déplace dans public/uploads/chambres
-        $image->move(public_path('uploads/chambres'), $nomImage);
-        $validated['image_principale'] = $nomImage; // stocke juste le nom
-    }
+            // Utilise le disque par défaut ('uploads') et stocke dans un sous-dossier 'chambres'.
+            // La méthode store() génère un nom unique ET renvoie le chemin complet (ex: 'chambres/nom_unique.jpg').
+        $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
+        }
 
         Chambre::create($validated);
 
         return redirect()->route('admin.chambres.index')->with('success', 'Chambre créée avec succès.');
     }
 
-    /**
-     * Affiche le formulaire pour modifier une chambre existante.
-     */
     public function edit(Chambre $chambre)
     {
         return view('admin.chambres.form', compact('chambre'));
     }
 
-    /**
-     * Met à jour une chambre existante dans la base de données.
-     */
     public function update(Request $request, Chambre $chambre)
     {
         $validated = $request->validate([
@@ -81,37 +64,28 @@ class ChambreController extends Controller
         $validated['slug'] = Str::slug($validated['nom']);
 
         if ($request->hasFile('image_principale')) {
-        // Supprimer l’ancienne image si elle existe
-        $ancienImage = public_path('uploads/chambres/' . $chambre->image_principale);
-        if (file_exists($ancienImage)) {
-            unlink($ancienImage);
+            // Supprimer l'ancienne image en utilisant le système de stockage Laravel
+            if ($chambre->image_principale) {
+                Storage::delete($chambre->image_principale);
+            }
+            // Uploader la nouvelle image
+        $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
         }
-        $image = $request->file('image_principale');
-        $nomImage = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('uploads/chambres'), $nomImage);
-        $validated['image_principale'] = $nomImage;
-    }
 
         $chambre->update($validated);
 
         return redirect()->route('admin.chambres.index')->with('success', 'Chambre mise à jour avec succès.');
     }
 
-    /**
-     * Supprime une chambre de la base de données.
-     */
     public function destroy(Chambre $chambre)
-{
-    if ($chambre->image_principale) {
-        $ancienImage = public_path('uploads/chambres/' . $chambre->image_principale);
-        if (file_exists($ancienImage)) {
-            unlink($ancienImage);
+    {
+        if ($chambre->image_principale) {
+            // Supprimer l'image en utilisant le système de stockage Laravel
+         Storage::disk('public')->delete($chambre->image_principale);
         }
+        
+        $chambre->delete();
+
+        return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
     }
-
-    $chambre->delete();
-
-    return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
-}
-
 }

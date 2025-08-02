@@ -24,7 +24,8 @@ class MenuPdfController extends Controller
         ]);
 
         if ($request->hasFile('fichier')) {
-            $validated['fichier'] = $request->file('fichier')->store('menus', 'uploads');
+            // On enlève 'uploads'. store() utilisera le disque par défaut.
+            $validated['fichier'] = $request->file('fichier')->store('menus');
         }
 
         if ($request->has('est_actif')) {

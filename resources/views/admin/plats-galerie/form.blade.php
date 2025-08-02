@@ -45,7 +45,7 @@
                     @if(isset($plat) && $plat->image)
                         <div class="mt-3">
                             <p class="small text-muted">Image actuelle :</p>
-                            <img src="{{ asset('uploads/' . $plat->image) }}" alt="Image actuelle" class="img-thumbnail" style="max-height: 150px;">
+                            <img src="{{ asset('storage/' . $plat->image) }}" alt="Image actuelle" class="img-thumbnail" style="max-height: 150px;">
                         </div>
                     @endif
                 </div>

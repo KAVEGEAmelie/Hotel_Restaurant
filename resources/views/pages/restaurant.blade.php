@@ -61,7 +61,7 @@
                     </div>
                     @if($menuActif)
                         <p class="mb-4">Explorez quelques-unes de nos créations ci-dessous. Pour une vue complète de notre offre, n'hésitez pas à télécharger notre menu détaillé.</p>
-                        <a href="{{ asset('uploads/' . $menuActif->fichier) }}" download class="btn-download-v3">
+                        <a href="{{ asset('storage/' . $menuActif->fichier) }}" download class="btn-download-v3">
                             <i class="bi bi-download me-2"></i> Télécharger le Menu Complet
                         </a>
                     @endif
@@ -74,8 +74,8 @@
                         <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ $loop->iteration * 50 }}"
                              data-bs-toggle="modal" data-bs-target="#platModal"
                              data-nom="{{ $plat->nom }}" data-prix="{{ number_format($plat->prix, 0, ',', ' ') }} FCFA"
-                             data-description="{{ $plat->description }}" data-image="{{ asset('uploads/' . $plat->image) }}">
-                            <img src="{{ asset('uploads/' . $plat->image) }}" alt="{{ $plat->nom }}" class="img-fluid">
+                             data-description="{{ $plat->description }}" data-image="{{ asset('storage/' . $plat->image_principale) }}">
+                            <img src="{{ asset('storage/' . $plat->image_principale) }}" alt="{{ $plat->nom }}" class="img-fluid">
                             <div class="gallery-item-info">
                                 <h3>{{ $plat->nom }}</h3>
                             </div>

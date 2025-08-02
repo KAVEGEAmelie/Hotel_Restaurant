@@ -37,9 +37,15 @@
             </div>
         </div>
 
-        @if(session('success'))
+       @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if(session('error'))
+             <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -75,6 +81,9 @@
                                         </span>
                                     </td>
                                     <td class="text-end">
+                                    <a href="{{ route('admin.reservations.police_form', $reservation) }}" class="btn btn-sm btn-info text-white" title="Imprimer Fiche de Police" target="_blank">
+                                        <i class="bi bi-printer-fill"></i>
+                                    </a>
                                         <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?');">
                                             @csrf
                                             @method('DELETE')

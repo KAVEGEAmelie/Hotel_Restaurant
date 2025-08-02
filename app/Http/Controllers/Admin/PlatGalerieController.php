@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -19,8 +20,7 @@ class PlatGalerieController extends Controller
         return view('admin.plats-galerie.form');
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'required|string',
@@ -29,26 +29,20 @@ class PlatGalerieController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('plats-galerie', 'uploads');
+            // On enlève 'public'. store() utilisera le disque par défaut.
+            $validated['image'] = $request->file('image')->store('plats-galerie');
         }
+        
         PlatGalerie::create($validated);
-        return redirect()->route('admin.plats-galerie.index')->with('success', 'Plat ajouté à la galerie.');
+        return redirect()->route('admin.plats-galerie.index')->with('success', 'Plat ajouté.');
     }
 
-    /**
-     * Affiche le formulaire pour modifier un plat existant.
-     * C'EST CETTE MÉTHODE QUI MANQUAIT.
-     */
-    public function edit(PlatGalerie $plat)
+    public function edit(PlatGalerie $plats_galery)
     {
-        return view('admin.plats-galerie.form', compact('plat'));
+        return view('admin.plats-galerie.form', ['plat' => $plats_galery]);
     }
 
-    /**
-     * Met à jour un plat existant.
-     * C'EST CETTE MÉTHODE QUI MANQUAIT AUSSI.
-     */
-   public function update(Request $request, PlatGalerie $plat)
+    public function update(Request $request, PlatGalerie $plats_galery)
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
@@ -58,21 +52,25 @@ class PlatGalerieController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($plat->image) {
-                Storage::disk('uploads')->delete($plat->image);
+            if ($plats_galery->image) {
+                Storage::disk('public')->delete($plats_galery->image);
             }
-            $validated['image'] = $request->file('image')->store('plats-galerie', 'uploads');
+            $validated['image'] = $request->file('image')->store('plats-galerie', 'public');
         }
 
-        $plat->update($validated);
+        $plats_galery->update($validated);
+        
         return redirect()->route('admin.plats-galerie.index')->with('success', 'Plat mis à jour avec succès.');
     }
 
-    // CORRECTION ICI
-    public function destroy(PlatGalerie $plat)
+    public function destroy(PlatGalerie $plats_galery)
     {
-        Storage::disk('uploads')->delete($plat->image);
-        $plat->delete();
+        if ($plats_galery->image) {
+            Storage::disk('public')->delete($plats_galery->image);
+        }
+        
+        $plats_galery->delete();
+        
         return redirect()->route('admin.plats-galerie.index')->with('success', 'Plat supprimé.');
     }
 }

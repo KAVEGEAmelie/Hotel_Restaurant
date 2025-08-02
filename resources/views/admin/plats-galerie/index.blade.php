@@ -34,7 +34,7 @@
                             <tr>
                                 <td>
                                     @if($plat->image)
-                                        <img src="{{ asset('uploads/'.$plat->image) }}" alt="{{ $plat->nom }}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                        <img src="{{ asset('storage/'.$plat->image) }}" alt="{{ $plat->nom }}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
                                     @endif
                                 </td>
                                 <td class="fw-bold">{{ $plat->nom }}</td>
