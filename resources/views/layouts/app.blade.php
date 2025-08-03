@@ -7,69 +7,49 @@
 
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
-    @php
-        $isPublicPage = !isset($header);
-    @endphp
+    <!-- === ASSETS POUR LE SITE PUBLIC === -->
 
-    @if($isPublicPage)
-        {{-- === ASSETS POUR LE SITE PUBLIC === --}}
-        <!-- Favicons -->
-        <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
-        <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    <!-- Favicons -->
+    {{-- <link href="{{ asset('assets/img/favicon.png') }}" rel="icon"> --}}
+    {{-- <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
 
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Vendor CSS Files -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-        <!-- Vendor CSS Files -->
-        <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
+    <!-- Votre fichier CSS Principal -->
+    <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
-        <!-- CSS pour Leaflet (la carte) -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-        <!-- Votre fichier CSS Principal -->
-        <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
-
-        <!-- Alpine.js pour le menu hamburger -->
-        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-        @stack('styles')
-    @else
-        {{-- === ASSETS POUR LE BACK-OFFICE (DASHBOARD) === --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
+    @stack('styles')
 </head>
-<body class="font-sans antialiased">
+<body>
 
-    @if($isPublicPage)
-    {{-- On inclut le header en lui passant une variable --}}
+    {{-- On inclut le header en lui passant une variable pour la transparence --}}
     @include('partials.header', ['transparent' => isset($makeHeaderTransparent) && $makeHeaderTransparent])
 
     <main>
         @yield('content')
     </main>
+
     @include('partials.footer')
-@endif
 
+    <!-- Vendor JS Files -->
+    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
 
-    {{-- On charge les scripts JS uniquement pour les pages publiques --}}
-    @if($isPublicPage)
-        <!-- Vendor JS Files -->
-        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
+    <!-- SCRIPT pour Leaflet (la carte) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        <!-- Votre fichier JS Principal -->
-        <script src="{{ asset('assets/js/main.js') }}"></script>
+    <!-- Votre fichier JS Principal -->
+    <script src="{{ asset('assets/js/main.js') }}"></script>
 
-        <!-- SCRIPT pour Leaflet (la carte) -->
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-        @stack('scripts')
-    @endif
+    @stack('scripts')
 </body>
 </html>
