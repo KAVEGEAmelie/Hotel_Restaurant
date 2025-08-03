@@ -42,7 +42,6 @@
                                 </div>
                             @endif
 
-                           <!-- Dans la colonne de droite "Formulaire de réservation" -->
 <!-- Dans la colonne de droite "Formulaire de réservation" -->
 <form action="{{ route('reservation.create') }}" method="POST" class="p-4">
     @csrf
