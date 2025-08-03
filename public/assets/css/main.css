@@ -874,5 +874,41 @@ section {
     text-decoration: none;
 }
 
+/*--------------------------------------------------------------
+# Page Chambres - Formulaire de Recherche et Cartes
+--------------------------------------------------------------*/
+
+/* --- Formulaire de Recherche --- */
+.booking-form-wrapper { background: var(--color-blanc); padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.form-group-v2 { display: flex; align-items: center; border-right: 1px solid #eee; padding: 10px 20px; }
+.form-group-v2 .icon { font-size: 24px; color: var(--color-dore-leger); margin-right: 15px; }
+.form-group-v2 .input-wrapper { display: flex; flex-direction: column; }
+.form-group-v2 label { font-weight: 600; font-size: 14px; color: #888; margin-bottom: 2px; }
+.form-group-v2 .form-control, .form-group-v2 .form-select { border: none; box-shadow: none; padding: 0; background: transparent; font-size: 16px; font-weight: 600; color: var(--color-marron-titre); }
+.form-group-v2 input::placeholder { color: var(--color-marron-titre); opacity: 0.8; }
+.btn-search { background: var(--color-vert-foret); color: var(--color-blanc); border: none; padding: 25px 30px; font-size: 16px; font-weight: 700; width: 100%; transition: background-color 0.3s ease; border-radius: 0 8px 8px 0; }
+.btn-search:hover { background-color: var(--color-vert-fonce-lien); }
+
+/* --- Cartes de Chambres Compactes --- */
+.room-card-compact { background: var(--color-blanc); border-radius: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; }
+.room-card-compact:hover { transform: translateY(-8px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); }
+.room-card-image-wrapper { position: relative; overflow: hidden; border-radius: 10px 10px 0 0; }
+.room-card-image-wrapper img { height: 220px; width: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.room-card-compact:hover .room-card-image-wrapper img { transform: scale(1.1); }
+.price-badge { position: absolute; bottom: 15px; right: 15px; background: rgba(34, 139, 34, 0.9); color: var(--color-blanc); padding: 6px 12px; border-radius: 50px; font-size: 14px; font-weight: 700; backdrop-filter: blur(5px); }
+.room-card-body { padding: 25px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
+.room-card-body .room-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 10px; }
+.room-card-body .room-description { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px; flex-grow: 1; }
+.room-card-body .btn-details { color: var(--color-vert-fonce-lien); font-weight: 600; text-decoration: none; transition: color 0.3s; }
+.room-card-body .btn-details:hover { color: var(--color-vert-foret); }
+.room-card-body .btn-details i { transition: transform 0.3s; vertical-align: middle; }
+.room-card-body .btn-details:hover i { transform: translateX(5px); }
+
+/* --- Responsive pour le formulaire de recherche --- */
+@media (max-width: 991.98px) {
+    .form-group-v2 { border-right: none; border-bottom: 1px solid #eee; }
+    .booking-form-wrapper .row > div:last-child .form-group-v2 { border-bottom: none; }
+    .btn-search { border-radius: 0 0 8px 8px; }
+}
 
 /* Test de modification pour Git */
