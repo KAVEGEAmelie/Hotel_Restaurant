@@ -47,12 +47,14 @@ return [
             'report' => false,
         ],
 
-        'uploads' => [
+       'chambres' => [
         'driver' => 'local',
-        'root' => public_path('uploads'), // Le dossier sera public/uploads
-        'url' => env('APP_URL').'/uploads',
+        'root' => public_path('storage/chambres'),
+        'url' => env('APP_URL') . '/storage/chambres',
         'visibility' => 'public',
+        'throw' => false,
     ],
+
 
 
         's3' => [

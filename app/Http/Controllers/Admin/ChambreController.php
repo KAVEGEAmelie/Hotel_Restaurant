@@ -33,9 +33,8 @@ class ChambreController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
-        
+
         if ($request->hasFile('image_principale')) {
-            // Utilise le disque par défaut ('uploads') et stocke dans un sous-dossier 'chambres'.
             // La méthode store() génère un nom unique ET renvoie le chemin complet (ex: 'chambres/nom_unique.jpg').
         $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
         }
@@ -68,7 +67,6 @@ class ChambreController extends Controller
             if ($chambre->image_principale) {
                 Storage::delete($chambre->image_principale);
             }
-            // Uploader la nouvelle image
         $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
         }
 
@@ -83,7 +81,7 @@ class ChambreController extends Controller
             // Supprimer l'image en utilisant le système de stockage Laravel
          Storage::disk('public')->delete($chambre->image_principale);
         }
-        
+
         $chambre->delete();
 
         return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
