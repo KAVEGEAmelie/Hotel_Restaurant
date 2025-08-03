@@ -1,43 +1,26 @@
 @extends('layouts.app')
-
 @section('title', $chambre->nom . ' - Hôtel Le Printemps')
 
 @section('content')
-
 <main id="main">
-
     <section id="room-details" class="room-details-section-final">
         <div class="container">
-
-            <!-- En-tête de la page -->
             <div class="room-page-header" data-aos="fade-up">
                 <h1>{{ $chambre->nom }}</h1>
                 <p class="lead">{{ $chambre->description_courte }}</p>
             </div>
-
             <div class="row g-5">
-
-                <!-- Colonne de gauche : Image + Description -->
                 <div class="col-lg-7">
                     <div class="room-main-content" data-aos="fade-up">
-
-                        <!-- Image -->
                         <div class="room-gallery-final mb-4">
-                            <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="img-fluid" alt="Image principale de la chambre {{ $chambre->nom }}">
+                            <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="img-fluid" alt="Image de la chambre {{ $chambre->nom }}">
                         </div>
-
-                        <!-- Description -->
                         <div class="room-description-final">
                             <h3 class="section-heading">Description de la chambre</h3>
-                            <div class="text-content">
-                                {!! nl2br(e($chambre->description_longue)) !!}
-                            </div>
+                            <div class="text-content">{!! nl2br(e($chambre->description_longue)) !!}</div>
                         </div>
-
                     </div>
                 </div>
-
-                <!-- Colonne de droite : Formulaire de réservation -->
                 <div class="col-lg-5">
                     <div class="booking-sidebar-final" data-aos="fade-left" data-aos-delay="200">
                         <div class="booking-card">
@@ -46,45 +29,77 @@
                                 <span>par nuit</span>
                             </div>
 
-                            <form action="{{ route('reservation.create') }}" method="POST" class="p-4">
-                                @csrf
-                                <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
-
-                                <h4 class="form-title">Réservez vos dates</h4>
-                                <div class="row g-3">
-                                    <div class="col-12"><input type="date" name="checkin_date" class="form-control" required value="{{ request('checkin_date', now()->format('Y-m-d')) }}"></div>
-                                    <div class="col-12"><input type="date" name="checkout_date" class="form-control" required value="{{ request('checkout_date', now()->addDay()->format('Y-m-d')) }}"></div>
+                            @if(session('error'))
+                                <div class="alert alert-danger mx-4 mt-3">{{ session('error') }}</div>
+                            @endif
+                            @if ($errors->any())
+                                <div class="alert alert-danger mx-4 mt-3">
+                                    <ul class="mb-0 small">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
                                 </div>
+                            @endif
 
-                                <hr class="my-4">
+                           <!-- Dans la colonne de droite "Formulaire de réservation" -->
+<!-- Dans la colonne de droite "Formulaire de réservation" -->
+<form action="{{ route('reservation.create') }}" method="POST" class="p-4">
+    @csrf
+    <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
 
-                                <h4 class="form-title">Vos informations</h4>
-                                <div class="row g-3">
-                                    <div class="col-md-6"><input type="text" name="client_nom" class="form-control" placeholder="Nom" required value="{{ old('client_nom') }}"></div>
-                                    <div class="col-md-6"><input type="text" name="client_prenom" class="form-control" placeholder="Prénom" required value="{{ old('client_prenom') }}"></div>
-                                    <div class="col-12"><input type="email" name="client_email" class="form-control" placeholder="Email" required value="{{ old('client_email') }}"></div>
-                                    <div class="col-12"><input type="tel" name="client_telephone" class="form-control" placeholder="Téléphone" required value="{{ old('client_telephone') }}"></div>
-                                    <div class="col-12">
-                                        <select name="nombre_invites" class="form-select">
-                                            @for ($i = 1; $i <= $chambre->capacite; $i++)
-                                                <option value="{{ $i }}" {{ request('guests') == $i ? 'selected' : '' }}>{{ $i }} personne(s)</option>
-                                            @endfor
-                                        </select>
-                                    </div>
-                                </div>
+    <h4 class="form-title">Réservez vos dates</h4>
+    <div class="row g-3">
+        <div class="col-12">
+            <label for="check_in_date" class="form-label">Arrivée</label>
+            <input type="date" name="check_in_date" id="check_in_date" class="form-control" required>
+        </div>
+        <div class="col-12">
+            <label for="check_out_date" class="form-label">Départ</label>
+            <input type="date" name="check_out_date" id="check_out_date" class="form-control" required>
+        </div>
+    </div>
 
-                                <div class="d-grid mt-4">
-                                    <button type="submit" class="btn btn-brand btn-lg">Procéder au Paiement</button>
-                                </div>
-                            </form>
+    <hr class="my-4">
+
+    <h4 class="form-title">Vos informations</h4>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="client_nom" class="form-label">Nom</label>
+            <input type="text" name="client_nom" id="client_nom" class="form-control" placeholder="Votre nom" required>
+        </div>
+        <div class="col-md-6">
+            <label for="client_prenom" class="form-label">Prénom</label>
+            <input type="text" name="client_prenom" id="client_prenom" class="form-control" placeholder="Votre prénom" required>
+        </div>
+        <div class="col-12">
+            <label for="client_email" class="form-label">Email</label>
+            <input type="email" name="client_email" id="client_email" class="form-control" placeholder="Votre email" required>
+        </div>
+        <div class="col-12">
+            <label for="client_telephone" class="form-label">Téléphone</label>
+            <input type="tel" name="client_telephone" id="client_telephone" class="form-control" placeholder="Votre téléphone" required>
+        </div>
+        <div class="col-12">
+            <label for="nombre_invites" class="form-label">Nombre de personnes (max: {{ $chambre->capacite }})</label>
+            <select name="nombre_invites" id="nombre_invites" class="form-select">
+                @for ($i = 1; $i <= $chambre->capacite; $i++)
+                    <option value="{{ $i }}">{{ $i }} personne(s)</option>
+                @endfor
+            </select>
+        </div>
+    </div>
+
+    <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-brand btn-lg">Procéder au Paiement</button>
+    </div>
+</form>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
-
 </main>
 @endsection
 

@@ -81,7 +81,7 @@
                 <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
                     <div class="order-summary-card-v2">
                         <div class="summary-header">
-                            <img src="{{ asset('uploads/' . $reservation->chambre->image_principale) }}" alt="{{ $reservation->chambre->nom }}">
+                            <img src="{{ asset('storage/' . $reservation->chambre->image_principale) }}" alt="{{ $reservation->chambre->nom }}">
                             <div class="header-text">
                                 <h5>{{ $reservation->chambre->nom }}</h5>
                                 <p>Réservation pour {{ $reservation->client_prenom }} {{ $reservation->client_nom }}</p>
