@@ -25,21 +25,26 @@ class MenuPdfController extends Controller
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'fichier' => 'required|file|mimes:pdf,jpg,png|max:5120',
+            'est_actif' => 'sometimes|boolean',
         ]);
 
-        if ($request->hasFile('fichier')) {
-            // On stocke sur le disque 'public' (le disque par défaut de Laravel pour les fichiers publics)
-            $validated['fichier'] = $request->file('fichier')->store('menus', 'public');
-        }
-
-        if ($request->has('est_actif')) {
-            MenuPdf::where('est_actif', true)->update(['est_actif' => false]);
-            $validated['est_actif'] = true;
-        }
-
-        MenuPdf::create($validated);
-        return redirect()->route('admin.menus-pdf.index')->with('success', 'Menu ajouté avec succès.');
+       // Traitement du fichier
+    if ($request->hasFile('fichier')) {
+        $path = $request->file('fichier')->store('menus', 'public');
+        $validated['fichier'] = $path;
     }
+
+    // Gestion du menu actif
+    if ($request->has('est_actif')) {
+        MenuPdf::where('est_actif', true)->update(['est_actif' => false]);
+        $validated['est_actif'] = true;
+    }
+
+    MenuPdf::create($validated);
+
+    return redirect()->route('admin.menus-pdf.index')
+        ->with('success', 'Menu ajouté avec succès.');
+}
 
     public function edit(MenuPdf $menus_pdf)
     {

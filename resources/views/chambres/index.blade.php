@@ -88,13 +88,12 @@
                         <div class="col-12 text-center py-5">
                             <div class="alert alert-warning">
                                 <h4>Aucune chambre disponible</h4>
-                                <p class="lead">Désolé, aucune chambre ne correspond à vos critères de recherche pour le moment. Veuillez essayer d'autres dates.</p>
+                                <p class="lead">Désolé, aucune chambre ne correspond à vos critères de recherche. Veuillez essayer d'autres dates.</p>
                             </div>
                         </div>
                     @endforelse
                 </div>
             </div>
         </section>
-
     </main>
 @endsection
