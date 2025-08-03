@@ -23,57 +23,51 @@
                 <div class="booking-form-wrapper" data-aos="fade-up">
                     <form action="{{ route('chambres.index') }}" method="GET">
                         <div class="row g-0 align-items-center">
-
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group-v2">
                                     <i class="bi bi-calendar-check icon"></i>
                                     <div class="input-wrapper">
                                         <label for="checkin_date">Arrivée</label>
-                                        <input type="text" class="form-control" id="checkin_date" name="checkin_date" value="{{ request('checkin_date') }}" placeholder="Choisissez une date" onfocus="(this.type='date')" onblur="(this.type='text')">
+                                        <input type="text" class="form-control" id="checkin_date" name="check_in_date" value="{{ request('check_in_date') }}" placeholder="Choisissez une date" onfocus="(this.type='date')" onblur="(this.type='text')">
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group-v2">
                                     <i class="bi bi-calendar-x icon"></i>
                                     <div class="input-wrapper">
                                         <label for="checkout_date">Départ</label>
-                                        <input type="text" class="form-control" id="checkout_date" name="checkout_date" value="{{ request('checkout_date') }}" placeholder="Choisissez une date" onfocus="(this.type='date')" onblur="(this.type='text')">
+                                        <input type="text" class="form-control" id="checkout_date" name="check_out_date" value="{{ request('check_out_date') }}" placeholder="Choisissez une date" onfocus="(this.type='date')" onblur="(this.type='text')">
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group-v2">
                                     <i class="bi bi-people icon"></i>
                                     <div class="input-wrapper">
                                         <label for="guests">Personnes</label>
                                         <select class="form-select" id="guests" name="guests">
-                                            <option value="1" {{ request('guests') == 1 ? 'selected' : '' }}>1 Personne</option>
-                                            <option value="2" {{ request('guests', 2) == 2 ? 'selected' : '' }}>2 Personnes</option>
-                                            <option value="3" {{ request('guests') == 3 ? 'selected' : '' }}>3 Personnes</option>
-                                            <option value="4" {{ request('guests') == 4 ? 'selected' : '' }}>4 Personnes</option>
+                                            <option value="1" @selected(request('guests') == 1)>1 Personne</option>
+                                            <option value="2" @selected(request('guests', 2) == 2)>2 Personnes</option>
+                                            <option value="3" @selected(request('guests') == 3)>3 Personnes</option>
+                                            <option value="4" @selected(request('guests') == 4)>4 Personnes</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-lg-3 col-md-6 d-grid">
                                 <button type="submit" class="btn-search">Vérifier la disponibilité</button>
                             </div>
-
                         </div>
                     </form>
                 </div>
             </div>
-        </section><!-- Fin Formulaire de Réservation -->
+        </section>
 
         <!-- ======= Section Liste des Chambres (Design Vertical Compact) ======= -->
         <section id="chambres-list" class="chambres-list-section py-5">
             <div class="container">
                 <div class="row g-4">
-
                     @forelse($chambres as $chambre)
                         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
                             <div class="room-card-compact">
@@ -84,8 +78,7 @@
                                 <div class="room-card-body">
                                     <h3 class="room-title">{{ $chambre->nom }}</h3>
                                     <p class="room-description">{{ Str::limit($chambre->description_courte, 90) }}</p>
-                                    <a href="{{ route('chambres.show', ['chambre' => $chambre, 'checkin_date' => request('checkin_date'), 'checkout_date' => request('checkout_date'), 'guests' => request('guests')]) }}"
-                                       class="btn-details">
+                                    <a href="{{ route('chambres.show', ['chambre' => $chambre, 'check_in_date' => request('check_in_date'), 'check_out_date' => request('check_out_date'), 'guests' => request('guests')]) }}" class="btn-details">
                                        Détails & Réservation <i class="bi bi-arrow-right"></i>
                                     </a>
                                 </div>
@@ -99,7 +92,6 @@
                             </div>
                         </div>
                     @endforelse
-
                 </div>
             </div>
         </section>
