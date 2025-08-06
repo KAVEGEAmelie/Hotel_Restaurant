@@ -1,61 +1,32 @@
-# Version Docker finale et correcte
 services:
   - type: web
-    name: printemp
+    name: hotel-le-printemps-app
+    runtime: docker # On utilise le runtime Docker
+    repo: https://github.com/KAVEGEAmelie/Hotel_Restaurant # On spécifie le repo explicitement
+    branch: master
     plan: free
-    # On dit à Render comment construire et démarrer l'image Docker
-    dockerfilePath: ./Dockerfile
-    dockerCommand: ./start.sh # Commande pour démarrer le conteneur
-
+    region: frankfurt
+    # Le healthCheck est géré par défaut, on l'enlève pour éviter les erreurs de validation
     envVars:
+      - key: APP_URL
+        fromService:
+          type: web
+          name: hotel-le-printemps-app
+          property: url
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hotel-le-printemps-db
+          property: internalConnectionString
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
       - key: APP_KEY
         generateValue: true
-      - key: APP_URL
-        fromService: # Plus dynamique que de mettre l'URL en dur
-          type: web
-          name: printemp
-          property: url
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: printemp-db
-          property: connectionString
 
 databases:
-  - name: printemp-db
-    plan: free# Version Docker finale et correcte
-services:
-  - type: web
-    name: printemp
-    plan: free
-    # On dit à Render comment construire et démarrer l'image Docker
-    dockerfilePath: ./Dockerfile
-    dockerCommand: ./start.sh # Commande pour démarrer le conteneur
-
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
-      - key: APP_KEY
-        generateValue: true
-      - key: APP_URL
-        fromService: # Plus dynamique que de mettre l'URL en dur
-          type: web
-          name: printemp
-          property: url
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: printemp-db
-          property: connectionString
-
-databases:
-  - name: printemp-db
+  - name: hotel-le-printemps-db
+    region: frankfurt
     plan: free

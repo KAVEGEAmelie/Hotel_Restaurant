@@ -1,36 +1,20 @@
-# Stage 1: Installer les dépendances avec Composer
-FROM composer:lts as vendor
+# Utilise une image de base optimisée pour Laravel
+FROM thecodingmachine/php:8.2-v4-fpm-node18
 
-WORKDIR /app
-COPY database/ database/
-COPY composer.json composer.json
-COPY composer.lock composer.lock
-RUN composer install --no-dev --no-interaction --optimize-autoloader
+# Copie le code de l'application
+COPY . /app
 
-# Stage 2: Construire l'image finale avec Apache et PHP
-FROM php:8.2-apache
+# Installe les dépendances Composer et NPM
+RUN composer install --no-dev --optimize-autoloader && \
+    npm install && \
+    npm run build
 
-# Installer les extensions PHP nécessaires pour Laravel
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libzip-dev \
-    unzip \
-    && pecl install zip \
-    && docker-php-ext-enable zip \
-    && docker-php-ext-install pdo pdo_pgsql
+# Gère les permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-# Configurer Apache pour pointer vers le dossier public de Laravel
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite
+# Copie le script de démarrage
+COPY .docker/start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-# Copier les fichiers de l'application
-COPY . .
-
-# Copier les dépendances installées à l'étape 1
-COPY --from=vendor /app/vendor/ vendor/
-
-# Définir les permissions correctes pour Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Exposer le port 80
-EXPOSE 80
+# Commande de démarrage
+CMD ["start.sh"]
