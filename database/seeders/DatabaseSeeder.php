@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; 
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
 
         // === 3. Appel de vos autres seeders ===
         $this->call([
-            MenuSeeder::class,
+            // MenuSeeder::class,
         ]);
     }
 }

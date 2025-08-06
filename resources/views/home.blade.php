@@ -10,7 +10,7 @@
 <!-- =======================================================
   Section Hero - Plein Écran
 ======================================================== -->
-<section id="hero" class="hero d-flex align-items-center justify-content-center" 
+<section id="hero" class="hero d-flex align-items-center justify-content-center"
          style="background-image: url('{{ asset('assets/img/1.jpg') }}');">
 
     <div class="container">
@@ -86,7 +86,6 @@
                     <div class="experience-content">
                         <h3>Cadre d'Exception</h3>
                         <p>Admirez des panoramas à couper le souffle depuis nos balcons.</p>
-                        {{-- CORRIGÉ : Ce bouton "Découvrir" pointe maintenant vers la page des chambres --}}
                         <a href="{{ route('chambres.index') }}" class="btn-read-more">Découvrir</a>
                     </div>
                 </div>
@@ -104,7 +103,6 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right">
-                {{-- J'ai corrigé le chemin de l'image ici, il manquait le nom du dossier 'img' --}}
                 <img src="{{ asset('assets/img/1.jpg') }}" class="img-fluid rounded shadow-lg" alt="Façade de l'hôtel Le Printemps">
             </div>
             <div class="col-lg-6 ps-lg-5 mt-4 mt-lg-0" data-aos="fade-left">

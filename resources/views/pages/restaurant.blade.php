@@ -104,9 +104,9 @@
                             <p id="modalPlatDescription" class="modal-description"></p>
                             <div id="modalPlatPrix" class="modal-price"></div>
                         </div>
-                        <div class="mt-auto p-4 bg-light text-center">
+                        {{-- <div class="mt-auto p-4 bg-light text-center">
                             <a href="#" class="btn btn-brand">Réserver une table</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
