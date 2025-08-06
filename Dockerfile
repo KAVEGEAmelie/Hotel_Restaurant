@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Installer les dépendances système
 RUN apt-get update && apt-get install -y \
@@ -31,4 +31,8 @@ RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
-CMD ["php-fpm"]
+# Exposer le port 80 pour Render
+EXPOSE 80
+
+# Lancer Laravel via son propre serveur HTTP
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
