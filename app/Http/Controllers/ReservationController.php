@@ -27,25 +27,42 @@ class ReservationController extends Controller
         $checkin = Carbon::parse($validatedData['check_in_date']);
         $checkout = Carbon::parse($validatedData['check_out_date']);
 
+        // Vérification de la capacité
         if ($validatedData['nombre_invites'] > $chambre->capacite) {
             return back()->withInput()->with('error', 'Le nombre d\'invités dépasse la capacité de la chambre.');
         }
 
-        $isBooked = Reservation::where('chambre_id', $chambre->id)
+        // Vérification de disponibilité plus robuste
+        $conflictingReservations = Reservation::where('chambre_id', $chambre->id)
             ->whereIn('statut', ['pending', 'confirmée'])
-            ->where(fn($q) => $q->where('check_out_date', '>', $checkin)->where('check_in_date', '<', $checkout))
-            ->exists();
+            ->where(function($query) use ($checkin, $checkout) {
+                $query->where(function($q) use ($checkin, $checkout) {
+                    // Vérifie si la nouvelle réservation chevauche une réservation existante
+                    $q->where('check_in_date', '<', $checkout)
+                      ->where('check_out_date', '>', $checkin);
+                });
+            })
+            ->get();
 
-        if ($isBooked) {
-            return back()->withInput()->with('error', 'Désolé, cette chambre n\'est plus disponible pour ces dates.');
+        if ($conflictingReservations->count() > 0) {
+            $conflictDetails = $conflictingReservations->map(function($res) {
+                return 'Du ' . Carbon::parse($res->check_in_date)->format('d/m/Y') .
+                       ' au ' . Carbon::parse($res->check_out_date)->format('d/m/Y');
+            })->join(', ');
+
+            return back()->withInput()->with('error',
+                'Désolé, cette chambre n\'est plus disponible pour ces dates. ' .
+                'Conflit avec les réservations : ' . $conflictDetails);
         }
 
+        // Calcul du prix total
         $nbNuits = $checkin->diffInDays($checkout);
         $dataToCreate = $validatedData;
-        $dataToCreate['user_id'] = Auth::id(); // Auth::id() renvoie null si l'utilisateur n'est pas connecté
+        $dataToCreate['user_id'] = Auth::id();
         $dataToCreate['prix_total'] = $nbNuits * $chambre->prix_par_nuit;
         $dataToCreate['statut'] = 'pending';
 
+        // Création de la réservation
         $reservation = Reservation::create($dataToCreate);
 
         return redirect()->route('payment.show', $reservation);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chambre;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ChambreController extends Controller
 {
@@ -17,10 +18,9 @@ class ChambreController extends Controller
         $query = Chambre::query();
 
         // On vérifie si des dates ont été soumises dans le formulaire
-        if ($request->filled('checkin_date') && $request->filled('checkout_date')) {
-
-            $checkin = $request->checkin_date;
-            $checkout = $request->checkout_date;
+        if ($request->filled('check_in_date') && $request->filled('check_out_date')) {
+            $checkin = Carbon::parse($request->check_in_date);
+            $checkout = Carbon::parse($request->check_out_date);
 
             // Si le nombre d'invités est fourni, on filtre par capacité
             if ($request->filled('guests')) {
@@ -29,10 +29,10 @@ class ChambreController extends Controller
 
             // On exclut les chambres qui ont des réservations qui se chevauchent
             $query->whereDoesntHave('reservations', function ($q) use ($checkin, $checkout) {
-                $q->where('statut', '!=', 'annulée') // On ignore les réservations annulées
+                $q->whereIn('statut', ['pending', 'confirmée']) // On ignore les réservations annulées
                   ->where(function ($query) use ($checkin, $checkout) {
-                      $query->where('check_out_date', '>', $checkin)
-                            ->where('check_in_date', '<', $checkout);
+                      $query->where('check_in_date', '<', $checkout)
+                            ->where('check_out_date', '>', $checkin);
                   });
             });
         }
