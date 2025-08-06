@@ -1,20 +1,34 @@
-# Utilise une image de base optimisée pour Laravel
-FROM thecodingmachine/php:8.2-v4-fpm-node18
+FROM php:8.2-fpm
 
-# Copie le code de l'application
-COPY . /app
+# Installer les dépendances système
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql mbstring zip exif pcntl bcmath gd
 
-# Installe les dépendances Composer et NPM
-RUN composer install --no-dev --optimize-autoloader && \
-    npm install && \
-    npm run build
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Gère les permissions
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+WORKDIR /var/www
 
-# Copie le script de démarrage
-COPY .docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+COPY . .
 
-# Commande de démarrage
-CMD ["start.sh"]
+RUN composer install --optimize-autoloader --no-dev
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
+CMD ["php-fpm"]
