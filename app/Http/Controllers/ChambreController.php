@@ -14,8 +14,11 @@ class ChambreController extends Controller
      */
     public function listPublic(Request $request)
     {
-        // On commence une requête de base
+        // On commence une requête de base - AFFICHER TOUTES LES CHAMBRES
         $query = Chambre::query();
+
+        // Trier par disponibilité d'abord (disponibles en premier)
+        $query->orderBy('est_disponible', 'desc')->orderBy('nom');
 
         // On vérifie si des dates ont été soumises dans le formulaire
         if ($request->filled('check_in_date') && $request->filled('check_out_date')) {
@@ -28,17 +31,22 @@ class ChambreController extends Controller
             }
 
             // On exclut les chambres qui ont des réservations qui se chevauchent
-            $query->whereDoesntHave('reservations', function ($q) use ($checkin, $checkout) {
-                $q->whereIn('statut', ['pending', 'confirmée']) // On ignore les réservations annulées
-                  ->where(function ($query) use ($checkin, $checkout) {
-                      $query->where('check_in_date', '<', $checkout)
-                            ->where('check_out_date', '>', $checkin);
+            // MAIS ON GARDE CELLES QUI SONT MARQUÉES COMME INDISPONIBLES PAR L'ADMIN
+            $query->where(function($q) use ($checkin, $checkout) {
+                // Chambres disponibles ET sans conflit de dates
+                $q->where('est_disponible', true)
+                  ->whereDoesntHave('reservations', function ($subQuery) use ($checkin, $checkout) {
+                      $subQuery->whereIn('statut', ['pending', 'confirmed'])
+                               ->where(function ($dateQuery) use ($checkin, $checkout) {
+                                   $dateQuery->where('check_in_date', '<', $checkout)
+                                            ->where('check_out_date', '>', $checkin);
+                               });
                   });
-            });
+            })->orWhere('est_disponible', false); // Toujours afficher les indisponibles
         }
 
         // On récupère le résultat final de la requête (filtrée ou non)
-        $chambres = $query->latest()->get();
+        $chambres = $query->get();
 
         // On retourne la vue avec la liste de chambres
         return view('chambres.index', [
@@ -53,6 +61,4 @@ class ChambreController extends Controller
     {
         return view('chambres.show', ['chambre' => $chambre]);
     }
-
-    // Les autres méthodes ne sont pas nécessaires pour la partie publique.
 }

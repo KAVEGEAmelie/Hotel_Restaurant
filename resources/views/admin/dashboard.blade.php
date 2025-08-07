@@ -2,6 +2,24 @@
 
 @section('title', 'Tableau de Bord')
 
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Notification de bienvenue si c'est une nouvelle session
+    @if(session('success'))
+        setTimeout(() => {
+            AdminNotifications.showUserLogin({name: '{{ Auth::user()->name }}'});
+        }, 500);
+    @endif
+    
+    // Afficher les statistiques avec animations
+    setTimeout(() => {
+        window.notify.info('📊 Tableau de bord chargé avec succès', { duration: 3000 });
+    }, 1000);
+});
+</script>
+@endpush
+
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Tableau de Bord</h1>

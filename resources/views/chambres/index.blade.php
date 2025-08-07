@@ -69,17 +69,64 @@
             <div class="row g-4">
                 @forelse($chambres as $chambre)
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
-                        <div class="room-card-compact">
+                        <div class="room-card-compact {{ !$chambre->est_disponible ? 'room-unavailable' : '' }}">
+
+                            <!-- Badge de statut en overlay -->
+                            @if(!$chambre->est_disponible)
+                                <div class="unavailable-overlay">
+                                    <div class="unavailable-badge">
+                                        <i class="bi bi-lock-fill"></i>
+                                        INDISPONIBLE
+                                    </div>
+                                    <p class="unavailable-text">Temporairement fermée</p>
+                                </div>
+                            @endif
+
                             <div class="room-card-image-wrapper">
-                                <img src="{{ asset('storage/' . $chambre->image_principale) }}" class="img-fluid" alt="{{ $chambre->nom }}">
-                                <div class="price-badge">{{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} F / nuit</div>
+                                <img src="{{ asset('storage/' . $chambre->image_principale) }}"
+                                     class="img-fluid {{ !$chambre->est_disponible ? 'img-unavailable' : '' }}"
+                                     alt="{{ $chambre->nom }}">
+
+                                <!-- Badge prix avec statut -->
+                                <div class="price-badge {{ !$chambre->est_disponible ? 'price-badge-unavailable' : '' }}">
+                                    {{ number_format($chambre->prix_par_nuit, 0, ',', ' ') }} F / nuit
+                                </div>
+
+                                <!-- Badge disponibilité en coin -->
+                                <div class="availability-badge">
+                                    @if($chambre->est_disponible)
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Disponible
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Indisponible
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="room-card-body">
+
+                            <div class="room-card-body {{ !$chambre->est_disponible ? 'body-unavailable' : '' }}">
                                 <h3 class="room-title">{{ $chambre->nom }}</h3>
                                 <p class="room-description">{{ Str::limit($chambre->description_courte, 90) }}</p>
-                                <a href="{{ route('chambres.show', ['chambre' => $chambre, 'check_in_date' => request('check_in_date'), 'check_out_date' => request('check_out_date'), 'guests' => request('guests')]) }}" class="btn-details">
-                                    Détails & Réservation <i class="bi bi-arrow-right"></i>
-                                </a>
+
+                                @if($chambre->est_disponible)
+                                    <a href="{{ route('chambres.show', ['chambre' => $chambre, 'check_in_date' => request('check_in_date'), 'check_out_date' => request('check_out_date'), 'guests' => request('guests')]) }}"
+                                       class="btn-details">
+                                        Détails & Réservation <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                @else
+                                    <div class="unavailable-actions">
+                                        <button class="btn-details-disabled" disabled>
+                                            <i class="bi bi-lock"></i> Réservation indisponible
+                                        </button>
+                                        <div class="contact-alternatives mt-2">
+                                            <a href="tel:+22871348888" class="btn-contact-small">
+                                                <i class="bi bi-telephone"></i> Nous contacter
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -158,6 +205,8 @@
 .btn-search:hover {
     background-color: var(--color-vert-fonce-lien);
 }
+
+/* ===== STYLES POUR LES CHAMBRES DISPONIBLES ===== */
 .room-card-compact {
     background: var(--color-blanc);
     border-radius: 10px;
@@ -166,11 +215,55 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 .room-card-compact:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 35px rgba(0,0,0,0.12);
 }
+
+/* ===== STYLES POUR LES CHAMBRES INDISPONIBLES ===== */
+.room-card-compact.room-unavailable {
+    border: 2px solid #dc3545;
+    background: #fff5f5;
+}
+.room-card-compact.room-unavailable:hover {
+    transform: none;
+    box-shadow: 0 5px 25px rgba(220, 53, 69, 0.15);
+}
+
+/* Overlay indisponible */
+.unavailable-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    text-align: center;
+}
+.unavailable-badge {
+    background: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+.unavailable-text {
+    color: #721c24;
+    font-size: 13px;
+    margin: 0;
+    font-weight: 600;
+}
+
 .room-card-image-wrapper {
     position: relative;
     overflow: hidden;
@@ -182,9 +275,17 @@
     object-fit: cover;
     transition: transform 0.4s ease;
 }
-.room-card-compact:hover .room-card-image-wrapper img {
+.room-card-compact:hover .room-card-image-wrapper img:not(.img-unavailable) {
     transform: scale(1.1);
 }
+
+/* Image indisponible */
+.img-unavailable {
+    opacity: 0.6;
+    filter: grayscale(30%);
+}
+
+/* Badge prix */
 .price-badge {
     position: absolute;
     bottom: 15px;
@@ -197,12 +298,27 @@
     font-weight: 700;
     backdrop-filter: blur(5px);
 }
+.price-badge-unavailable {
+    background: rgba(108, 117, 125, 0.9);
+    text-decoration: line-through;
+}
+
+/* Badge disponibilité */
+.availability-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
 .room-card-body {
     padding: 25px;
     text-align: center;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+}
+.body-unavailable {
+    opacity: 0.7;
 }
 .room-card-body .room-title {
     font-family: 'Playfair Display', serif;
@@ -216,6 +332,8 @@
     margin-bottom: 20px;
     flex-grow: 1;
 }
+
+/* Boutons disponibles */
 .room-card-body .btn-details {
     color: var(--color-vert-fonce-lien);
     font-weight: 600;
@@ -232,6 +350,30 @@
 .room-card-body .btn-details:hover i {
     transform: translateX(5px);
 }
+
+/* Boutons indisponibles */
+.btn-details-disabled {
+    color: #6c757d;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid #dee2e6;
+    padding: 8px 16px;
+    border-radius: 25px;
+    background: #f8f9fa;
+    cursor: not-allowed;
+    display: inline-block;
+    font-size: 14px;
+}
+.btn-contact-small {
+    color: #0d6efd;
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.btn-contact-small:hover {
+    color: #0b5ed7;
+}
+
 @media (max-width: 991.98px) {
     .form-group-v2 {
         border-right: none;

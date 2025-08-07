@@ -22,7 +22,9 @@ class Chambre extends Model
         'image_principale',
         'prix_par_nuit',
         'capacite',
-        'est_disponible', // Même si on ne le met pas dans le formulaire, c'est bien de l'avoir ici
+        'est_disponible',
+        'disponible', // Champ pour la disponibilité 
+        'statut', // Champ pour le statut général
     ];
 
     // ... vos relations (comme la relation vers Reservation) ...

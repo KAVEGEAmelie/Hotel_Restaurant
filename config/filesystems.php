@@ -47,13 +47,6 @@ return [
             'report' => false,
         ],
 
-       'chambres' => [
-        'driver' => 'local',
-        'root' => public_path('storage/chambres'),
-        'url' => env('APP_URL') . '/storage/chambres',
-        'visibility' => 'public',
-        'throw' => false,
-    ],
 
 
 

@@ -46,7 +46,9 @@ class UserController extends Controller
             'is_admin' => $request->has('is_admin'),
         ]);
 
-        return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur créé avec succès.');
+        return redirect()->route('admin.utilisateurs.index')
+            ->with('success', '👤 Utilisateur créé avec succès !')
+            ->with('info', 'Le nouvel utilisateur peut maintenant se connecter');
     }
 
     /**
@@ -78,7 +80,9 @@ class UserController extends Controller
 
         $user->save(); // CORRIGÉ
 
-        return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur mis à jour avec succès.');
+        return redirect()->route('admin.utilisateurs.index')
+            ->with('success', '✏️ Utilisateur mis à jour avec succès !')
+            ->with('info', 'Les modifications du profil ont été enregistrées');
     }
 
     /**
@@ -91,6 +95,8 @@ class UserController extends Controller
         }
 
         $user->delete(); // CORRIGÉ
-        return redirect()->route('admin.utilisateurs.index')->with('success', 'Utilisateur supprimé avec succès.');
+        return redirect()->route('admin.utilisateurs.index')
+            ->with('warning', '🗑️ Utilisateur supprimé')
+            ->with('info', 'Le compte utilisateur a été définitivement supprimé');
     }
 }

@@ -68,6 +68,8 @@ class ReservationController extends Controller
         return redirect()->route('payment.show', $reservation);
     }
 
+    
+
     public function downloadReceipt(Reservation $reservation)
     {
         if (Auth::id() !== $reservation->user_id) {

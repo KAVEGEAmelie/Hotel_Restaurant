@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="test-token">
+    <title>Test des Boutons Admin</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Nos CSS -->
+    <link href="public/css/notifications.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">🧪 Test des Boutons Admin</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Boutons de Suppression</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-outline-danger btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmDelete(1, 'Chambre Deluxe', 'chambres')">
+                            <i class="bi bi-trash"></i> Supprimer Chambre
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-outline-danger btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmDelete(2, 'Catégorie Plats', 'categories')">
+                            <i class="bi bi-trash"></i> Supprimer Catégorie
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-outline-danger btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmDelete(3, 'Utilisateur Test', 'utilisateurs')">
+                            <i class="bi bi-trash"></i> Supprimer Utilisateur
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Boutons de Statut</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-outline-success btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmStatusToggle(1, 'Chambre Deluxe', 'false')">
+                            <i class="bi bi-toggle-on"></i> Activer Chambre
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-outline-warning btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmStatusToggle(2, 'Utilisateur Test', 'true')">
+                            <i class="bi bi-toggle-off"></i> Désactiver Utilisateur
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmStatusToggle(3, 'Réservation #123', 'pending')">
+                            <i class="bi bi-clock"></i> Changer Statut Réservation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Boutons d'Export</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-outline-primary btn-sm export-btn me-2" 
+                                data-export-type="PDF" 
+                                data-item-name="chambres">
+                            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm export-btn" 
+                                data-export-type="Excel" 
+                                data-item-name="réservations">
+                            <i class="bi bi-file-earmark-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Actions Groupées</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-warning btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmBulkAction([1,2,3], 'supprimer', 'delete')">
+                            <i class="bi bi-trash3"></i> Suppression Groupée
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-success btn-sm mb-2" 
+                                onclick="AdminActionComponents.confirmBulkAction([4,5,6], 'activer', 'activate')">
+                            <i class="bi bi-check-circle"></i> Activation Groupée
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test des Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-success btn-sm me-2" 
+                                onclick="window.notify.success('✅ Opération réussie !', { duration: 5000 })">
+                            Success
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm me-2" 
+                                onclick="window.notify.error('❌ Erreur survenue !', { duration: 5000 })">
+                            Error
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm me-2" 
+                                onclick="window.notify.warning('⚠️ Attention !', { duration: 5000 })">
+                            Warning
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm me-2" 
+                                onclick="window.notify.info('ℹ️ Information', { duration: 5000 })">
+                            Info
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm me-2" 
+                                onclick="window.notify.payment('💳 Paiement traité', { duration: 5000 })">
+                            Payment
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm me-2" 
+                                onclick="window.notify.reservation('📅 Réservation confirmée', { duration: 5000 })">
+                            Reservation
+                        </button>
+                        <button type="button" class="btn btn-dark btn-sm" 
+                                onclick="window.notify.email('📧 Email envoyé', { duration: 5000 })">
+                            Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🔍 Diagnostic du Système</h5>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-info btn-sm me-2" 
+                                onclick="AdminDiagnostic.runDiagnostic()">
+                            <i class="bi bi-bug"></i> Lancer Diagnostic
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm me-2" 
+                                onclick="AdminDiagnostic.quickTest()">
+                            <i class="bi bi-lightning"></i> Test Rapide
+                        </button>
+                        <small class="text-muted">Ouvrez la console (F12) pour voir les résultats</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="public/js/notifications.js"></script>
+    <script src="public/js/admin-notifications.js"></script>
+    <script src="public/js/admin-actions.js"></script>
+    <script src="public/js/admin-diagnostic.js"></script>
+
+    <script>
+        // Simulation des Flash messages pour test
+        window.flashMessages = {};
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Page de test chargée');
+            console.log('✅ NotificationSystem:', typeof window.NotificationSystem);
+            console.log('✅ AdminActionComponents:', typeof window.AdminActionComponents);
+            
+            // Test automatique des notifications au chargement
+            setTimeout(() => {
+                window.notify.info('🧪 Page de test initialisée avec succès !', { duration: 4000 });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

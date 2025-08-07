@@ -21,6 +21,11 @@ class ChambreController extends Controller
         return view('admin.chambres.form');
     }
 
+    public function show(Chambre $chambre)
+    {
+        return view('admin.chambres.show', compact('chambre'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -41,7 +46,9 @@ class ChambreController extends Controller
 
         Chambre::create($validated);
 
-        return redirect()->route('admin.chambres.index')->with('success', 'Chambre créée avec succès.');
+        return redirect()->route('admin.chambres.index')
+            ->with('success', '🏨 Chambre créée avec succès !')
+            ->with('info', 'La chambre est maintenant disponible pour les réservations');
     }
 
     public function edit(Chambre $chambre)
@@ -72,7 +79,9 @@ class ChambreController extends Controller
 
         $chambre->update($validated);
 
-        return redirect()->route('admin.chambres.index')->with('success', 'Chambre mise à jour avec succès.');
+        return redirect()->route('admin.chambres.index')
+            ->with('success', '✏️ Chambre mise à jour avec succès !')
+            ->with('info', 'Les modifications ont été enregistrées');
     }
 
     public function destroy(Chambre $chambre)
@@ -84,6 +93,31 @@ class ChambreController extends Controller
 
         $chambre->delete();
 
-        return redirect()->route('admin.chambres.index')->with('success', 'Chambre supprimée avec succès.');
+        return redirect()->route('admin.chambres.index')
+            ->with('warning', '🗑️ Chambre supprimée')
+            ->with('info', 'La chambre a été retirée du système');
+    }
+
+    /**
+     * Toggle le statut de disponibilité d'une chambre
+     */
+    public function toggleStatus(Chambre $chambre)
+    {
+        // Déterminer le nouveau statut
+        $currentStatus = $chambre->est_disponible ?? true;
+        $newStatus = !$currentStatus;
+
+        // Mettre à jour le statut
+        $chambre->update(['est_disponible' => $newStatus]);
+
+        $statusText = $newStatus ? 'disponible' : 'indisponible';
+        $emoji = $newStatus ? '✅' : '❌';
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$emoji} Chambre '{$chambre->nom}' marquée comme {$statusText}",
+            'new_status' => $newStatus,
+            'status_text' => $statusText
+        ]);
     }
 }

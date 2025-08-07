@@ -36,13 +36,14 @@ return [
     ],
 
 'cashpay' => [
-    'url' => env('CASHPAY_API_URL'),
-    'username' => env('CASHPAY_USERNAME'),
-    'password' => env('CASHPAY_PASSWORD'),
-    'client_id' => env('CASHPAY_CLIENT_ID'),
-    'client_secret' => env('CASHPAY_CLIENT_SECRET'),
-    'api_key' => env('CASHPAY_API_KEY'),
-    'api_reference' => env('CASHPAY_API_REFERENCE'),
+    'url' => env('CASHPAY_API_URL', 'https://sandbox.semoa-payments.com/api'),
+    'username' => env('CASHPAY_USERNAME', 'api_cashpay.leprintemps'),
+    'password' => env('CASHPAY_PASSWORD', 'nwDT7XCQzU'),
+    'client_id' => env('CASHPAY_CLIENT_ID', 'api_cashpay.leprintemps'),
+    'client_secret' => env('CASHPAY_CLIENT_SECRET', 'NZLJv4V4A9R5zAN6oeQxFq985F9E2RxC'),
+    'api_key' => env('CASHPAY_API_KEY', '2xiUFAWYSriHvSFYcv9YRl816uzgbC2Vth5g'),
+    'api_reference' => env('CASHPAY_API_REFERENCE', '104'),
+    'simulation_mode' => env('CASHPAY_SIMULATION_MODE', false),
 ],
 
 ];

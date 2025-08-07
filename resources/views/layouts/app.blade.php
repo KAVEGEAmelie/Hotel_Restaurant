@@ -29,6 +29,9 @@
     <!-- Votre fichier CSS Principal -->
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
+    <!-- Système de notifications modernes -->
+    <link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
+
     @stack('styles')
 </head>
 <body>
@@ -52,6 +55,79 @@
     <!-- Votre fichier JS Principal -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
-    @stack('scripts')
+    <!-- Système de notifications modernes -->
+    <script src="{{ asset('js/notifications.js') }}"></script>
+
+    <!-- Messages Flash Laravel vers JavaScript -->
+    <script>
+        window.flashMessages = {
+            @if(session('success'))
+                success: @json(session('success')),
+            @endif
+            @if(session('error'))
+                error: @json(session('error')),
+            @endif
+            @if(session('warning'))
+                warning: @json(session('warning')),
+            @endif
+            @if(session('info'))
+                info: @json(session('info')),
+            @endif
+        };
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des notifications Flash structurées
+    @if(session('notification'))
+        @php $notification = session('notification'); @endphp
+        setTimeout(() => {
+            window.notify.{{ $notification['type'] ?? 'info' }}(
+                '{{ $notification['title'] ?? '' }}',
+                {
+                    message: '{{ $notification['message'] ?? '' }}',
+                    duration: {{ $notification['duration'] ?? 5000 }}
+                }
+            );
+        }, 500);
+     @endif
+
+    @if(session('notification_secondary'))
+        @php $notification = session('notification_secondary'); @endphp
+        setTimeout(() => {
+            window.notify.{{ $notification['type'] ?? 'info' }}(
+                '{{ $notification['title'] ?? '' }}',
+                {
+                    message: '{{ $notification['message'] ?? '' }}',
+                    duration: {{ $notification['duration'] ?? 5000 }}
+                }
+            );
+        }, 2000);
+    @endif
+    // Gestion des anciens messages Flash (rétrocompatibilité)
+    @if(session('success'))
+        setTimeout(() => {
+            window.notify.success('{{ session('success') }}', { duration: 5000 });
+        }, 500);
+    @endif
+
+    @if(session('error'))
+        setTimeout(() => {
+            window.notify.error('{{ session('error') }}', { duration: 6000 });
+        }, 500);
+    @endif
+    @if(session('info'))
+        setTimeout(() => {
+            window.notify.info('{{ session('info') }}', { duration: 4000 });
+        }, 1500);
+    @endif
+
+    @if(session('warning'))
+        setTimeout(() => {
+            window.notify.warning('{{ session('warning') }}', { duration: 5000 });
+        }, 500);
+    @endif
+});
+</script>
+@stack('scripts')
 </body>
 </html>

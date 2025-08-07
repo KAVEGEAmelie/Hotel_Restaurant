@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone')->nullable(); // ✅ Ajout du téléphone
+            $table->text('address')->nullable(); // ✅ Ajout de l'adresse
+            $table->boolean('is_admin')->default(false); // ✅ Ajout du statut admin
             $table->rememberToken();
             $table->timestamps();
         });

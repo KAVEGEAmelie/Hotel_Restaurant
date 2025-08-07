@@ -26,6 +26,11 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () { return view('home'); })->name('home');
+
+// Route de démonstration des notifications (développement uniquement)
+Route::get('/demo-notifications', function () {
+    return view('demo-notifications');
+})->name('demo.notifications');
 Route::get('/chambres', [ChambreController::class, 'listPublic'])->name('chambres.index');
 Route::get('/chambres/{chambre}', [ChambreController::class, 'show'])->name('chambres.show');
 Route::get('/restaurant', [RestaurantController::class, 'index'])->name('restaurant.index');
@@ -36,9 +41,15 @@ Route::post('/contact', [PageController::class, 'handleContactForm'])->name('con
 // Processus de réservation et paiement (public)
 Route::post('/reservation/creer', [ReservationController::class, 'create'])->name('reservation.create');
 Route::get('/paiement/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
+Route::post('/paiement/process/{reservation}', [PaymentController::class, 'process'])->name('payment.process');
+
 Route::post('/paiement/{reservation}', [PaymentController::class, 'process'])->name('payment.process');
 Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/simulation/{amount}', [PaymentController::class, 'simulation'])->name('payment.simulation');
+Route::post('/payment/simulation/complete', [PaymentController::class, 'completeSimulation'])->name('payment.simulation.complete');
+Route::get('/payment/success/{reservation}', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/receipt/{reservation}', [PaymentController::class, 'downloadReceipt'])->name('payment.receipt');
 Route::get('/reservation/succes/{reservation}', function (Reservation $reservation) {
     return view('reservation.success', compact('reservation'));
 })->name('reservation.success');
@@ -74,10 +85,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('chambres', AdminChambreController::class);
+    Route::post('/chambres/bulk-action', [AdminChambreController::class, 'bulkAction'])->name('chambres.bulk-action');
+    Route::patch('/chambres/{chambre}/toggle-status', [AdminChambreController::class, 'toggleStatus'])->name('chambres.toggle-status');
     Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
     Route::resource('reservations', AdminReservationController::class)->except(['index']);
     Route::get('/reservations/{reservation}/fiche-police', [AdminReservationController::class, 'downloadPoliceForm'])->name('reservations.police_form');
     Route::resource('utilisateurs', AdminUserController::class)->parameters(['utilisateurs' => 'user']);
     Route::resource('menus-pdf', AdminMenuPdfController::class);
     Route::resource('plats-galerie', AdminPlatGalerieController::class)->parameters(['plats-galerie' => 'plat']);
+    Route::post('/reservations/bulk-action', [AdminReservationController::class, 'bulkAction'])->name('reservations.bulkAction');
+    Route::patch('/reservations/{reservation}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
+    Route::get('/reservations/{reservation}/recu', [AdminReservationController::class, 'downloadReceipt'])->name('reservations.receipt');
+
+    Route::patch('/{reservation}/status', [AdminReservationController::class, 'updateStatus'])->name('update-status');
+    Route::patch('/{reservation}/confirm', [AdminReservationController::class, 'confirm'])->name('confirm');
+    Route::patch('/{reservation}/cancel', [AdminReservationController::class, 'cancel'])->name('cancel');
+    Route::patch('/{reservation}/mark-paid', [AdminReservationController::class, 'markAsPaid'])->name('mark-paid');
+    Route::get('/{reservation}/edit', [AdminReservationController::class, 'edit'])->name('edit');
+});
+
+// Route de test CashPay
+Route::get('/test-cashpay-connection', function() {
+    $cashPayService = app(\App\Services\CashPayService::class);
+
+    // Test de configuration
+    $isConfigured = $cashPayService->isConfigured();
+
+    // Test de connexion
+    $connectionTest = $cashPayService->testConnection();
+
+    return response()->json([
+        'configured' => $isConfigured,
+        'connection_test' => $connectionTest,
+        'config' => [
+            'api_url' => config('services.cashpay.url'),
+            'username' => config('services.cashpay.username') ? 'SET' : 'NOT SET',
+            'api_key' => config('services.cashpay.api_key') ? 'SET' : 'NOT SET',
+        ]
+    ]);
 });

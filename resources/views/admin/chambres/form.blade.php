@@ -2,6 +2,35 @@
 
 @section('title', isset($chambre) ? 'Modifier la Chambre' : 'Ajouter une Chambre')
 
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des erreurs de validation
+    @if($errors->any())
+        const errors = @json($errors->all());
+        AdminNotifications.showValidationErrors({errors: errors});
+    @endif
+    
+    // Notification d'aide pour le formulaire
+    setTimeout(() => {
+        window.notify.info('💡 Remplissez tous les champs obligatoires', { duration: 4000 });
+    }, 500);
+    
+    // Ajouter des listeners sur le formulaire
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                window.notify.info('⏳ Enregistrement en cours...', { autoClose: false });
+            }
+        });
+    }
+});
+</script>
+@endpush
+
 @section('content')
     <div class="container-fluid">
         <h1 class="h2 mb-4">

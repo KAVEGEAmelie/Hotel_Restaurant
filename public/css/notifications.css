@@ -1,0 +1,237 @@
+/* Système de notifications modernes */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    pointer-events: none;
+    max-width: 400px;
+    width: 100%;
+}
+
+.notification {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    margin-bottom: 12px;
+    transform: translateX(100%);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    pointer-events: all;
+    overflow: hidden;
+    position: relative;
+    border-left: 4px solid;
+    max-width: 100%;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification.hide {
+    transform: translateX(100%);
+    opacity: 0;
+    margin-bottom: 0;
+    max-height: 0;
+    padding: 0;
+}
+
+.notification-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px 20px;
+    gap: 12px;
+}
+
+.notification-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+    font-weight: 500;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #9CA3AF;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.notification-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #374151;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Types de notifications */
+.notification-success {
+    border-left-color: #10B981;
+    background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
+}
+
+.notification-success .notification-icon {
+    color: #10B981;
+}
+
+.notification-success .notification-progress {
+    background: #10B981;
+}
+
+.notification-error {
+    border-left-color: #EF4444;
+    background: linear-gradient(135deg, #FEF2F2 0%, #FEF2F2 100%);
+}
+
+.notification-error .notification-icon {
+    color: #EF4444;
+}
+
+.notification-error .notification-progress {
+    background: #EF4444;
+}
+
+.notification-warning {
+    border-left-color: #F59E0B;
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+}
+
+.notification-warning .notification-icon {
+    color: #F59E0B;
+}
+
+.notification-warning .notification-progress {
+    background: #F59E0B;
+}
+
+.notification-info {
+    border-left-color: #3B82F6;
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+}
+
+.notification-info .notification-icon {
+    color: #3B82F6;
+}
+
+.notification-info .notification-progress {
+    background: #3B82F6;
+}
+
+.notification-payment {
+    border-left-color: #8B5CF6;
+    background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+
+.notification-payment .notification-icon {
+    color: #8B5CF6;
+}
+
+.notification-payment .notification-progress {
+    background: #8B5CF6;
+}
+
+.notification-reservation {
+    border-left-color: #06B6D4;
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F7FA 100%);
+}
+
+.notification-reservation .notification-icon {
+    color: #06B6D4;
+}
+
+.notification-reservation .notification-progress {
+    background: #06B6D4;
+}
+
+.notification-email {
+    border-left-color: #EC4899;
+    background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+}
+
+.notification-email .notification-icon {
+    color: #EC4899;
+}
+
+.notification-email .notification-progress {
+    background: #EC4899;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .notification-container {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+    }
+    
+    .notification-content {
+        padding: 14px 16px;
+    }
+    
+    .notification-message {
+        font-size: 13px;
+    }
+}
+
+/* Animation hover */
+.notification:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.notification:hover .notification-progress {
+    animation-play-state: paused;
+}
+
+/* Animation d'entrée spéciale pour les notifications importantes */
+.notification-payment.show,
+.notification-reservation.show {
+    animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: translateX(100%) scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(-10px) scale(1.05);
+    }
+    70% {
+        transform: translateX(5px) scale(0.98);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
