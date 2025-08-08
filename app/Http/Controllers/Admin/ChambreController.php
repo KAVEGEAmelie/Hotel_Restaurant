@@ -31,7 +31,7 @@ class ChambreController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:chambres,nom',
             'description_courte' => 'required|string|max:255',
-            'description_longue' => 'nullable|string',
+            'description_longue' => 'required|string',
             'prix_par_nuit' => 'required|numeric|min:0',
             'capacite' => 'required|integer|min:1',
             'image_principale' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
