@@ -32,10 +32,5 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]
         );
-
-        // === 3. Appel de vos autres seeders ===
-        $this->call([
-            // MenuSeeder::class,
-        ]);
     }
 }

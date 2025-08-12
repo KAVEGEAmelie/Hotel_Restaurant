@@ -22,6 +22,7 @@ class Chambre extends Model
         'image_principale',
         'prix_par_nuit',
         'capacite',
+        'categorie',
         'est_disponible',
         'disponible', // Champ pour la disponibilité 
         'statut', // Champ pour le statut général

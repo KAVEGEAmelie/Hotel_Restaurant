@@ -2,6 +2,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#B8860B">
+    <meta name="description" content="Hôtel Le Printemps de Kpalimé - Votre havre de paix au cœur de Kpalimé">
 
     <title>@yield('title', 'Hôtel Le Printemps de Kpalimé')</title>
 
@@ -18,8 +20,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Favicons -->
-  <link href="{{ asset('assets/img/logo.pjg') }}" rel="icon">
-  {{-- <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="icon" type="image/jpeg">
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="apple-touch-icon">
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="shortcut icon" type="image/jpeg">
 
   <!-- ... autres balises link ... -->
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />

@@ -46,4 +46,14 @@ return [
     'simulation_mode' => env('CASHPAY_SIMULATION_MODE', false),
 ],
 
+// CinetPay Configuration
+'cinetpay' => [
+    'api_key' => env('CINETPAY_API_KEY'),
+    'site_id' => env('CINETPAY_SITE_ID'),
+    'secret_key' => env('CINETPAY_SECRET_KEY'),
+    'currency' => env('CINETPAY_CURRENCY', 'XOF'),
+    'environment' => env('CINETPAY_ENVIRONMENT', 'sandbox'),
+    'webhook_url' => env('APP_URL') . '/webhook/cinetpay',
+],
+
 ];

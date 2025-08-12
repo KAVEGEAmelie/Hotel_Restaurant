@@ -10,8 +10,9 @@
     <!-- === ASSETS POUR LE SITE PUBLIC === -->
 
     <!-- Favicons -->
-    {{-- <link href="{{ asset('assets/img/favicon.png') }}" rel="icon"> --}}
-    {{-- <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="icon" type="image/jpeg">
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="apple-touch-icon">
+    <link href="{{ asset('assets/img/logo.jpg') }}" rel="shortcut icon" type="image/jpeg">
 
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 

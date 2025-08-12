@@ -11,12 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // On enregistre notre alias 'admin' ici
-    $middleware->alias([
-        'admin' => \App\Http\Middleware\IsAdmin::class,
-        'cashpay.config' => \App\Http\Middleware\CheckCashPayConfig::class,
-    ]);
-    
+        // On enregistre nos alias de middleware
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\IsAdmin::class,
+            'admin.access' => \App\Http\Middleware\EnsureUserCanAccessAdmin::class,
+            'admin.manage.users' => \App\Http\Middleware\EnsureUserCanManageUsers::class,
+            'cashpay.config' => \App\Http\Middleware\CheckCashPayConfig::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -65,7 +65,7 @@ class ReservationController extends Controller
         // Création de la réservation
         $reservation = Reservation::create($dataToCreate);
 
-        return redirect()->route('payment.show', $reservation);
+        return redirect()->route('payment.cinetpay', $reservation->id);
     }
 
     

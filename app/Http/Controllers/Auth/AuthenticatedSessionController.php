@@ -35,18 +35,19 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Redirection selon le type d'utilisateur avec notifications modernes
-        if ($user && $user->is_admin) {
+        if ($user && $user->canAccessAdmin()) {
+            $roleTitle = $user->isAdmin() ? 'administrateur' : 'gérant';
             return redirect()->route('admin.dashboard')
                 ->with('notification', [
                     'type' => 'success',
                     'title' => '👋 Bienvenue dans l\'administration !',
-                    'message' => "Connexion réussie en tant qu'administrateur • " . $user->name,
+                    'message' => "Connexion réussie en tant que {$roleTitle} • " . $user->name,
                     'duration' => 6000
                 ])
                 ->with('notification_secondary', [
                     'type' => 'info',
-                    'title' => '🛡️ Accès administrateur activé',
-                    'message' => 'Vous avez maintenant accès à toutes les fonctionnalités d\'administration',
+                    'title' => '🛡️ Accès ' . $roleTitle . ' activé',
+                    'message' => 'Vous avez maintenant accès aux fonctionnalités d\'administration',
                     'duration' => 4000
                 ]);
         }
