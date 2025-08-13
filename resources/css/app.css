@@ -7,3 +7,140 @@
         @apply inline-flex items-center px-6 py-2 bg-[#228B22] border border-transparent rounded-full font-semibold text-xs text-white uppercase tracking-widest hover:bg-[#006400] focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150;
     }
 }
+
+/* Styles pour le bouton d'administration dans le footer */
+.admin-access-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.admin-access-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-access-btn:active {
+    transform: translateY(0);
+}
+
+.admin-access-btn i {
+    font-size: 0.875rem;
+}
+
+/* Styles pour le bouton d'administration dans le header */
+.admin-header-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.admin-header-btn:hover {
+    background: #f8f9fa;
+    border-color: #bbb;
+    color: #333;
+    transform: scale(1.05);
+}
+
+/* Styles pour le lien d'administration dans le menu mobile */
+.admin-mobile-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.admin-mobile-link {
+    color: #ffc107 !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.admin-mobile-link:hover {
+    color: #ffca2c !important;
+}
+
+/* Styles pour la signature du développeur */
+/* Signature développeur dans le footer */
+.developer-signature {
+    position: relative !important;
+    z-index: 1000 !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    padding: 8px 15px !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(3px) !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    margin-top: 15px !important;
+}
+
+.developer-signature small {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 12px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+.developer-signature strong {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.developer-signature .developer-email {
+    color: #d4af37 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+.developer-signature .developer-email:hover {
+    color: #f4d03f !important;
+    text-shadow: 0 0 8px rgba(244, 208, 63, 0.8) !important;
+    transform: scale(1.03) !important;
+    text-decoration: underline !important;
+}
+
+/* Responsive pour le footer avec le bouton admin */
+@media (max-width: 768px) {
+    .copyright {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .admin-access-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .admin-header-btn {
+        width: 35px;
+        height: 35px;
+    }
+
+    .developer-signature {
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .developer-signature small {
+        font-size: 0.75rem;
+    }
+}

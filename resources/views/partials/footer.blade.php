@@ -50,8 +50,29 @@
     </div>
 
     <div class="container mt-4">
-        <div class="copyright">
-            © Copyright {{ date('Y') }} <strong><span>Hôtel Le Printemps</span></strong>. Tous droits réservés.
+        <div class="copyright d-flex justify-content-between align-items-center">
+            <div>
+                © Copyright {{ date('Y') }} <strong><span>Hôtel Le Printemps</span></strong>. Tous droits réservés.
+            </div>
+            
+            @auth
+                @if(auth()->user()->canAccessAdmin())
+                    <div>
+                        <a href="{{ route('admin.dashboard') }}" class="admin-access-btn btn btn-outline-light btn-sm">
+                            <i class="bi bi-gear-fill me-1"></i>
+                            Administration
+                        </a>
+                    </div>
+                @endif
+            @endauth
+        </div>
+        
+        <!-- Signature du développeur -->
+        <div class="developer-signature text-center mt-3">
+            <small class="text-muted">
+                Développé par <strong>KA.A</strong> • 
+                <a href="mailto:camillekvg99@gmail.com" class="developer-email">camillekvg99@gmail.com</a>
+            </small>
         </div>
     </div>
 </footer><!-- End Footer -->

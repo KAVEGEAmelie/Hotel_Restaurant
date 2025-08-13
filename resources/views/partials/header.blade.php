@@ -19,7 +19,17 @@
             </ul>
         </nav><!-- .navbar -->
 
-        <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
+            
+            @auth
+                @if(auth()->user()->canAccessAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm admin-header-btn" title="Administration">
+                        <i class="bi bi-gear-fill"></i>
+                    </a>
+                @endif
+            @endauth
+        </div>
 
         <!-- Icône pour OUVRIR le menu mobile -->
         <i class="mobile-nav-toggle bi bi-list"></i>
@@ -41,6 +51,15 @@
             <li><a href="{{ route('restaurant.index') }}">Restaurant</a></li>
             <li><a href="{{ route('about') }}">À Propos</a></li>
             <li><a href="{{ route('contact') }}">Contact</a></li>
+            @auth
+                @if(auth()->user()->canAccessAdmin())
+                    <li class="admin-mobile-item">
+                        <a href="{{ route('admin.dashboard') }}" class="admin-mobile-link">
+                            <i class="bi bi-gear-fill me-2"></i>Administration
+                        </a>
+                    </li>
+                @endif
+            @endauth
         </ul>
     </div>
     <div class="mobile-nav-footer">
