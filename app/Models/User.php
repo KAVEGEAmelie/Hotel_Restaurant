@@ -19,12 +19,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'prenom',
         'email', 
-        'telephone',
+        'phone',
+        'address',
         'password',
         'is_admin',
-        'role',
     ];
 
     /**
@@ -55,15 +54,15 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin' || $this->is_admin === true;
+        return $this->is_admin === true;
     }
 
     /**
-     * Vérifie si l'utilisateur est gérant
+     * Vérifie si l'utilisateur est gérant (pour l'instant basé sur email)
      */
     public function isGerant(): bool
     {
-        return $this->role === 'gerant';
+        return str_contains($this->email, 'gerant');
     }
 
     /**
