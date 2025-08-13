@@ -33,12 +33,12 @@ class UsersSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Gérant
+        // Gérant (accès partiel - PAS de gestion utilisateurs)
         User::create([
             'name' => 'Gérant Hotel',
             'email' => 'gerant@hotel.com',
             'password' => Hash::make('password'),
-            'is_admin' => false,
+            'is_admin' => false, // Pas admin complet
             'phone' => '90000002',
             'email_verified_at' => now(),
         ]);

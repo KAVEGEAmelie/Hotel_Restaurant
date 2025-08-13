@@ -50,7 +50,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Vérifie si l'utilisateur est administrateur
+     * Vérifie si l'utilisateur est administrateur (accès COMPLET)
      */
     public function isAdmin(): bool
     {
@@ -58,15 +58,15 @@ class User extends Authenticatable
     }
 
     /**
-     * Vérifie si l'utilisateur est gérant (pour l'instant basé sur email)
+     * Vérifie si l'utilisateur est gérant (accès partiel)
      */
     public function isGerant(): bool
     {
-        return str_contains($this->email, 'gerant');
+        return str_contains($this->email, 'gerant') && $this->is_admin !== true;
     }
 
     /**
-     * Vérifie si l'utilisateur peut accéder à l'administration (admin ou gérant)
+     * Vérifie si l'utilisateur peut accéder au dashboard admin (admin OU gérant)
      */
     public function canAccessAdmin(): bool
     {
@@ -74,10 +74,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Vérifie si l'utilisateur peut gérer les utilisateurs (admin seulement)
+     * Vérifie si l'utilisateur peut gérer les utilisateurs (SEULEMENT admin)
      */
     public function canManageUsers(): bool
     {
         return $this->isAdmin();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut donner des permissions (SEULEMENT admin)
+     */
+    public function canManagePermissions(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut gérer les réservations (admin ET gérant)
+     */
+    public function canManageReservations(): bool
+    {
+        return $this->canAccessAdmin();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut gérer les chambres (admin ET gérant)
+     */
+    public function canManageChambres(): bool
+    {
+        return $this->canAccessAdmin();
     }
 }
