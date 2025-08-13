@@ -70,103 +70,75 @@
         <!-- Signature du développeur -->
         <div class="developer-signature text-center mt-3" style="
             position: relative !important;
-            z-index: 1000 !important;
-            background: rgba(0, 0, 0, 0.8) !important;
-            padding: 12px 25px !important;
-            border-radius: 10px !important;
-            backdrop-filter: blur(5px) !important;
-            -webkit-backdrop-filter: blur(5px) !important;
-            border: 2px solid rgba(212, 175, 55, 0.6) !important;
-            margin: 25px auto !important;
+            z-index: 100 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            padding: 6px 12px !important;
+            border-radius: 5px !important;
+            margin: 15px auto !important;
             display: inline-block !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
         ">
             <small style="
-                color: #ffffff !important;
-                font-size: 14px !important;
-                font-weight: 500 !important;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+                font-size: 11px !important;
+                font-weight: 400 !important;
                 font-family: 'Arial', sans-serif !important;
             ">
                 Développé par 
                 <strong style="
-                    color: #ffffff !important;
-                    font-weight: 700 !important;
-                    font-size: 16px !important;
-                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+                    color: rgba(255, 255, 255, 0.8) !important;
+                    font-weight: 500 !important;
+                    font-size: 11px !important;
                 ">KA.A</strong> 
                 • 
                 <a href="mailto:camillekvg99@gmail.com" style="
-                    color: #ffd700 !important;
+                    color: rgba(212, 175, 55, 0.8) !important;
                     text-decoration: none !important;
-                    font-weight: 600 !important;
-                    font-size: 14px !important;
-                    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
-                    transition: all 0.3s ease !important;
-                " onmouseover="this.style.color='#ffed4e'; this.style.textDecoration='underline'; this.style.transform='scale(1.05)';" 
-                   onmouseout="this.style.color='#ffd700'; this.style.textDecoration='none'; this.style.transform='scale(1)';">
+                    font-weight: 400 !important;
+                    font-size: 11px !important;
+                    transition: all 0.2s ease !important;
+                " onmouseover="this.style.color='rgba(212, 175, 55, 1)'; this.style.textDecoration='underline';" 
+                   onmouseout="this.style.color='rgba(212, 175, 55, 0.8)'; this.style.textDecoration='none';">
                     camillekvg99@gmail.com
                 </a>
             </small>
         </div>
     </div>
     
-    <!-- Style de sécurité pour forcer l'affichage -->
+    <!-- Style discret pour la signature -->
     <style>
         .developer-signature {
             position: relative !important;
-            z-index: 9999 !important;
-            background: rgba(0, 0, 0, 0.8) !important;
-            color: #ffffff !important;
-            padding: 12px 25px !important;
-            border-radius: 10px !important;
-            border: 2px solid #ffd700 !important;
-            margin: 25px auto !important;
+            background: transparent !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            padding: 5px 10px !important;
+            margin: 10px auto !important;
             display: inline-block !important;
             text-align: center !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-            backdrop-filter: blur(5px) !important;
-            -webkit-backdrop-filter: blur(5px) !important;
+            font-size: 11px !important;
         }
         
         .developer-signature,
         .developer-signature *,
-        .developer-signature small,
+        .developer-signature small {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 11px !important;
+        }
+        
         .developer-signature strong {
-            color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
         }
         
-        .developer-signature a,
-        .developer-signature a:link,
-        .developer-signature a:visited {
-            color: #ffd700 !important;
+        .developer-signature a {
+            color: rgba(212, 175, 55, 0.8) !important;
             text-decoration: none !important;
-            font-weight: 600 !important;
+            font-weight: 400 !important;
         }
         
-        .developer-signature a:hover,
-        .developer-signature a:focus {
-            color: #ffed4e !important;
+        .developer-signature a:hover {
+            color: rgba(212, 175, 55, 1) !important;
             text-decoration: underline !important;
-            transform: scale(1.05) !important;
-        }
-        
-        /* Forcer pour tous les thèmes */
-        .footer .developer-signature,
-        #footer .developer-signature {
-            background: rgba(0, 0, 0, 0.8) !important;
-            color: #ffffff !important;
-        }
-        
-        .footer .developer-signature *,
-        #footer .developer-signature * {
-            color: #ffffff !important;
-        }
-        
-        .footer .developer-signature a,
-        #footer .developer-signature a {
-            color: #ffd700 !important;
         }
     </style>
 </footer><!-- End Footer -->
