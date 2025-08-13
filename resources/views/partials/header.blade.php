@@ -22,9 +22,9 @@
         <div class="d-flex align-items-center gap-2">
             <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
             
-            <!-- Bouton admin toujours visible -->
+            <!-- Bouton admin toujours visible - juste l'icône -->
             <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm" title="Administration">
-                <i class="bi bi-gear-fill"></i> Admin
+                <i class="bi bi-gear-fill"></i>
             </a>
         </div>
 
