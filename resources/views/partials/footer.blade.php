@@ -55,16 +55,13 @@
                 © Copyright {{ date('Y') }} <strong><span>Hôtel Le Printemps</span></strong>. Tous droits réservés.
             </div>
             
-            @auth
-                @if(auth()->user()->is_admin)
-                    <div>
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-gear-fill me-1"></i>
-                            Administration
-                        </a>
-                    </div>
-                @endif
-            @endauth
+            <!-- Bouton admin toujours visible -->
+            <div>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-gear-fill me-1"></i>
+                    Administration
+                </a>
+            </div>
         </div>
         
         <!-- Signature du développeur -->

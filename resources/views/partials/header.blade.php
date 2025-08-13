@@ -22,13 +22,10 @@
         <div class="d-flex align-items-center gap-2">
             <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
             
-            @auth
-                @if(auth()->user()->is_admin)
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm" title="Administration">
-                        <i class="bi bi-gear-fill"></i> Admin
-                    </a>
-                @endif
-            @endauth
+            <!-- Bouton admin toujours visible -->
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm" title="Administration">
+                <i class="bi bi-gear-fill"></i> Admin
+            </a>
         </div>
 
         <!-- Icône pour OUVRIR le menu mobile -->
@@ -51,15 +48,12 @@
             <li><a href="{{ route('restaurant.index') }}">Restaurant</a></li>
             <li><a href="{{ route('about') }}">À Propos</a></li>
             <li><a href="{{ route('contact') }}">Contact</a></li>
-            @auth
-                @if(auth()->user()->is_admin)
-                    <li>
-                        <a href="{{ route('admin.dashboard') }}" style="color: #ffc107; font-weight: 600;">
-                            <i class="bi bi-gear-fill me-2"></i>Administration
-                        </a>
-                    </li>
-                @endif
-            @endauth
+            <!-- Lien admin toujours visible dans menu mobile -->
+            <li>
+                <a href="{{ route('admin.dashboard') }}" style="color: #ffc107; font-weight: 600;">
+                    <i class="bi bi-gear-fill me-2"></i>Administration
+                </a>
+            </li>
         </ul>
     </div>
     <div class="mobile-nav-footer">
