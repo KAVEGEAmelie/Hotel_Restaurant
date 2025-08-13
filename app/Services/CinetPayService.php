@@ -20,81 +20,125 @@ class CinetPayService
         $this->apiKey = config('services.cinetpay.api_key');
         $this->siteId = config('services.cinetpay.site_id');
         $this->secretKey = config('services.cinetpay.secret_key');
-        $this->currency = config('services.cinetpay.currency');
-        $this->environment = config('services.cinetpay.environment');
+        $this->currency = config('services.cinetpay.currency', 'XOF');
+        $this->environment = config('services.cinetpay.environment', 'sandbox');
         
-        // URL de l'API CinetPay
-        $this->apiUrl = $this->environment === 'live' 
-            ? 'https://api-checkout.cinetpay.com/v2'
-            : 'https://api-checkout.cinetpay.com/v2';
+        // URL de l'API CinetPay (même URL pour sandbox et production)
+        $this->apiUrl = 'https://api-checkout.cinetpay.com/v2';
     }
 
     /**
-     * Initier un paiement via l'API REST CinetPay
+     * Initier un paiement selon les spécifications CinetPay
      */
-    public function initiatePayment($data)
+    public function initiatePayment($reservation)
     {
         try {
+            // Générer un ID de transaction unique
+            $transactionId = $this->generateTransactionId($reservation->id);
+            
+            // Données du formulaire de réservation
+            $customerData = $this->extractCustomerData($reservation);
+            
+            // Données de paiement selon les spécifications CinetPay
             $paymentData = [
                 'apikey' => $this->apiKey,
                 'site_id' => $this->siteId,
-                'transaction_id' => $data['transaction_id'],
-                'amount' => $data['amount'],
+                'transaction_id' => $transactionId,
+                'amount' => $this->formatAmount($reservation->prix_total),
                 'currency' => $this->currency,
-                'description' => $data['description'],
-                'return_url' => $data['return_url'],
-                'notify_url' => config('services.cinetpay.webhook_url'),
-                'customer_name' => $data['customer_name'],
-                'customer_surname' => $data['customer_surname'] ?? '',
-                'customer_email' => $data['customer_email'],
-                'customer_phone_number' => $data['customer_phone'] ?? '',
-                'customer_address' => $data['customer_address'] ?? '',
-                'customer_city' => $data['customer_city'] ?? 'Lomé',
-                'customer_country' => $data['customer_country'] ?? 'TG',
-                'customer_state' => $data['customer_state'] ?? 'Maritime',
-                'customer_zip_code' => $data['customer_zip_code'] ?? '00000',
+                'description' => "Réservation Hôtel Le Printemps - Chambre {$reservation->chambre->nom}",
+                'notify_url' => route('payment.webhook'),
+                'return_url' => route('payment.return', $reservation->id),
+                'channels' => 'ALL', // Tous les moyens de paiement
+                'lang' => 'fr',
+                
+                // Informations client du formulaire de réservation
+                'customer_id' => $reservation->user_id ?? null,
+                'customer_name' => $customerData['name'],
+                'customer_surname' => $customerData['surname'],
+                'customer_email' => $customerData['email'],
+                'customer_phone_number' => $customerData['phone'],
+                'customer_address' => $customerData['address'],
+                'customer_city' => $customerData['city'],
+                'customer_country' => $customerData['country'],
+                'customer_state' => $customerData['state'],
+                'customer_zip_code' => $customerData['zip_code'],
+                
+                // Données de facture personnalisées
+                'invoice_data' => [
+                    'Chambre' => "Chambre {$reservation->chambre->numero} - {$reservation->chambre->type}",
+                    'Période' => "Du {$reservation->date_arrivee} au {$reservation->date_depart}",
+                    'Durée' => "{$reservation->nombre_nuits} nuit(s)"
+                ],
+                
+                // Métadonnées pour identifier la réservation
+                'metadata' => json_encode([
+                    'reservation_id' => $reservation->id,
+                    'chambre_id' => $reservation->chambre_id,
+                    'user_id' => $reservation->user_id,
+                    'source' => 'hotel_reservation'
+                ])
             ];
 
-            Log::info('CinetPay payment initiation request', $paymentData);
+            Log::info('CinetPay: Initiation du paiement', [
+                'reservation_id' => $reservation->id,
+                'transaction_id' => $transactionId,
+                'amount' => $paymentData['amount']
+            ]);
 
+            // Appel à l'API CinetPay
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
+                    'Accept' => 'application/json',
+                    'User-Agent' => 'Hotel-Le-Printemps/1.0'
                 ])
                 ->post($this->apiUrl . '/payment', $paymentData);
 
             $result = $response->json();
 
             if ($response->successful() && isset($result['code']) && $result['code'] == '201') {
-                Log::info('CinetPay payment initiated successfully', [
-                    'transaction_id' => $data['transaction_id'],
+                // Mise à jour de la réservation avec les données CinetPay
+                $reservation->update([
+                    'transaction_id' => $transactionId,
+                    'payment_url' => $result['data']['payment_url'],
+                    'payment_token' => $result['data']['payment_token'],
+                    'cinetpay_data' => json_encode($paymentData),
+                    'statut_paiement' => 'en_attente'
+                ]);
+
+                Log::info('CinetPay: Paiement initié avec succès', [
+                    'reservation_id' => $reservation->id,
+                    'transaction_id' => $transactionId,
                     'payment_url' => $result['data']['payment_url']
                 ]);
 
                 return [
                     'success' => true,
                     'payment_url' => $result['data']['payment_url'],
-                    'payment_token' => $result['data']['payment_token'] ?? null,
-                    'message' => 'Paiement initié avec succès'
+                    'payment_token' => $result['data']['payment_token'],
+                    'transaction_id' => $transactionId,
+                    'message' => 'Lien de paiement généré avec succès'
                 ];
             } else {
-                Log::error('CinetPay payment initiation failed', [
-                    'transaction_id' => $data['transaction_id'],
+                Log::error('CinetPay: Échec initiation paiement', [
+                    'reservation_id' => $reservation->id,
                     'response' => $result,
                     'status' => $response->status()
                 ]);
 
                 return [
                     'success' => false,
-                    'message' => $result['message'] ?? 'Erreur lors de l\'initiation du paiement'
+                    'message' => $result['message'] ?? 'Erreur lors de la génération du lien de paiement',
+                    'error_code' => $result['code'] ?? 'unknown'
                 ];
             }
 
         } catch (Exception $e) {
-            Log::error('CinetPay service error', [
+            Log::error('CinetPay: Erreur technique', [
+                'reservation_id' => $reservation->id ?? 'unknown',
                 'error' => $e->getMessage(),
-                'transaction_id' => $data['transaction_id'] ?? 'unknown'
+                'trace' => $e->getTraceAsString()
             ]);
 
             return [
@@ -105,7 +149,7 @@ class CinetPayService
     }
 
     /**
-     * Vérifier le statut d'un paiement
+     * Vérifier le statut d'une transaction
      */
     public function checkPaymentStatus($transactionId)
     {
@@ -119,81 +163,102 @@ class CinetPayService
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
+                    'Accept' => 'application/json',
+                    'User-Agent' => 'Hotel-Le-Printemps/1.0'
                 ])
                 ->post($this->apiUrl . '/payment/check', $data);
 
             $result = $response->json();
 
+            Log::info('CinetPay: Vérification statut', [
+                'transaction_id' => $transactionId,
+                'response_code' => $result['code'] ?? 'unknown'
+            ]);
+
             if ($response->successful() && isset($result['code']) && $result['code'] == '00') {
                 return [
                     'success' => true,
-                    'status' => $result['data']['status'],
+                    'status' => 'COMPLETED',
                     'amount' => $result['data']['amount'],
                     'currency' => $result['data']['currency'],
                     'operator_id' => $result['data']['operator_id'] ?? null,
                     'payment_method' => $result['data']['payment_method'] ?? null,
                     'payment_date' => $result['data']['payment_date'] ?? null,
+                    'raw_data' => $result['data']
                 ];
             } else {
                 return [
                     'success' => false,
-                    'message' => $result['message'] ?? 'Transaction non trouvée'
+                    'status' => 'FAILED',
+                    'message' => $result['message'] ?? 'Transaction non trouvée ou échouée',
+                    'error_code' => $result['code'] ?? 'unknown'
                 ];
             }
 
         } catch (Exception $e) {
-            Log::error('CinetPay status check error', [
-                'error' => $e->getMessage(),
-                'transaction_id' => $transactionId
+            Log::error('CinetPay: Erreur vérification statut', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage()
             ]);
 
             return [
                 'success' => false,
+                'status' => 'ERROR',
                 'message' => 'Erreur lors de la vérification du statut'
             ];
         }
     }
 
     /**
-     * Traiter les notifications webhook
+     * Traiter les notifications webhook de CinetPay
      */
-    public function handleWebhook($data)
+    public function handleWebhook($requestData)
     {
         try {
-            // Vérifier la signature du webhook
-            if (!$this->verifyWebhookSignature($data)) {
-                Log::warning('CinetPay webhook signature verification failed');
+            Log::info('CinetPay: Webhook reçu', ['data' => $requestData]);
+
+            // Vérifier la présence des données essentielles
+            if (!isset($requestData['cpm_trans_id'])) {
+                Log::warning('CinetPay: Webhook sans transaction_id');
                 return false;
             }
 
-            $transactionId = $data['cpm_trans_id'] ?? null;
-            $status = $data['cpm_result'] ?? null;
-            $amount = $data['cpm_amount'] ?? null;
+            $transactionId = $requestData['cpm_trans_id'];
+            $siteId = $requestData['cpm_site_id'] ?? null;
 
-            if ($transactionId && $status) {
-                Log::info('CinetPay webhook received', [
+            // Vérifier que le site_id correspond
+            if ($siteId && $siteId != $this->siteId) {
+                Log::warning('CinetPay: Site ID mismatch', [
+                    'received' => $siteId,
+                    'expected' => $this->siteId
+                ]);
+                return false;
+            }
+
+            // Vérifier le statut de la transaction directement avec l'API
+            $status = $this->checkPaymentStatus($transactionId);
+
+            if ($status['success'] && $status['status'] === 'COMPLETED') {
+                Log::info('CinetPay: Paiement confirmé via webhook', [
                     'transaction_id' => $transactionId,
-                    'status' => $status,
-                    'amount' => $amount
+                    'amount' => $status['amount']
                 ]);
 
                 return [
                     'transaction_id' => $transactionId,
-                    'status' => $status,
-                    'amount' => $amount,
-                    'currency' => $data['cpm_currency'] ?? $this->currency,
-                    'operator_id' => $data['operator_id'] ?? null,
-                    'payment_method' => $data['payment_method'] ?? null,
+                    'status' => 'COMPLETED',
+                    'amount' => $status['amount'],
+                    'currency' => $status['currency'],
+                    'payment_data' => $status['raw_data']
                 ];
             }
 
             return false;
 
         } catch (Exception $e) {
-            Log::error('CinetPay webhook processing error', [
+            Log::error('CinetPay: Erreur traitement webhook', [
                 'error' => $e->getMessage(),
-                'data' => $data
+                'data' => $requestData
             ]);
 
             return false;
@@ -201,55 +266,88 @@ class CinetPayService
     }
 
     /**
-     * Vérifier la signature du webhook
+     * Extraire les données client du formulaire de réservation
      */
-    private function verifyWebhookSignature($data)
+    private function extractCustomerData($reservation)
     {
-        // Implémentation de la vérification de signature selon la documentation CinetPay
-        // Pour l'instant, nous retournons true (à sécuriser en production)
-        return true;
-    }
-
-    /**
-     * Obtenir les moyens de paiement disponibles
-     */
-    public function getPaymentMethods()
-    {
+        // Récupérer les données du user ou des données de réservation
+        $user = $reservation->user;
+        
         return [
-            'ORANGE_MONEY_BF' => 'Orange Money Burkina Faso',
-            'ORANGE_MONEY_CI' => 'Orange Money Côte d\'Ivoire',
-            'ORANGE_MONEY_SN' => 'Orange Money Sénégal',
-            'ORANGE_MONEY_CM' => 'Orange Money Cameroun',
-            'ORANGE_MONEY_ML' => 'Orange Money Mali',
-            'MTN_MONEY_BF' => 'MTN Money Burkina Faso',
-            'MTN_MONEY_CI' => 'MTN Money Côte d\'Ivoire',
-            'MTN_MONEY_CM' => 'MTN Money Cameroun',
-            'MOOV_MONEY_BF' => 'Moov Money Burkina Faso',
-            'MOOV_MONEY_CI' => 'Moov Money Côte d\'Ivoire',
-            'MOOV_MONEY_TG' => 'Moov Money Togo',
-            'TMONEY_TG' => 'T-Money Togo',
-            'CARD' => 'Carte bancaire',
+            'name' => $reservation->nom_client ?? $user->name ?? 'Client',
+            'surname' => $reservation->prenom_client ?? $user->prenom ?? '',
+            'email' => $reservation->email_client ?? $user->email ?? 'client@hotel.com',
+            'phone' => $reservation->telephone_client ?? $user->telephone ?? '',
+            'address' => $reservation->adresse_client ?? 'Adresse non fournie',
+            'city' => $reservation->ville_client ?? 'Kpalimé',
+            'country' => 'TG', // Togo
+            'state' => 'Plateaux',
+            'zip_code' => '00000'
         ];
     }
 
     /**
-     * Formater le montant pour CinetPay
+     * Formater le montant selon CinetPay (multiple de 5)
      */
     public function formatAmount($amount)
     {
-        // CinetPay accepte les montants en centimes pour XOF
+        $amount = (int) $amount;
+        
+        // CinetPay exige des multiples de 5 pour XOF
         if ($this->currency === 'XOF') {
-            return (int) $amount; // Montant déjà en FCFA
+            $remainder = $amount % 5;
+            if ($remainder !== 0) {
+                $amount = $amount + (5 - $remainder);
+            }
         }
         
         return $amount;
     }
 
     /**
-     * Générer un ID de transaction unique
+     * Générer un ID de transaction unique selon CinetPay
      */
     public function generateTransactionId($reservationId)
     {
-        return 'RES_' . $reservationId . '_' . time() . '_' . rand(1000, 9999);
+        // Format: PREFIX_RESERVATION_TIMESTAMP_RANDOM
+        return 'HP_' . str_pad($reservationId, 4, '0', STR_PAD_LEFT) . '_' . date('YmdHis') . '_' . rand(100, 999);
+    }
+
+    /**
+     * Obtenir les moyens de paiement disponibles
+     */
+    public function getAvailableChannels()
+    {
+        return [
+            'ALL' => 'Tous les moyens de paiement',
+            'MOBILE_MONEY' => 'Mobile Money uniquement',
+            'CREDIT_CARD' => 'Carte bancaire uniquement',
+            'WALLET' => 'Portefeuille électronique'
+        ];
+    }
+
+    /**
+     * Valider la configuration CinetPay
+     */
+    public function validateConfiguration()
+    {
+        $errors = [];
+
+        if (empty($this->apiKey)) {
+            $errors[] = 'API Key manquante';
+        }
+
+        if (empty($this->siteId)) {
+            $errors[] = 'Site ID manquant';
+        }
+
+        if (empty($this->secretKey)) {
+            $errors[] = 'Secret Key manquante';
+        }
+
+        return [
+            'valid' => empty($errors),
+            'errors' => $errors
+        ];
     }
 }

@@ -46,14 +46,30 @@ return [
     'simulation_mode' => env('CASHPAY_SIMULATION_MODE', false),
 ],
 
-// CinetPay Configuration
+// CinetPay Configuration - Conforme aux spécifications officielles
 'cinetpay' => [
     'api_key' => env('CINETPAY_API_KEY'),
     'site_id' => env('CINETPAY_SITE_ID'),
     'secret_key' => env('CINETPAY_SECRET_KEY'),
     'currency' => env('CINETPAY_CURRENCY', 'XOF'),
     'environment' => env('CINETPAY_ENVIRONMENT', 'sandbox'),
-    'webhook_url' => env('APP_URL') . '/webhook/cinetpay',
+    
+    // URLs configurées selon la documentation CinetPay
+    'api_url' => 'https://api-checkout.cinetpay.com/v2',
+    'webhook_url' => env('APP_URL') . '/payment/webhook',
+    'return_url' => env('APP_URL') . '/payment/return',
+    
+    // Canaux de paiement disponibles
+    'channels' => env('CINETPAY_CHANNELS', 'ALL'), // ALL, MOBILE_MONEY, CREDIT_CARD, WALLET
+    
+    // Langue par défaut
+    'lang' => env('CINETPAY_LANG', 'fr'),
+    
+    // Configuration client par défaut pour le Togo
+    'default_country' => 'TG',
+    'default_state' => 'Plateaux',
+    'default_city' => 'Kpalimé',
+    'default_zip' => '00000',
 ],
 
 ];

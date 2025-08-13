@@ -45,14 +45,11 @@ Route::post('/contact', [PageController::class, 'handleContactForm'])->name('con
 |--------------------------------------------------------------------------
 */
 
-// Création de réservation
-Route::post('/reservation/creer', [ReservationController::class, 'create'])->name('reservation.create');
+// Création et stockage de réservation
+Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
-// Page de paiement CinetPay
-Route::get('/payment/cinetpay/{reservation}', function($reservationId) {
-    $reservation = \App\Models\Reservation::with(['chambre', 'user'])->findOrFail($reservationId);
-    return view('payment.cinetpay', compact('reservation'));
-})->name('payment.cinetpay');
+// Affichage confirmation avant paiement
+Route::get('/reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])->name('reservations.confirm');
 
 // Routes de paiement CinetPay
 Route::post('/payment/initiate/{reservation}', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
@@ -66,7 +63,6 @@ Route::get('/payment/receipt/{reservation}', [PaymentController::class, 'downloa
 Route::get('/reservation/succes/{reservation}', function (Reservation $reservation) {
     return view('reservation.success', compact('reservation'));
 })->name('reservation.success');
-
 /*
 |--------------------------------------------------------------------------
 | 2. ROUTES D'AUTHENTIFICATION
@@ -100,12 +96,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 */
 Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    
+
     // Routes des chambres (accessible aux admin ET gérants)
     Route::resource('chambres', AdminChambreController::class);
     Route::post('/chambres/bulk-action', [AdminChambreController::class, 'bulkAction'])->name('chambres.bulk-action');
     Route::patch('/chambres/{chambre}/toggle-status', [AdminChambreController::class, 'toggleStatus'])->name('chambres.toggle-status');
-    
+
     // Routes des réservations (accessible aux admin ET gérants)
     Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
     Route::resource('reservations', AdminReservationController::class)->except(['index']);
@@ -113,13 +109,13 @@ Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->gr
     Route::post('/reservations/bulk-action', [AdminReservationController::class, 'bulkAction'])->name('reservations.bulkAction');
     Route::patch('/reservations/{reservation}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
     Route::get('/reservations/{reservation}/recu', [AdminReservationController::class, 'downloadReceipt'])->name('reservations.receipt');
-    
+
     // Routes des menus PDF (accessible aux admin ET gérants)
     Route::resource('menus-pdf', AdminMenuPdfController::class);
-    
+
     // Routes de la galerie des plats (accessible aux admin ET gérants)
     Route::resource('plats-galerie', AdminPlatGalerieController::class)->parameters(['plats-galerie' => 'plat']);
-    
+
     // Routes des utilisateurs (SEULEMENT pour les administrateurs)
     Route::middleware(['admin.manage.users'])->group(function () {
         Route::resource('utilisateurs', AdminUserController::class)->parameters(['utilisateurs' => 'user']);

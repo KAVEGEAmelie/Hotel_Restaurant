@@ -15,7 +15,7 @@ class Reservation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        // Champs que vous aviez déjà
+        // Champs de base
         'user_id',
         'chambre_id',
         'check_in_date',
@@ -23,13 +23,29 @@ class Reservation extends Model
         'nombre_invites',
         'prix_total',
         'statut',
-        'transaction_ref',
+        
+        // Informations client
         'client_nom',
         'client_prenom',
         'client_email',
         'client_telephone',
         
-        // NOUVEAUX CHAMPS pour la Fiche de Police (ajoutés)
+        // Champs CinetPay
+        'transaction_id',
+        'payment_url',
+        'payment_token', 
+        'payment_status',
+        'payment_date',
+        'payment_method',
+        'operator_id',
+        'statut_paiement',
+        'montant_paye',
+        'methode_paiement',
+        'date_paiement',
+        'notes_paiement',
+        'cinetpay_payment_data',
+
+        // Champs fiche de police (optionnels)
         'client_date_naissance',
         'client_nationalite',
         'client_profession',

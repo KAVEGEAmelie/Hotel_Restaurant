@@ -90,7 +90,7 @@
 
                             @if($chambre->est_disponible)
                                 <!-- Formulaire de réservation normal -->
-                                <form action="{{ route('reservation.create') }}" method="POST" class="p-4">
+                                <form action="{{ route('reservations.store') }}" method="POST" class="p-4">
                                     @csrf
                                     <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
 

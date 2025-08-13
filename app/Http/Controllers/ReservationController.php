@@ -10,7 +10,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReservationController extends Controller
 {
-    public function create(Request $request)
+    /**
+     * Stocker une nouvelle réservation
+     */
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'chambre_id' => 'required|exists:chambres,id',
@@ -32,51 +35,82 @@ class ReservationController extends Controller
             return back()->withInput()->with('error', 'Le nombre d\'invités dépasse la capacité de la chambre.');
         }
 
-        // Vérification de disponibilité plus robuste
+        // Vérification de disponibilité
         $conflictingReservations = Reservation::where('chambre_id', $chambre->id)
-            ->whereIn('statut', ['pending', 'confirmée'])
+            ->whereIn('statut', ['en_attente', 'confirmee'])
             ->where(function($query) use ($checkin, $checkout) {
-                $query->where(function($q) use ($checkin, $checkout) {
-                    // Vérifie si la nouvelle réservation chevauche une réservation existante
-                    $q->where('check_in_date', '<', $checkout)
-                      ->where('check_out_date', '>', $checkin);
-                });
+                $query->whereBetween('check_in_date', [$checkin, $checkout->copy()->subDay()])
+                      ->orWhereBetween('check_out_date', [$checkin->copy()->addDay(), $checkout])
+                      ->orWhere(function($q) use ($checkin, $checkout) {
+                          $q->where('check_in_date', '<', $checkin)
+                            ->where('check_out_date', '>', $checkout);
+                      });
             })
-            ->get();
+            ->exists();
 
-        if ($conflictingReservations->count() > 0) {
-            $conflictDetails = $conflictingReservations->map(function($res) {
-                return 'Du ' . Carbon::parse($res->check_in_date)->format('d/m/Y') .
-                       ' au ' . Carbon::parse($res->check_out_date)->format('d/m/Y');
-            })->join(', ');
-
-            return back()->withInput()->with('error',
-                'Désolé, cette chambre n\'est plus disponible pour ces dates. ' .
-                'Conflit avec les réservations : ' . $conflictDetails);
+        if ($conflictingReservations) {
+            return back()->withInput()->with('error', 'Cette chambre n\'est pas disponible pour les dates sélectionnées.');
         }
 
         // Calcul du prix total
         $nbNuits = $checkin->diffInDays($checkout);
-        $dataToCreate = $validatedData;
-        $dataToCreate['user_id'] = Auth::id();
-        $dataToCreate['prix_total'] = $nbNuits * $chambre->prix_par_nuit;
-        $dataToCreate['statut'] = 'pending';
+        $prixTotal = $nbNuits * $chambre->prix_par_nuit;
 
         // Création de la réservation
-        $reservation = Reservation::create($dataToCreate);
+        $reservation = Reservation::create([
+            'chambre_id' => $chambre->id,
+            'user_id' => Auth::id(),
+            'client_nom' => $validatedData['client_nom'],
+            'client_prenom' => $validatedData['client_prenom'],
+            'client_email' => $validatedData['client_email'],
+            'client_telephone' => $validatedData['client_telephone'],
+            'check_in_date' => $checkin,
+            'check_out_date' => $checkout,
+            'nombre_invites' => $validatedData['nombre_invites'],
+            'prix_total' => $prixTotal,
+            'statut' => 'en_attente',
+            'statut_paiement' => 'en_attente'
+        ]);
 
-        return redirect()->route('payment.cinetpay', $reservation->id);
+        return redirect()->route('reservations.confirm', $reservation);
     }
 
-    
+    /**
+     * Afficher la page de confirmation avant paiement
+     */
+    public function confirm(Reservation $reservation)
+    {
+        // Vérifier que l'utilisateur connecté est propriétaire de la réservation
+        if (Auth::check() && $reservation->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à voir cette réservation.');
+        }
 
+        // Vérifier que la réservation est bien en attente
+        if ($reservation->statut !== 'en_attente') {
+            return redirect()->route('chambres.index')->with('error', 'Cette réservation ne peut plus être modifiée.');
+        }
+
+        $reservation->load('chambre');
+        
+        return view('reservations.confirm', compact('reservation'));
+    }
+
+    /**
+     * Télécharger le reçu de réservation
+     */
     public function downloadReceipt(Reservation $reservation)
     {
         if (Auth::id() !== $reservation->user_id) {
             abort(403);
         }
+
+        if ($reservation->statut_paiement !== 'paye') {
+            return back()->with('error', 'Le reçu n\'est disponible que pour les paiements confirmés.');
+        }
+
         $reservation->load('chambre');
         $pdf = Pdf::loadView('pdf.receipt', compact('reservation'));
+
         return $pdf->download('recu-reservation-'.$reservation->id.'.pdf');
     }
 }
