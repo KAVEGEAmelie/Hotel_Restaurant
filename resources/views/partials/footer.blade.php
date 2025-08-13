@@ -58,7 +58,20 @@
             @auth
                 @if(auth()->user()->canAccessAdmin())
                     <div>
-                        <a href="{{ route('admin.dashboard') }}" class="admin-access-btn btn btn-outline-light btn-sm">
+                        <a href="{{ route('admin.dashboard') }}" class="admin-access-btn btn btn-outline-light btn-sm" style="
+                            background: rgba(255, 255, 255, 0.1) !important;
+                            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                            color: #fff !important;
+                            padding: 8px 16px !important;
+                            border-radius: 25px !important;
+                            text-decoration: none !important;
+                            transition: all 0.3s ease !important;
+                            font-size: 0.875rem !important;
+                            font-weight: 500 !important;
+                            display: inline-flex !important;
+                            align-items: center !important;
+                        " onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.2)';" 
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                             <i class="bi bi-gear-fill me-1"></i>
                             Administration
                         </a>

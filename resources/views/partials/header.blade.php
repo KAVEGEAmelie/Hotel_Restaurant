@@ -24,7 +24,20 @@
             
             @auth
                 @if(auth()->user()->canAccessAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm admin-header-btn" title="Administration">
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm admin-header-btn" title="Administration" style="
+                        width: 40px !important;
+                        height: 40px !important;
+                        border-radius: 50% !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        border: 1px solid #ddd !important;
+                        background: #fff !important;
+                        color: #666 !important;
+                        transition: all 0.3s ease !important;
+                        text-decoration: none !important;
+                    " onmouseover="this.style.background='#f8f9fa'; this.style.borderColor='#bbb'; this.style.color='#333'; this.style.transform='scale(1.05)';" 
+                       onmouseout="this.style.background='#fff'; this.style.borderColor='#ddd'; this.style.color='#666'; this.style.transform='scale(1)';">
                         <i class="bi bi-gear-fill"></i>
                     </a>
                 @endif
@@ -53,8 +66,18 @@
             <li><a href="{{ route('contact') }}">Contact</a></li>
             @auth
                 @if(auth()->user()->canAccessAdmin())
-                    <li class="admin-mobile-item">
-                        <a href="{{ route('admin.dashboard') }}" class="admin-mobile-link">
+                    <li class="admin-mobile-item" style="
+                        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+                        margin-top: 10px !important;
+                        padding-top: 10px !important;
+                    ">
+                        <a href="{{ route('admin.dashboard') }}" class="admin-mobile-link" style="
+                            color: #ffc107 !important;
+                            font-weight: 600 !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            text-decoration: none !important;
+                        " onmouseover="this.style.color='#ffca2c';" onmouseout="this.style.color='#ffc107';">
                             <i class="bi bi-gear-fill me-2"></i>Administration
                         </a>
                     </li>
