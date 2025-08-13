@@ -46,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -54,7 +55,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->is_admin === true;
+        return (bool) $this->is_admin;
     }
 
     /**
@@ -62,7 +63,7 @@ class User extends Authenticatable
      */
     public function isGerant(): bool
     {
-        return str_contains($this->email, 'gerant') && $this->is_admin !== true;
+        return str_contains($this->email, 'gerant') && !$this->is_admin;
     }
 
     /**
