@@ -1,0 +1,129 @@
+/* Styles pour les boutons d'administration - CSS direct sans compilation */
+
+/* Bouton admin dans le header */
+.admin-header-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #ddd !important;
+    background: #fff !important;
+    color: #666 !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+.admin-header-btn:hover {
+    background: #f8f9fa !important;
+    border-color: #bbb !important;
+    color: #333 !important;
+    transform: scale(1.05) !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+
+.admin-header-btn i {
+    font-size: 16px !important;
+}
+
+/* Bouton admin dans le footer */
+.admin-access-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    padding: 8px 16px !important;
+    border-radius: 25px !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.admin-access-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    text-decoration: none !important;
+}
+
+.admin-access-btn i {
+    font-size: 0.875rem !important;
+    margin-right: 4px !important;
+}
+
+/* Lien admin dans le menu mobile */
+.admin-mobile-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+}
+
+.admin-mobile-link {
+    color: #ffc107 !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    padding: 8px 0 !important;
+}
+
+.admin-mobile-link:hover {
+    color: #ffca2c !important;
+    text-decoration: none !important;
+}
+
+.admin-mobile-link i {
+    margin-right: 8px !important;
+    font-size: 16px !important;
+}
+
+/* Styles pour la signature développeur */
+.developer-signature {
+    position: relative !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 6px 12px !important;
+    border-radius: 5px !important;
+    margin: 15px auto !important;
+    display: inline-block !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.developer-signature small {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 11px !important;
+}
+
+.developer-signature strong {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+}
+
+.developer-signature a {
+    color: rgba(212, 175, 55, 0.8) !important;
+    text-decoration: none !important;
+    font-weight: 400 !important;
+}
+
+.developer-signature a:hover {
+    color: rgba(212, 175, 55, 1) !important;
+    text-decoration: underline !important;
+}
+
+/* Force l'affichage même avec d'autres CSS */
+body .admin-header-btn,
+body .admin-access-btn,
+body .admin-mobile-link {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}

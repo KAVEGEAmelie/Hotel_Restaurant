@@ -33,6 +33,9 @@
     <!-- Système de notifications modernes -->
     <link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
 
+    <!-- Styles pour boutons admin (CSS direct) -->
+    <link href="{{ asset('css/admin-buttons.css') }}?v={{ time() }}" rel="stylesheet">
+
     @stack('styles')
 </head>
 <body>
