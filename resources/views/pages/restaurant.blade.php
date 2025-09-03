@@ -59,7 +59,8 @@
                         <h2>Notre Carte</h2>
                         <p>Un Aperçu de nos Saveurs</p>
                     </div>
-                    @if($menuActif)
+                    
+                    @if($menuActif && $menuActif->fichier)
                         @php
                             $extension = pathinfo($menuActif->fichier, PATHINFO_EXTENSION);
                             $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
@@ -90,6 +91,12 @@
                                 <i class="bi bi-download me-2"></i> Télécharger le Menu Complet
                             </a>
                         @endif
+                    @else
+                        <p class="mb-4">Aucun menu n'est actuellement configuré. Explorez nos spécialités ci-dessous.</p>
+                    @endif
+                    @else
+                        <!-- Debug: Variable menuActif non définie -->
+                        <p class="mb-4">Variable menuActif non transmise. Explorez nos spécialités ci-dessous.</p>
                     @endif
                 </div>
             </div>
