@@ -1,27 +1,16 @@
 #!/bin/bash
-echo "🚀 Démarrage du build sur Render..."
+echo "🚀 Démarrage du build optimisé pour Render..."
 
-# Installer les dépendances Composer
-composer install --no-dev --optimize-autoloader --no-interaction
+# Installer Composer rapidement
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Installer les dépendances Node.js
-npm install
+# Installer les dépendances sans interaction
+composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
-# Compiler les assets
-npm run build
+# Générer la clé application
+php artisan key:generate --force
 
-# Générer la clé application si elle n'existe pas
-if [ -z "$APP_KEY" ]; then
-    php artisan key:generate --force
-fi
-
-# Optimiser l'application
+# Nettoyer le cache
 php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Créer le lien symbolique pour le stockage
-php artisan storage:link
 
 echo "✅ Build terminé !"

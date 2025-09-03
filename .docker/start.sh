@@ -1,6 +1,18 @@
 #!/bin/bash
 echo "🚀 Démarrage de l'application Laravel..."
 
+# Copier le fichier d'environnement de production
+if [ -f .env.production ]; then
+    cp .env.production .env
+    echo "✅ Fichier .env.production copié vers .env"
+fi
+
+# Générer la clé si elle n'existe pas
+if [ -z "$(grep 'APP_KEY=base64:' .env)" ]; then
+    echo "🔑 Génération de la clé application..."
+    php artisan key:generate --force
+fi
+
 # Attendre que la base de données soit prête (max 30 secondes)
 echo "⏳ Attente de la base de données..."
 for i in {1..30}; do
@@ -24,12 +36,6 @@ php artisan storage:link
 echo "⚡ Optimisation de l'application..."
 php artisan optimize:clear
 php artisan optimize
-
-# Générer la clé si elle n'existe pas
-if [ -z "$(grep 'APP_KEY=base64:' .env)" ]; then
-    echo "🔑 Génération de la clé application..."
-    php artisan key:generate --force
-fi
 
 # Démarrer Apache en premier plan
 echo "🌐 Démarrage d'Apache..."

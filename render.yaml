@@ -4,8 +4,11 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    dockerfilePath: Dockerfile
+    buildCommand: ./render-build.sh
+    startCommand: ./.docker/start.sh
     envVars:
+      - key: PORT
+        value: 10000
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
@@ -14,10 +17,6 @@ services:
         value: base64:Xmj2ol9FNXacWfCgPDNCNacKvWngXgbmrL2j6EUWc+0=
       - key: APP_URL
         value: https://hotel-restaurant-le-printemps.onrender.com
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: LOG_CHANNEL
-        value: stderr
 
 databases:
   - name: db-hotel-printemps
