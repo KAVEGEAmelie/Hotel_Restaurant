@@ -27,7 +27,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Configurer Apache
 RUN a2enmod rewrite
-COPY .docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
@@ -53,16 +52,60 @@ RUN npm run build
 # Exécuter les scripts Composer
 RUN composer dump-autoload --optimize
 
+# Configuration Apache pour Render
+RUN echo '<VirtualHost *:${PORT}>\n\
+    DocumentRoot /var/www/html/public\n\
+    ServerName localhost\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        DirectoryIndex index.php\n\
+        RewriteEngine On\n\
+        RewriteCond %{REQUEST_FILENAME} !-f\n\
+        RewriteCond %{REQUEST_FILENAME} !-d\n\
+        RewriteRule ^(.*)$ index.php [QSA,L]\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
 # Définir les permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Exposer le port
-EXPOSE $PORT
+# Script de démarrage simple
+RUN echo '#!/bin/bash\n\
+echo "🚀 Démarrage de l'\''application Laravel..."\n\
+\n\
+# Copier le fichier d'\''environnement de production\n\
+if [ -f .env.production ]; then\n\
+    cp .env.production .env\n\
+    echo "✅ Fichier .env.production copié vers .env"\n\
+fi\n\
+\n\
+# Configurer Apache pour le port dynamique\n\
+echo "Listen ${PORT:-80}" > /etc/apache2/ports.conf\n\
+sed -i "s/\${PORT}/${PORT:-80}/g" /etc/apache2/sites-available/000-default.conf\n\
+\n\
+# Générer la clé si nécessaire\n\
+php artisan key:generate --force\n\
+\n\
+# Optimiser l'\''application\n\
+php artisan optimize:clear\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
+\n\
+# Créer le lien de stockage\n\
+php artisan storage:link || true\n\
+\n\
+# Démarrer Apache\n\
+echo "🌐 Démarrage d'\''Apache sur le port ${PORT:-80}..."\n\
+exec apache2-foreground' > /usr/local/bin/start.sh \
+    && chmod +x /usr/local/bin/start.sh
 
-# Script de démarrage
-COPY .docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+# Exposer le port
+EXPOSE ${PORT}
 
 CMD ["/usr/local/bin/start.sh"]
