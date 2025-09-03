@@ -4,8 +4,6 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    buildCommand: ./render-build.sh
-    startCommand: ./.docker/start.sh
     envVars:
       - key: PORT
         value: 10000

@@ -59,7 +59,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Exposer le port
-EXPOSE 80
+EXPOSE $PORT
 
 # Script de démarrage
 COPY .docker/start.sh /usr/local/bin/start.sh
