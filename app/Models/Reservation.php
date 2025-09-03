@@ -30,20 +30,22 @@ class Reservation extends Model
         'client_email',
         'client_telephone',
         
-        // Champs CinetPay
-        'transaction_id',
-        'payment_url',
-        'payment_token', 
-        'payment_status',
-        'payment_date',
-        'payment_method',
-        'operator_id',
+        // Champs de paiement
         'statut_paiement',
         'montant_paye',
         'methode_paiement',
         'date_paiement',
         'notes_paiement',
-        'cinetpay_payment_data',
+
+        // Champs CashPay selon la documentation V2.0
+        'cashpay_order_reference',
+        'cashpay_merchant_reference',
+        'cashpay_bill_url',
+        'cashpay_code',
+        'cashpay_qrcode_url',
+        'cashpay_status',
+        'cashpay_data',
+        'cashpay_webhook_data',
 
         // Champs fiche de police (optionnels)
         'client_date_naissance',
@@ -57,6 +59,10 @@ class Reservation extends Model
         'piece_identite_delivree_le',
         'piece_identite_delivree_a',
         'personne_a_prevenir',
+        
+        // Champs confirmation admin
+        'admin_confirme_id',
+        'date_confirmation',
     ];
 
     /**
@@ -69,6 +75,7 @@ class Reservation extends Model
         'check_out_date' => 'date',
         'client_date_naissance' => 'date',
         'piece_identite_delivree_le' => 'date',
+        'date_confirmation' => 'datetime',
     ];
 
     /**
@@ -85,5 +92,13 @@ class Reservation extends Model
     public function chambre()
     {
         return $this->belongsTo(Chambre::class);
+    }
+
+    /**
+     * Relation : L'admin qui a confirmé la réservation.
+     */
+    public function adminConfirme()
+    {
+        return $this->belongsTo(User::class, 'admin_confirme_id');
     }
 }

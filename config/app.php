@@ -123,6 +123,4 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'CinetPay' => App\Services\CinetPayService::class,
-
 ];

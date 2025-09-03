@@ -386,20 +386,27 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
 
         <!-- Formulaire de Recherche -->
         <div class="card shadow-sm mb-4">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="bi bi-funnel me-2"></i>Filtres de recherche
                 </h5>
+                <div>
+                    <span class="badge bg-info">
+                        <i class="bi bi-lightbulb me-1"></i>
+                        Recherche par n° : tapez #35 ou 35
+                    </span>
+                </div>
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.reservations.index') }}" method="GET">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-6 col-lg-4">
-                            <label for="search" class="form-label">Rechercher (Nom, Email...)</label>
+                            <label for="search" class="form-label">Rechercher</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="Entrez un nom...">
+                                <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="Nom, email, téléphone ou #numéro...">
                             </div>
+                            <small class="text-muted">Ex: "Kouame", "john@email.com", "#35"</small>
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <label for="date" class="form-label">Date d'arrivée</label>
@@ -433,11 +440,13 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                 <div class="d-flex gap-2">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-sm btn-outline-secondary"
+                                onclick="exportReservations('pdf')"
                                 data-bs-toggle="tooltip"
                                 title="Exporter en PDF">
                             <i class="bi bi-file-earmark-pdf"></i> PDF
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary"
+                                onclick="exportReservations('excel')"
                                 data-bs-toggle="tooltip"
                                 title="Exporter en Excel">
                             <i class="bi bi-file-earmark-excel"></i> Excel
@@ -482,11 +491,13 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                         <label class="form-check-label" for="selectAll"></label>
                                     </div>
                                 </th>
+                                <th scope="col">N° Réservation</th>
                                 <th scope="col">Client</th>
                                 <th scope="col">Chambre</th>
                                 <th scope="col">Dates du séjour</th>
                                 <th scope="col">Prix Total</th>
                                 <th scope="col">Statut</th>
+                                <th scope="col">Confirmé par</th>
                                 <th scope="col" class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -497,6 +508,16 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                         <div class="form-check">
                                             <input class="form-check-input item-checkbox" type="checkbox" value="{{ $reservation->id }}" id="item_{{ $reservation->id }}">
                                             <label class="form-check-label" for="item_{{ $reservation->id }}"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <span class="badge bg-primary fs-6 px-3 py-2">
+                                                #{{ $reservation->id }}
+                                            </span>
+                                            <div class="small text-muted mt-1">
+                                                {{ $reservation->created_at->format('d/m/Y') }}
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -548,6 +569,21 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                             {{ ucfirst($reservation->statut) }}
                                         </span>
                                     </td>
+                                    <td>
+                                        @if($reservation->adminConfirme)
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 25px; height: 25px; font-size: 10px;">
+                                                    {{ strtoupper(substr($reservation->adminConfirme->name, 0, 1)) }}
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold" style="font-size: 12px;">{{ $reservation->adminConfirme->name }}</div>
+                                                    <div class="small text-muted">{{ $reservation->date_confirmation ? $reservation->date_confirmation->format('d/m/Y H:i') : '' }}</div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">En attente</span>
+                                        @endif
+                                    </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
                                             <!-- Bouton Fiche de Police -->
@@ -566,6 +602,15 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                                         data-bs-toggle="tooltip" title="Confirmer la réservation">
                                                     <i class="bi bi-check-circle"></i>
                                                 </button>
+                                            @endif
+
+                                            <!-- Bouton Fiche de Police (affiché seulement si confirmée) -->
+                                            @if($reservation->statut === 'confirmée')
+                                                <a href="{{ route('admin.reservations.police_form', $reservation->id) }}" 
+                                                   class="btn btn-outline-info btn-sm"
+                                                   data-bs-toggle="tooltip" title="Télécharger fiche de police">
+                                                    <i class="bi bi-file-earmark-person"></i>
+                                                </a>
                                             @endif
 
                                             <!-- Bouton Annuler (affiché seulement si pas annulée) -->
@@ -588,7 +633,7 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">
+                                    <td colspan="9" class="text-center py-4">
                                         <div class="text-muted">
                                             <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
                                             <h5>Aucune réservation trouvée</h5>

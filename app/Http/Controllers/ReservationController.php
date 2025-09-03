@@ -5,8 +5,10 @@ use App\Models\Chambre;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ReservationController extends Controller
 {
@@ -72,7 +74,7 @@ class ReservationController extends Controller
             'statut_paiement' => 'en_attente'
         ]);
 
-        return redirect()->route('reservations.confirm', $reservation);
+        return redirect()->route('reservations.bon', $reservation);
     }
 
     /**
@@ -80,19 +82,91 @@ class ReservationController extends Controller
      */
     public function confirm(Reservation $reservation)
     {
+        Log::info('ReservationController: Page confirm demandée', [
+            'reservation_id' => $reservation->id,
+            'user_authenticated' => Auth::check(),
+            'current_user_id' => Auth::id(),
+            'reservation_user_id' => $reservation->user_id,
+            'reservation_status' => $reservation->statut
+        ]);
+
         // Vérifier que l'utilisateur connecté est propriétaire de la réservation
         if (Auth::check() && $reservation->user_id !== Auth::id()) {
+            Log::warning('ReservationController: Accès refusé - utilisateur non autorisé', [
+                'reservation_id' => $reservation->id,
+                'current_user' => Auth::id(),
+                'reservation_owner' => $reservation->user_id
+            ]);
             abort(403, 'Vous n\'êtes pas autorisé à voir cette réservation.');
         }
 
         // Vérifier que la réservation est bien en attente
         if ($reservation->statut !== 'en_attente') {
+            Log::warning('ReservationController: Réservation pas en attente', [
+                'reservation_id' => $reservation->id,
+                'current_status' => $reservation->statut
+            ]);
             return redirect()->route('chambres.index')->with('error', 'Cette réservation ne peut plus être modifiée.');
         }
 
         $reservation->load('chambre');
         
+        Log::info('ReservationController: Affichage page confirm', [
+            'reservation_id' => $reservation->id,
+            'chambre_loaded' => isset($reservation->chambre)
+        ]);
+        
         return view('reservations.confirm', compact('reservation'));
+    }
+
+    /**
+     * Afficher le bon de réservation à présenter à l'hôtel
+     */
+    public function bon(Reservation $reservation)
+    {
+        Log::info('ReservationController: Génération bon de réservation', [
+            'reservation_id' => $reservation->id,
+            'client' => $reservation->client_nom . ' ' . $reservation->client_prenom
+        ]);
+
+        // Charger la chambre associée
+        $reservation->load('chambre');
+        
+        return view('reservations.bon', compact('reservation'));
+    }
+
+    /**
+     * Télécharger le bon de réservation en PDF
+     */
+    public function downloadBon(Reservation $reservation)
+    {
+        Log::info('ReservationController: Téléchargement bon PDF', [
+            'reservation_id' => $reservation->id
+        ]);
+
+        $reservation->load('chambre');
+        
+        // Génération du QR Code avec les informations de la réservation
+        $qrData = json_encode([
+            'reservation_id' => $reservation->id,
+            'client_nom' => $reservation->client_nom,
+            'client_prenom' => $reservation->client_prenom,
+            'chambre' => $reservation->chambre->nom,
+            'check_in' => $reservation->check_in_date,
+            'check_out' => $reservation->check_out_date,
+            'prix_total' => $reservation->prix_total,
+            'hotel' => 'Hôtel Le Printemps'
+        ]);
+        
+        $qrCode = QrCode::size(120)
+                        ->style('round')
+                        ->eye('circle')
+                        ->gradient(45, 60, 140, 39, 124, 71, 'radial')
+                        ->generate($qrData);
+        
+        $pdf = Pdf::loadView('pdf.bon-reservation', compact('reservation', 'qrCode'));
+
+        return $pdf->download('bon-reservation-'.$reservation->id.'.pdf');
     }
 
     /**

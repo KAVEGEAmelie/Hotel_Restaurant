@@ -46,9 +46,9 @@
                     <div class="mb-4">
                         <div class="row">
                             <div class="col-md-6 mb-2">
-                                <a href="{{ route('payment.cinetpay', $reservation->id) }}" class="btn btn-success btn-lg w-100">
+                                <a href="{{ route('payment.initiate', $reservation->id) }}" class="btn btn-success btn-lg w-100">
                                     <i class="fas fa-redo me-2"></i>
-                                    Réessayer le paiement
+                                    Confirmer la réservation
                                 </a>
                             </div>
                             <div class="col-md-6 mb-2">

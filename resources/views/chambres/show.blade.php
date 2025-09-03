@@ -89,20 +89,50 @@
                             @endif
 
                             @if($chambre->est_disponible)
+                                <!-- Messages d'erreur -->
+                                @if($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <h6><i class="bi bi-exclamation-triangle-fill me-2"></i>Veuillez corriger les erreurs suivantes :</h6>
+                                        <ul class="mb-0">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                @endif
+
+                                @if(session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                @endif
+
                                 <!-- Formulaire de réservation normal -->
-                                <form action="{{ route('reservations.store') }}" method="POST" class="p-4">
+                                <form action="{{ route('reservations.store') }}" method="POST" class="p-4" id="reservationForm">
                                     @csrf
                                     <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
 
                                     <h4 class="form-title">Réservez vos dates</h4>
                                     <div class="row g-3">
                                         <div class="col-12">
-                                            <label for="check_in_date" class="form-label">Arrivée</label>
-                                            <input type="date" name="check_in_date" id="check_in_date" class="form-control" required>
+                                            <label for="check_in_date" class="form-label">Arrivée <span class="text-danger">*</span></label>
+                                            <input type="date" name="check_in_date" id="check_in_date" 
+                                                   class="form-control @error('check_in_date') is-invalid @enderror" 
+                                                   value="{{ old('check_in_date') }}" required>
+                                            @error('check_in_date')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-12">
-                                            <label for="check_out_date" class="form-label">Départ</label>
-                                            <input type="date" name="check_out_date" id="check_out_date" class="form-control" required>
+                                            <label for="check_out_date" class="form-label">Départ <span class="text-danger">*</span></label>
+                                            <input type="date" name="check_out_date" id="check_out_date" 
+                                                   class="form-control @error('check_out_date') is-invalid @enderror" 
+                                                   value="{{ old('check_out_date') }}" required>
+                                            @error('check_out_date')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
@@ -111,33 +141,62 @@
                                     <h4 class="form-title">Vos informations</h4>
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label for="client_nom" class="form-label">Nom</label>
-                                            <input type="text" name="client_nom" id="client_nom" class="form-control" placeholder="Votre nom" required>
+                                            <label for="client_nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                            <input type="text" name="client_nom" id="client_nom" 
+                                                   class="form-control @error('client_nom') is-invalid @enderror" 
+                                                   placeholder="Votre nom" value="{{ old('client_nom') }}" required>
+                                            @error('client_nom')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="client_prenom" class="form-label">Prénom</label>
-                                            <input type="text" name="client_prenom" id="client_prenom" class="form-control" placeholder="Votre prénom" required>
+                                            <label for="client_prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                            <input type="text" name="client_prenom" id="client_prenom" 
+                                                   class="form-control @error('client_prenom') is-invalid @enderror" 
+                                                   placeholder="Votre prénom" value="{{ old('client_prenom') }}" required>
+                                            @error('client_prenom')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-12">
-                                            <label for="client_email" class="form-label">Email</label>
-                                            <input type="email" name="client_email" id="client_email" class="form-control" placeholder="Votre email" required>
+                                            <label for="client_email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input type="email" name="client_email" id="client_email" 
+                                                   class="form-control @error('client_email') is-invalid @enderror" 
+                                                   placeholder="Votre email" value="{{ old('client_email') }}" required>
+                                            @error('client_email')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-12">
-                                            <label for="client_telephone" class="form-label">Téléphone</label>
-                                            <input type="tel" name="client_telephone" id="client_telephone" class="form-control" placeholder="Votre téléphone" required>
+                                            <label for="client_telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                            <input type="tel" name="client_telephone" id="client_telephone" 
+                                                   class="form-control @error('client_telephone') is-invalid @enderror" 
+                                                   placeholder="Ex: +228 90 00 00 00" value="{{ old('client_telephone') }}" required>
+                                            @error('client_telephone')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-12">
-                                            <label for="nombre_invites" class="form-label">Nombre de personnes (max: {{ $chambre->capacite }})</label>
-                                            <select name="nombre_invites" id="nombre_invites" class="form-select">
+                                            <label for="nombre_invites" class="form-label">Nombre de personnes (max: {{ $chambre->capacite }}) <span class="text-danger">*</span></label>
+                                            <select name="nombre_invites" id="nombre_invites" 
+                                                    class="form-select @error('nombre_invites') is-invalid @enderror" required>
                                                 @for ($i = 1; $i <= $chambre->capacite; $i++)
-                                                    <option value="{{ $i }}">{{ $i }} personne(s)</option>
+                                                    <option value="{{ $i }}" {{ old('nombre_invites') == $i ? 'selected' : '' }}>
+                                                        {{ $i }} personne(s)
+                                                    </option>
                                                 @endfor
                                             </select>
+                                            @error('nombre_invites')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
                                     <div class="d-grid mt-4">
-                                        <button type="submit" class="btn btn-brand btn-lg">Procéder au Paiement</button>
+                                        <button type="submit" class="btn btn-brand btn-lg" id="submitBtn">
+                                            <span class="spinner-border spinner-border-sm me-2 d-none" id="loadingSpinner"></span>
+                                            Réserver maintenant
+                                        </button>
                                     </div>
                                 </form>
                             @else
@@ -279,4 +338,78 @@
     margin-bottom: 10px;
 }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('reservationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const checkinInput = document.getElementById('check_in_date');
+    const checkoutInput = document.getElementById('check_out_date');
+
+    // Définir la date minimum (aujourd'hui)
+    const today = new Date().toISOString().split('T')[0];
+    checkinInput.min = today;
+    
+    // Validation des dates
+    checkinInput.addEventListener('change', function() {
+        const checkinDate = new Date(this.value);
+        const tomorrow = new Date(checkinDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        checkoutInput.min = tomorrow.toISOString().split('T')[0];
+        
+        if (checkoutInput.value && new Date(checkoutInput.value) <= checkinDate) {
+            checkoutInput.value = '';
+        }
+    });
+
+    // Validation côté client
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Validation spécifique de l'email
+        const emailField = document.getElementById('client_email');
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailField.value && !emailPattern.test(emailField.value)) {
+            isValid = false;
+            emailField.classList.add('is-invalid');
+        }
+
+        // Validation du téléphone
+        const phoneField = document.getElementById('client_telephone');
+        const phonePattern = /^[\+]?[0-9\s\-\(\)]+$/;
+        if (phoneField.value && !phonePattern.test(phoneField.value)) {
+            isValid = false;
+            phoneField.classList.add('is-invalid');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez corriger les erreurs dans le formulaire avant de continuer.');
+            return;
+        }
+
+        // Afficher le spinner de chargement
+        loadingSpinner.classList.remove('d-none');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Traitement en cours...';
+    });
+
+    // Le client doit saisir ses propres informations
+    // Pas d'auto-complétion automatique
+});
+</script>
 @endpush

@@ -1,0 +1,337 @@
+{
+	"info": {
+		"_postman_id": "cashpay-integration-test",
+		"name": "CashPay V2.0 Integration Test - Hotel Le Printemps",
+		"description": "Collection de tests pour l'intégration CashPay V2.0 avec l'API OAuth 2.0\n\nCredentials:\n- Username: api_cashpay.leprintemps\n- Password: nwDT7XCQzU\n- Client ID: api_cashpay.leprintemps\n- Client Secret: NZLJv4V4A9R5zAN6oeQxFq985F9E2RxC\n- API Reference: 104\n- API Key: 2xiUFAWYSriHvSFYcv9YRl816uzgbC2Vth5g",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Test Complet CashPay",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/complete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"complete"
+					]
+				},
+				"description": "Test complet de toutes les fonctionnalités CashPay :\n- Configuration\n- Authentification OAuth 2.0\n- Récupération des passerelles\n- Création de ledger\n- Création de facture test\n- Récupération détails ledger"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Test Authentification OAuth 2.0",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/auth",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"auth"
+					]
+				},
+				"description": "Test uniquement l'authentification OAuth 2.0 avec CashPay"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Récupérer Passerelles de Paiement",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/gateways",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"gateways"
+					]
+				},
+				"description": "Récupère la liste des passerelles de paiement disponibles"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Créer un Ledger",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/ledger/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"ledger",
+						"create"
+					]
+				},
+				"description": "Crée un nouveau ledger pour le terminal TERMINAL_LEPRINTEMPS"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Lister les Ledgers",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/ledgers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"ledgers"
+					]
+				},
+				"description": "Liste tous les ledgers du terminal"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Créer Facture Test (Paramètres par défaut)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 1500,\n    \"phone\": \"+22890112783\",\n    \"email\": \"test@leprintemps.tg\",\n    \"description\": \"Test de paiement depuis Postman\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/bill/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"bill",
+						"create"
+					]
+				},
+				"description": "Crée une facture de test avec les paramètres fournis.\n\nParamètres optionnels :\n- amount : montant en francs CFA (défaut: 1000)\n- phone : numéro de téléphone (défaut: +22890112783)\n- email : email du client (défaut: test@example.com)\n- description : description de la facture"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Créer Facture Test (Personnalisée)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 2500,\n    \"phone\": \"+22890112783\",\n    \"email\": \"client.test@leprintemps.tg\",\n    \"description\": \"Réservation chambre deluxe - 2 nuits\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/bill/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"bill",
+						"create"
+					]
+				},
+				"description": "Exemple de création de facture avec des paramètres personnalisés"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Simuler Webhook Paiement Réussi",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_reference\": \"SANDBOX-1725000000-ABC123\",\n    \"merchant_reference\": \"RES_123_1725000000\",\n    \"amount\": 1500,\n    \"state\": \"Paid\",\n    \"received_amount\": 1500,\n    \"client_phone\": \"+22890112783\",\n    \"client_email\": \"test@leprintemps.tg\",\n    \"payments\": [\n        {\n            \"method\": \"Mobile Money\",\n            \"amount\": 1500,\n            \"status\": \"success\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/webhook/simulate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"webhook",
+						"simulate"
+					]
+				},
+				"description": "Simule un webhook de paiement réussi pour tester le traitement"
+			},
+			"response": []
+		},
+		{
+			"name": "9. Simuler Webhook Paiement Échec",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_reference\": \"SANDBOX-1725000000-DEF456\",\n    \"merchant_reference\": \"RES_124_1725000000\",\n    \"amount\": 1000,\n    \"state\": \"Error\",\n    \"received_amount\": 0,\n    \"client_phone\": \"+22890112783\",\n    \"client_email\": \"test@leprintemps.tg\",\n    \"payments\": []\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cashpay-test/webhook/simulate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay-test",
+						"webhook",
+						"simulate"
+					]
+				},
+				"description": "Simule un webhook de paiement en échec"
+			},
+			"response": []
+		},
+		{
+			"name": "10. Webhook CashPay Réel",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmRlcl9yZWZlcmVuY2UiOiJTQU5EQk9YLTAwMDAwMDAwLUFCQzEyMyIsIm1lcmNoYW50X3JlZmVyZW5jZSI6IlJFU18xMjNfMTcyNTAwMDAwMCIsImFtb3VudCI6MTUwMCwic3RhdGUiOiJQYWlkIiwicmVjZWl2ZWRfYW1vdW50IjoxNTAwfQ.signature\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cashpay/webhook",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"cashpay",
+						"webhook"
+					]
+				},
+				"description": "Endpoint webhook réel de CashPay (format JWT)\n\nCet endpoint sera appelé par CashPay lors des changements d'état de paiement."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string",
+			"description": "URL de base de l'application Laravel"
+		}
+	]
+}

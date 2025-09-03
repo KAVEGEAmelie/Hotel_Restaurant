@@ -38,9 +38,26 @@
                     <input type="file" name="fichier" id="fichier" class="form-control" {{ isset($menu_pdf) ? '' : 'required' }}>
                     @if(isset($menu_pdf) && $menu_pdf->fichier)
                         <div class="mt-3">
-                            <p class="small text-muted">Fichier actuel :
-                                <a href="{{ asset('storage/' . $menu_pdf->fichier) }}" target="_blank">Voir le fichier</a>
-                            </p>
+                            @php
+                                $extension = pathinfo($menu_pdf->fichier, PATHINFO_EXTENSION);
+                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                            @endphp
+                            
+                            <p class="small text-muted">Fichier actuel :</p>
+                            @if($isImage)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . $menu_pdf->fichier) }}" alt="{{ $menu_pdf->titre }}" 
+                                         style="max-height: 200px; max-width: 100%; object-fit: contain; border-radius: 8px;" 
+                                         class="border shadow-sm">
+                                </div>
+                                <a href="{{ asset('storage/' . $menu_pdf->fichier) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye-fill"></i> Voir l'image en taille réelle
+                                </a>
+                            @else
+                                <a href="{{ asset('storage/' . $menu_pdf->fichier) }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i> Voir le PDF
+                                </a>
+                            @endif
                         </div>
                     @endif
                 </div>

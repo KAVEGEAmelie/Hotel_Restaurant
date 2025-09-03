@@ -20,10 +20,10 @@ class ReservationController extends Controller
     {
         try {
             // Requête de base avec relations
-            $query = Reservation::with(['user', 'chambre'])
+            $query = Reservation::with(['user', 'chambre', 'adminConfirme'])
                 ->orderBy('created_at', 'desc');
 
-            // 🔍 Filtre de recherche par nom, prénom ou email
+            // 🔍 Filtre de recherche par nom, prénom, email, téléphone ou numéro de réservation
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
                 $query->where(function($q) use ($searchTerm) {
@@ -31,6 +31,15 @@ class ReservationController extends Controller
                       ->orWhere('client_prenom', 'like', "%{$searchTerm}%")
                       ->orWhere('client_email', 'like', "%{$searchTerm}%")
                       ->orWhere('client_telephone', 'like', "%{$searchTerm}%");
+                    
+                    // Recherche par numéro de réservation (ID exact ou partiel)
+                    if (is_numeric($searchTerm)) {
+                        $q->orWhere('id', $searchTerm);
+                    }
+                    // Recherche par #ID (ex: "#35" ou "35")
+                    if (preg_match('/^#?(\d+)$/', $searchTerm, $matches)) {
+                        $q->orWhere('id', $matches[1]);
+                    }
                 });
             }
 
@@ -206,8 +215,8 @@ class ReservationController extends Controller
                 case 'confirm':
                     $reservations->update([
                         'statut' => 'confirmée',
-                        'confirmed_at' => now(),
-                        'confirmed_by' => Auth::id()
+                        'admin_confirme_id' => Auth::id(),
+                        'date_confirmation' => now()
                     ]);
                     $message = "✅ {$count} réservation(s) confirmée(s) avec succès";
                     break;
@@ -381,7 +390,17 @@ public function destroy(Request $request, Reservation $reservation)
                 $query->where(function($q) use ($searchTerm) {
                     $q->where('client_nom', 'like', "%{$searchTerm}%")
                       ->orWhere('client_prenom', 'like', "%{$searchTerm}%")
-                      ->orWhere('client_email', 'like', "%{$searchTerm}%");
+                      ->orWhere('client_email', 'like', "%{$searchTerm}%")
+                      ->orWhere('client_telephone', 'like', "%{$searchTerm}%");
+                    
+                    // Recherche par numéro de réservation (ID exact ou partiel)
+                    if (is_numeric($searchTerm)) {
+                        $q->orWhere('id', $searchTerm);
+                    }
+                    // Recherche par #ID (ex: "#35" ou "35")
+                    if (preg_match('/^#?(\d+)$/', $searchTerm, $matches)) {
+                        $q->orWhere('id', $matches[1]);
+                    }
                 });
             }
 
@@ -409,9 +428,58 @@ public function destroy(Request $request, Reservation $reservation)
                     return $pdf->download("export-reservations-" . now()->format('Y-m-d') . ".pdf");
 
                 case 'excel':
-                    // Ici vous pourrez implémenter l'export Excel plus tard
-                    return redirect()->back()
-                        ->with('info', '📊 Export Excel sera disponible prochainement');
+                    // Export CSV (compatible Excel)
+                    $filename = "export-reservations-" . now()->format('Y-m-d') . ".csv";
+                    
+                    $headers = [
+                        'Content-Type' => 'text/csv; charset=UTF-8',
+                        'Content-Disposition' => "attachment; filename=\"$filename\"",
+                    ];
+
+                    $callback = function() use ($reservations) {
+                        $file = fopen('php://output', 'w');
+                        
+                        // BOM pour l'UTF-8 (pour Excel)
+                        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+                        
+                        // En-têtes CSV
+                        fputcsv($file, [
+                            'N° Réservation',
+                            'Nom',
+                            'Prénom', 
+                            'Email',
+                            'Téléphone',
+                            'Chambre',
+                            'Date Arrivée',
+                            'Date Départ',
+                            'Nombre Invités',
+                            'Prix Total (FCFA)',
+                            'Statut',
+                            'Date Création'
+                        ], ';');
+
+                        // Données
+                        foreach ($reservations as $reservation) {
+                            fputcsv($file, [
+                                '#' . $reservation->id,
+                                $reservation->client_nom,
+                                $reservation->client_prenom,
+                                $reservation->client_email,
+                                $reservation->client_telephone,
+                                $reservation->chambre->nom ?? 'N/A',
+                                \Carbon\Carbon::parse($reservation->check_in_date)->format('d/m/Y'),
+                                \Carbon\Carbon::parse($reservation->check_out_date)->format('d/m/Y'),
+                                $reservation->nombre_invites,
+                                number_format($reservation->prix_total, 0, ',', ' '),
+                                ucfirst($reservation->statut),
+                                $reservation->created_at->format('d/m/Y H:i:s')
+                            ], ';');
+                        }
+                        
+                        fclose($file);
+                    };
+
+                    return response()->stream($callback, 200, $headers);
 
                 default:
                     return redirect()->back()

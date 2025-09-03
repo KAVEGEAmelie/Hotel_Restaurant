@@ -22,7 +22,7 @@ class CinetPayService
         $this->secretKey = config('services.cinetpay.secret_key');
         $this->currency = config('services.cinetpay.currency', 'XOF');
         $this->environment = config('services.cinetpay.environment', 'sandbox');
-        
+
         // URL de l'API CinetPay (même URL pour sandbox et production)
         $this->apiUrl = 'https://api-checkout.cinetpay.com/v2';
     }
@@ -30,15 +30,15 @@ class CinetPayService
     /**
      * Initier un paiement selon les spécifications CinetPay
      */
-    public function initiatePayment($reservation)
+    public function initiatePayment($reservation, $paymentMethod = 'ALL')
     {
         try {
             // Générer un ID de transaction unique
             $transactionId = $this->generateTransactionId($reservation->id);
-            
+
             // Données du formulaire de réservation
             $customerData = $this->extractCustomerData($reservation);
-            
+
             // Données de paiement selon les spécifications CinetPay
             $paymentData = [
                 'apikey' => $this->apiKey,
@@ -49,9 +49,9 @@ class CinetPayService
                 'description' => "Réservation Hôtel Le Printemps - Chambre {$reservation->chambre->nom}",
                 'notify_url' => route('payment.webhook'),
                 'return_url' => route('payment.return', $reservation->id),
-                'channels' => 'ALL', // Tous les moyens de paiement
+                'channels' => $paymentMethod, // Méthode de paiement choisie
                 'lang' => 'fr',
-                
+
                 // Informations client du formulaire de réservation
                 'customer_id' => $reservation->user_id ?? null,
                 'customer_name' => $customerData['name'],
@@ -63,27 +63,29 @@ class CinetPayService
                 'customer_country' => $customerData['country'],
                 'customer_state' => $customerData['state'],
                 'customer_zip_code' => $customerData['zip_code'],
-                
+
                 // Données de facture personnalisées
                 'invoice_data' => [
-                    'Chambre' => "Chambre {$reservation->chambre->numero} - {$reservation->chambre->type}",
-                    'Période' => "Du {$reservation->date_arrivee} au {$reservation->date_depart}",
-                    'Durée' => "{$reservation->nombre_nuits} nuit(s)"
+                    'Chambre' => "Chambre {$reservation->chambre->nom}",
+                    'Période' => "Du {$reservation->check_in_date->format('d/m/Y')} au {$reservation->check_out_date->format('d/m/Y')}",
+                    'Durée' => $reservation->check_in_date->diffInDays($reservation->check_out_date) . " nuit(s)"
                 ],
-                
+
                 // Métadonnées pour identifier la réservation
                 'metadata' => json_encode([
                     'reservation_id' => $reservation->id,
                     'chambre_id' => $reservation->chambre_id,
                     'user_id' => $reservation->user_id,
-                    'source' => 'hotel_reservation'
+                    'source' => 'hotel_reservation',
+                    'payment_method' => $paymentMethod
                 ])
             ];
 
             Log::info('CinetPay: Initiation du paiement', [
                 'reservation_id' => $reservation->id,
                 'transaction_id' => $transactionId,
-                'amount' => $paymentData['amount']
+                'amount' => $paymentData['amount'],
+                'payment_method' => $paymentMethod
             ]);
 
             // Appel à l'API CinetPay
@@ -272,14 +274,14 @@ class CinetPayService
     {
         // Récupérer les données du user ou des données de réservation
         $user = $reservation->user;
-        
+
         return [
-            'name' => $reservation->nom_client ?? $user->name ?? 'Client',
-            'surname' => $reservation->prenom_client ?? $user->prenom ?? '',
-            'email' => $reservation->email_client ?? $user->email ?? 'client@hotel.com',
-            'phone' => $reservation->telephone_client ?? $user->telephone ?? '',
-            'address' => $reservation->adresse_client ?? 'Adresse non fournie',
-            'city' => $reservation->ville_client ?? 'Kpalimé',
+            'name' => $reservation->client_nom ?? $user->name ?? 'Client',
+            'surname' => $reservation->client_prenom ?? $user->prenom ?? '',
+            'email' => $reservation->client_email ?? $user->email ?? 'client@hotel.com',
+            'phone' => $reservation->client_telephone ?? $user->telephone ?? '',
+            'address' => $user->address ?? 'Adresse non fournie',
+            'city' => 'Kpalimé',
             'country' => 'TG', // Togo
             'state' => 'Plateaux',
             'zip_code' => '00000'
@@ -292,7 +294,7 @@ class CinetPayService
     public function formatAmount($amount)
     {
         $amount = (int) $amount;
-        
+
         // CinetPay exige des multiples de 5 pour XOF
         if ($this->currency === 'XOF') {
             $remainder = $amount % 5;
@@ -300,7 +302,7 @@ class CinetPayService
                 $amount = $amount + (5 - $remainder);
             }
         }
-        
+
         return $amount;
     }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
-use App\Services\CinetPayService;
 use App\Mail\ReservationConfirmationMail;
+use App\Services\CashPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,51 +14,83 @@ use Exception;
 
 class PaymentController extends Controller
 {
-    private $cinetPayService;
+    protected $cashPayService;
 
-    public function __construct(CinetPayService $cinetPayService)
+    public function __construct(CashPayService $cashPayService)
     {
-        $this->cinetPayService = $cinetPayService;
+        $this->cashPayService = $cashPayService;
     }
 
     /**
-     * Initier un paiement pour une réservation
+     * Initier un paiement pour une réservation avec CashPay V2.0
      */
     public function initiatePayment(Request $request, $reservationId)
     {
         try {
-            // Récupérer la réservation avec toutes les relations nécessaires
+            Log::info('CashPay: Début initiation paiement', [
+                'reservation_id' => $reservationId,
+                'request_data' => $request->all()
+            ]);
+
+            // Récupérer la réservation
             $reservation = Reservation::with(['chambre', 'user'])->findOrFail($reservationId);
+
+            Log::info('CashPay: Réservation trouvée', [
+                'reservation_id' => $reservation->id,
+                'statut' => $reservation->statut,
+                'prix_total' => $reservation->prix_total
+            ]);
 
             // Vérifier que la réservation est en attente de paiement
             if ($reservation->statut !== 'en_attente') {
+                Log::warning('CashPay: Réservation pas en attente', [
+                    'reservation_id' => $reservationId,
+                    'statut_actuel' => $reservation->statut
+                ]);
                 return back()->with('error', 'Cette réservation ne peut plus être payée.');
             }
 
-            // Initier le paiement via CinetPay avec les données complètes
-            $result = $this->cinetPayService->initiatePayment($reservation);
+            Log::info('CashPay: Appel createBill...');
+            
+            // Créer la facture avec CashPay V2.0
+            $billResult = $this->cashPayService->createBill($reservation);
 
-            if ($result['success']) {
-                Log::info('Paiement initié avec succès', [
-                    'reservation_id' => $reservation->id,
-                    'transaction_id' => $result['transaction_id']
+            Log::info('CashPay: Résultat createBill', [
+                'success' => $billResult['success'] ?? false,
+                'bill_url' => $billResult['bill_url'] ?? 'NON DÉFINI',
+                'message' => $billResult['message'] ?? 'Pas de message'
+            ]);
+
+            if (!$billResult['success']) {
+                Log::error('CashPay: Échec création facture', [
+                    'reservation_id' => $reservationId,
+                    'error' => $billResult['message']
                 ]);
-
-                // Rediriger vers le guichet de paiement CinetPay
-                return redirect($result['payment_url']);
-            } else {
-                Log::error('Échec initiation paiement', [
-                    'reservation_id' => $reservation->id,
-                    'error' => $result['message']
-                ]);
-
-                return back()->with('error', $result['message']);
+                return back()->with('error', 'Erreur lors de la création du paiement: ' . $billResult['message']);
             }
 
-        } catch (Exception $e) {
-            Log::error('Erreur initiation paiement', [
+            // Vérifier que l'URL de la facture est valide
+            if (empty($billResult['bill_url'])) {
+                Log::error('CashPay: URL de facture vide', [
+                    'reservation_id' => $reservationId,
+                    'billResult' => $billResult
+                ]);
+                return back()->with('error', 'Erreur lors de la génération du lien de paiement. Veuillez réessayer.');
+            }
+
+            Log::info('CashPay: Redirection vers le paiement', [
                 'reservation_id' => $reservationId,
-                'error' => $e->getMessage()
+                'bill_url' => $billResult['bill_url']
+            ]);
+
+            // Rediriger vers l'URL de la facture CashPay
+            return redirect($billResult['bill_url']);
+
+        } catch (Exception $e) {
+            Log::error('Erreur initiation paiement CashPay', [
+                'reservation_id' => $reservationId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return back()->with('error', 'Une erreur technique s\'est produite. Veuillez réessayer.');
@@ -66,60 +98,23 @@ class PaymentController extends Controller
     }
 
     /**
-     * Page de retour après paiement CinetPay
+     * Page de retour après paiement CashPay
      */
-    public function returnFromPayment(Request $request, $reservationId)
+    public function paymentReturn(Request $request, $reservationId)
     {
         try {
             $reservation = Reservation::with(['chambre', 'user'])->findOrFail($reservationId);
 
-            // Récupérer les paramètres de retour CinetPay
-            $transactionId = $request->input('transaction_id') ?? $reservation->transaction_id;
-            $token = $request->input('token');
+            Log::info('CashPay: Retour de paiement', [
+                'reservation_id' => $reservationId,
+                'params' => $request->all()
+            ]);
 
-            if ($transactionId) {
-                // Vérifier le statut du paiement auprès de CinetPay
-                $status = $this->cinetPayService->checkPaymentStatus($transactionId);
-
-                if ($status['success'] && $status['status'] === 'COMPLETED') {
-                    // Paiement réussi
-                    DB::transaction(function () use ($reservation, $status) {
-                        $reservation->update([
-                            'statut' => 'confirmee',
-                            'statut_paiement' => 'paye',
-                            'date_paiement' => now(),
-                            'montant_paye' => $status['amount'],
-                            'methode_paiement' => $status['payment_method'] ?? 'CinetPay'
-                        ]);
-                    });
-
-                    // Envoyer email de confirmation
-                    try {
-                        if ($reservation->user && $reservation->user->email) {
-                            Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
-                        }
-                    } catch (Exception $e) {
-                        Log::warning('Erreur envoi email', ['error' => $e->getMessage()]);
-                    }
-
-                    return redirect()->route('payment.success', $reservation->id);
-
-                } elseif ($status['status'] === 'FAILED') {
-                    // Paiement échoué
-                    $reservation->update(['statut_paiement' => 'echec']);
-                    return view('payment.failed', compact('reservation'));
-
-                } else {
-                    // Paiement en cours
-                    return view('payment.pending', compact('reservation'));
-                }
-            }
-
-            // Statut indéterminé
+            // Afficher la page en attente pendant la vérification
             return view('payment.pending', compact('reservation'));
 
         } catch (Exception $e) {
-            Log::error('Erreur page de retour', [
+            Log::error('Erreur page de retour CashPay', [
                 'reservation_id' => $reservationId,
                 'error' => $e->getMessage()
             ]);
@@ -129,133 +124,78 @@ class PaymentController extends Controller
     }
 
     /**
-     * Webhook CinetPay pour les notifications de paiement
+     * Webhook CashPay pour les notifications de paiement
      */
-    public function webhook(Request $request)
+    public function handleWebhook(Request $request)
     {
         try {
-            Log::info('CinetPay: Webhook reçu', $request->all());
+            $webhookData = $request->all();
+            
+            Log::info('CashPay: Webhook reçu', ['data' => $webhookData]);
 
-            // Traiter le webhook selon les spécifications CinetPay
-            $webhookData = $this->cinetPayService->handleWebhook($request->all());
+            // Traiter le webhook selon la documentation CashPay V2.0
+            $webhookResult = $this->cashPayService->handleWebhook($webhookData);
 
-            if ($webhookData) {
-                $transactionId = $webhookData['transaction_id'];
-                $status = $webhookData['status'];
-
-                // Trouver la réservation correspondante
-                $reservation = Reservation::where('transaction_id', $transactionId)->first();
-
-                if ($reservation) {
-                    if ($status === 'COMPLETED') {
-                        // Paiement confirmé - Mise à jour selon les données réelles de CinetPay
-                        DB::transaction(function () use ($reservation, $webhookData) {
-                            $reservation->update([
-                                'statut' => 'confirmee',
-                                'statut_paiement' => 'paye',
-                                'date_paiement' => now(),
-                                'montant_paye' => $webhookData['amount'],
-                                'methode_paiement' => $webhookData['payment_data']['payment_method'] ?? 'CinetPay',
-                                'cinetpay_payment_data' => json_encode($webhookData['payment_data'])
-                            ]);
-
-                            // Libérer la chambre si elle était bloquée
-                            if ($reservation->chambre) {
-                                $reservation->chambre->update(['statut' => 'disponible']);
-                            }
-                        });
-
-                        // Envoyer l'email de confirmation avec les vraies données
-                        try {
-                            if ($reservation->user && $reservation->user->email) {
-                                Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
-                            }
-                        } catch (Exception $e) {
-                            Log::warning('Erreur envoi email confirmation', [
-                                'reservation_id' => $reservation->id,
-                                'error' => $e->getMessage()
-                            ]);
-                        }
-
-                        Log::info('CinetPay: Paiement confirmé via webhook', [
-                            'reservation_id' => $reservation->id,
-                            'transaction_id' => $transactionId,
-                            'amount' => $webhookData['amount']
-                        ]);
-
-                    } else {
-                        // Paiement échoué ou en attente
-                        $reservation->update([
-                            'statut_paiement' => 'echec',
-                            'notes_paiement' => 'Paiement échoué - ' . ($webhookData['message'] ?? 'Raison inconnue')
-                        ]);
-
-                        Log::info('CinetPay: Paiement échoué via webhook', [
-                            'reservation_id' => $reservation->id,
-                            'transaction_id' => $transactionId,
-                            'status' => $status
-                        ]);
-                    }
-
-                    // Réponse pour CinetPay
-                    return response('OK', 200);
-                } else {
-                    Log::warning('CinetPay: Réservation non trouvée', [
-                        'transaction_id' => $transactionId
-                    ]);
-                    return response('Transaction not found', 404);
-                }
-            } else {
-                Log::warning('CinetPay: Webhook invalide');
-                return response('Invalid webhook data', 400);
+            if (!$webhookResult) {
+                return response()->json(['error' => 'Invalid webhook data'], 400);
             }
 
+            // Trouver la réservation correspondante
+            $reservation = Reservation::where('cashpay_merchant_reference', $webhookResult['merchant_reference'])
+                ->orWhere('cashpay_order_reference', $webhookResult['order_reference'])
+                ->first();
+
+            if (!$reservation) {
+                Log::warning('CashPay: Réservation non trouvée pour webhook', [
+                    'merchant_reference' => $webhookResult['merchant_reference'],
+                    'order_reference' => $webhookResult['order_reference']
+                ]);
+                return response()->json(['error' => 'Reservation not found'], 404);
+            }
+
+            // Mettre à jour la réservation selon l'état du paiement
+            $this->updateReservationFromWebhook($reservation, $webhookResult);
+
+            return response()->json(['success' => true]);
+
         } catch (Exception $e) {
-            Log::error('CinetPay: Erreur traitement webhook', [
+            Log::error('CashPay: Erreur traitement webhook', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'data' => $request->all()
+                'request_data' => $request->all()
             ]);
 
-            return response('Webhook processing error', 500);
+            return response()->json(['error' => 'Internal server error'], 500);
         }
     }
 
     /**
-     * Vérifier manuellement le statut d'un paiement
+     * Vérifier le statut d'un paiement (AJAX)
      */
-    public function checkPaymentStatus(Request $request, $reservationId)
+    public function checkPaymentStatus(Reservation $reservation)
     {
         try {
-            $reservation = Reservation::findOrFail($reservationId);
-
-            if ($reservation->transaction_id) {
-                $status = $this->cinetPayService->checkPaymentStatus($reservation->transaction_id);
-
-                if ($status['success']) {
-                    return response()->json([
-                        'success' => true,
-                        'status' => $status['status'],
-                        'message' => 'Statut vérifié avec succès'
-                    ]);
-                }
-            }
+            // Recharger la réservation depuis la base de données
+            $reservation->refresh();
 
             return response()->json([
-                'success' => false,
-                'message' => 'Impossible de vérifier le statut'
+                'success' => true,
+                'reservation_status' => $reservation->statut_paiement,
+                'status' => $reservation->statut,
+                'amount_paid' => $reservation->montant_paye,
+                'payment_method' => $reservation->methode_paiement,
+                'payment_date' => $reservation->date_paiement,
             ]);
 
         } catch (Exception $e) {
-            Log::error('Erreur vérification statut', [
-                'reservation_id' => $reservationId,
+            Log::error('Erreur vérification statut paiement', [
+                'reservation_id' => $reservation->id,
                 'error' => $e->getMessage()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la vérification'
-            ]);
+                'message' => 'Erreur lors de la vérification du statut'
+            ], 500);
         }
     }
 
@@ -272,6 +212,14 @@ class PaymentController extends Controller
     }
 
     /**
+     * Page d'échec de paiement
+     */
+    public function failed(Reservation $reservation)
+    {
+        return view('payment.failed', compact('reservation'));
+    }
+
+    /**
      * Télécharger le reçu de paiement
      */
     public function downloadReceipt(Reservation $reservation)
@@ -283,5 +231,85 @@ class PaymentController extends Controller
         $pdf = Pdf::loadView('payment.receipt', compact('reservation'));
 
         return $pdf->download('recu-reservation-' . $reservation->id . '.pdf');
+    }
+
+    /**
+     * Test de l'intégration CashPay
+     */
+    public function testCashPay()
+    {
+        try {
+            $result = $this->cashPayService->testAuthentication();
+            
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'data' => $result['data'] ?? null
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mettre à jour la réservation depuis un webhook
+     */
+    private function updateReservationFromWebhook($reservation, $webhookResult)
+    {
+        DB::transaction(function () use ($reservation, $webhookResult) {
+            $updateData = [
+                'cashpay_webhook_data' => json_encode($webhookResult),
+                'cashpay_status' => $webhookResult['state'],
+                'updated_at' => now()
+            ];
+
+            // Selon la documentation, l'état peut être : Pending, Paid, Error, Cancelled, Partial, Excess
+            switch ($webhookResult['state']) {
+                case 'Paid':
+                    $updateData = array_merge($updateData, [
+                        'statut' => 'confirmee',
+                        'statut_paiement' => 'paye',
+                        'date_paiement' => now(),
+                        'montant_paye' => $webhookResult['received_amount'] ?? $reservation->prix_total,
+                        'methode_paiement' => 'CashPay'
+                    ]);
+
+                    // Envoyer email de confirmation
+                    try {
+                        if ($reservation->user && $reservation->user->email) {
+                            Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
+                        }
+                    } catch (Exception $e) {
+                        Log::warning('Erreur envoi email confirmation', ['error' => $e->getMessage()]);
+                    }
+                    break;
+
+                case 'Error':
+                case 'Cancelled':
+                    $updateData['statut_paiement'] = 'echec';
+                    break;
+
+                case 'Partial':
+                    $updateData['statut_paiement'] = 'partiel';
+                    break;
+
+                case 'Pending':
+                default:
+                    $updateData['statut_paiement'] = 'en_attente';
+                    break;
+            }
+
+            $reservation->update($updateData);
+
+            Log::info('CashPay: Réservation mise à jour', [
+                'reservation_id' => $reservation->id,
+                'new_status' => $updateData['statut_paiement'],
+                'cashpay_state' => $webhookResult['state']
+            ]);
+        });
     }
 }

@@ -60,10 +60,36 @@
                         <p>Un Aperçu de nos Saveurs</p>
                     </div>
                     @if($menuActif)
-                        <p class="mb-4">Explorez quelques-unes de nos créations ci-dessous. Pour une vue complète de notre offre, n'hésitez pas à télécharger notre menu détaillé.</p>
-                        <a href="{{ asset('storage/' . $menuActif->fichier) }}" download class="btn-download-v3">
-                            <i class="bi bi-download me-2"></i> Télécharger le Menu Complet
-                        </a>
+                        @php
+                            $extension = pathinfo($menuActif->fichier, PATHINFO_EXTENSION);
+                            $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                        @endphp
+
+                        @if($isImage)
+                            <p class="mb-4">Explorez quelques-unes de nos créations ci-dessous. Voici notre menu actuel :</p>
+                            <div class="text-center mb-4">
+                                <img src="{{ asset('storage/' . $menuActif->fichier) }}"
+                                     alt="{{ $menuActif->titre }}"
+                                     class="img-fluid rounded shadow"
+                                     style="max-height: 600px; cursor: pointer;"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#menuModal">
+                            </div>
+                            <a href="{{ asset('storage/' . $menuActif->fichier) }}" target="_blank" class="btn-download-v3 me-3">
+                                <i class="bi bi-eye me-2"></i> Voir en grand
+                            </a>
+                            <a href="{{ asset('storage/' . $menuActif->fichier) }}" download class="btn-download-v3">
+                                <i class="bi bi-download me-2"></i> Télécharger l'image
+                            </a>
+                        @else
+                            <p class="mb-4">Explorez quelques-unes de nos créations ci-dessous. Pour une vue complète de notre offre, n'hésitez pas à télécharger notre menu détaillé.</p>
+                            <a href="{{ asset('storage/' . $menuActif->fichier) }}" target="_blank" class="btn-download-v3 me-3">
+                                <i class="bi bi-eye me-2"></i> Voir le Menu PDF
+                            </a>
+                            <a href="{{ asset('storage/' . $menuActif->fichier) }}" download class="btn-download-v3">
+                                <i class="bi bi-download me-2"></i> Télécharger le Menu Complet
+                            </a>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -113,6 +139,38 @@
         </div>
     </div>
 </div>
+
+<!-- ======= Fenêtre Modale pour le Menu ======= -->
+@if($menuActif)
+    @php
+        $extension = pathinfo($menuActif->fichier, PATHINFO_EXTENSION);
+        $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+    @endphp
+
+    @if($isImage)
+    <div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="menuModalLabel">{{ $menuActif->titre }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-2">
+                    <img src="{{ asset('storage/' . $menuActif->fichier) }}"
+                         alt="{{ $menuActif->titre }}"
+                         class="img-fluid rounded"
+                         style="max-height: 80vh;">
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="{{ asset('storage/' . $menuActif->fichier) }}" download class="btn btn-primary">
+                        <i class="bi bi-download"></i> Télécharger
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+@endif
 
 @endsection
 

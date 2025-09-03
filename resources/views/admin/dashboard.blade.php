@@ -90,12 +90,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <th>Chambre</th>
                             <th>Dates du séjour</th>
                             <th>Statut</th>
+                            <th>Confirmé par</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($dernieresReservations as $reservation)
                             <tr>
-                                <td>{{ $reservation->user->name ?? $reservation->client_nom }}</td>
+                                <td>{{ $reservation->client_nom }} {{ $reservation->client_prenom }}</td>
                                 <td>{{ $reservation->chambre->nom ?? 'N/A' }}</td>
                                 <td>
                                     Du {{ \Carbon\Carbon::parse($reservation->check_in_date)->format('d/m/Y') }}<br>
@@ -107,10 +108,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                         {{ ucfirst($reservation->statut) }}
                                     </span>
                                 </td>
+                                <td>
+                                    @if($reservation->adminConfirme)
+                                        <small class="text-success">
+                                            <i class="bi bi-person-check me-1"></i>{{ $reservation->adminConfirme->name }}
+                                            <br><span class="text-muted">{{ $reservation->date_confirmation ? $reservation->date_confirmation->format('d/m H:i') : '' }}</span>
+                                        </small>
+                                    @else
+                                        <small class="text-muted">En attente</small>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">Aucune réservation pour le moment.</td>
+                                <td colspan="5" class="text-center">Aucune réservation pour le moment.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -40,9 +40,25 @@
                                 <tr>
                                     <td class="fw-bold">{{ $menu->titre }}</td>
                                     <td>
-                                        <a href="{{ asset('storage/'.$menu->fichier) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                            <i class="bi bi-eye-fill"></i> Voir le fichier
-                                        </a>
+                                        @if($menu->fichier)
+                                            @php
+                                                $extension = pathinfo($menu->fichier, PATHINFO_EXTENSION);
+                                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                            @endphp
+                                            
+                                            @if($isImage)
+                                                <a href="{{ asset('storage/'.$menu->fichier) }}" target="_blank" class="btn btn-sm btn-outline-secondary me-2">
+                                                    <i class="bi bi-eye-fill"></i> Voir l'image
+                                                </a>
+                                                <img src="{{ asset('storage/'.$menu->fichier) }}" alt="{{ $menu->titre }}" style="height: 40px; width: 60px; object-fit: cover; border-radius: 4px;" class="border">
+                                            @else
+                                                <a href="{{ asset('storage/'.$menu->fichier) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-file-earmark-pdf-fill"></i> Voir le PDF
+                                                </a>
+                                            @endif
+                                        @else
+                                            <span class="text-muted">Aucun fichier</span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($menu->est_actif)

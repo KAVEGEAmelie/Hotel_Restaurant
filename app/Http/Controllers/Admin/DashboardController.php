@@ -18,7 +18,7 @@ class DashboardController extends Controller
         ];
 
         // On récupère les 5 dernières réservations avec les infos du client et de la chambre
-        $dernieresReservations = Reservation::with(['user', 'chambre'])
+        $dernieresReservations = Reservation::with(['user', 'chambre', 'adminConfirme'])
                                             ->latest()
                                             ->take(5)
                                             ->get();
