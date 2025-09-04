@@ -1,0 +1,12 @@
+{
+  "require": {
+    "php": "^8.2",
+    "ext-pgsql": "*",
+    "ext-gd": "*",
+    "ext-zip": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "heroku/heroku-buildpack-php": "*"
+  }
+}
