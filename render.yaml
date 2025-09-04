@@ -5,29 +5,31 @@ services:
     plan: free
     region: frankfurt
     buildCommand: |
-      # Mettre à jour les paquets
-      apt-get update
+      # Installer PHP via gestionnaire de paquets Node
+      curl -sL https://deb.nodesource.com/setup_18.x | sudo bash -
+      sudo apt-get update
       
-      # Installer PHP 8.2 et extensions
-      apt-get install -y software-properties-common
-      add-apt-repository -y ppa:ondrej/php
-      apt-get update
-      apt-get install -y php8.2-cli php8.2-curl php8.2-mbstring php8.2-xml php8.2-zip php8.2-pgsql php8.2-gd php8.2-bcmath
+      # Installer PHP 8.2 et extensions nécessaires
+      sudo apt-get install -y software-properties-common
+      sudo add-apt-repository -y ppa:ondrej/php
+      sudo apt-get update
+      sudo apt-get install -y php8.2-cli php8.2-curl php8.2-mbstring php8.2-xml php8.2-zip php8.2-pgsql php8.2-gd php8.2-bcmath
       
-      # Installer Composer
-      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+      # Installer Composer globalement
+      curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
       
       # Copier la configuration d'environnement
-      cp .env.production .env || echo "APP_ENV=production" > .env
+      cp .env.production .env 2>/dev/null || echo "APP_ENV=production" > .env
+      echo "APP_KEY=base64:Xmj2ol9FNXacWfCgPDNCNacKvWngXgbmrL2j6EUWc+0=" >> .env
       
       # Installer les dépendances PHP
       composer install --no-dev --optimize-autoloader --no-interaction
       
-      # Installer les dépendances Node.js et builder
+      # Installer les dépendances Node.js et builder les assets
       npm install
       npm run build
       
-      # Générer la clé et optimiser
+      # Optimiser Laravel
       php artisan key:generate --force
       php artisan config:cache
       php artisan route:cache
