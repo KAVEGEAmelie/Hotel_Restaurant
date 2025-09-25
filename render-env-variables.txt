@@ -1,0 +1,31 @@
+# Variables d'environnement pour Render
+
+APP_NAME=Hotel Restaurant Le Printemps
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:biNLtRftMrheEP4oy25gKTrFFDD+N2EuNc+APzExiV8=
+
+# Base de données PostgreSQL (à récupérer depuis votre DB Render)
+DATABASE_URL=postgresql://username:password@host:port/database
+# Remplacez par l'URL de connexion de votre DB Render
+
+# Email Yahoo
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mail.yahoo.com
+MAIL_PORT=587
+MAIL_USERNAME=hotelrestaurantleprintemps@yahoo.com
+MAIL_PASSWORD=VOTRE_MOT_DE_PASSE_APP
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=hotelrestaurantleprintemps@yahoo.com
+MAIL_FROM_NAME=Hotel Restaurant Le Printemps
+
+# CashPay
+CASHPAY_API_KEY=VOTRE_CLE_API
+CASHPAY_SECRET_KEY=VOTRE_CLE_SECRETE
+CASHPAY_MODE=live
+
+# Autres
+CACHE_DRIVER=file
+FILESYSTEM_DISK=public
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=database
