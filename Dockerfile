@@ -99,17 +99,15 @@ fi\n\
 if [ -n "$DATABASE_URL" ]; then\n\
     echo "✅ DATABASE_URL détecté: $DATABASE_URL"\n\
     \n\
-    # Utiliser directement DATABASE_URL (Laravel le supporte nativement)\n\
-    echo "DATABASE_URL=$DATABASE_URL" >> .env\n\
-    echo "DB_CONNECTION=pgsql" >> .env\n\
-    \n\
-    # Parser pour les composants individuels (au cas où)\n\
+    # Parser pour les composants individuels\n\
     DB_USERNAME=$(echo "$DATABASE_URL" | sed "s|postgresql://\\([^:]*\\):.*|\\1|")\n\
     DB_PASSWORD=$(echo "$DATABASE_URL" | sed "s|postgresql://[^:]*:\\([^@]*\\)@.*|\\1|")\n\
     DB_HOST=$(echo "$DATABASE_URL" | sed "s|.*@\\([^:]*\\):.*|\\1|")\n\
     DB_PORT=$(echo "$DATABASE_URL" | sed "s|.*:\\([0-9]*\\)/.*|\\1|")\n\
     DB_DATABASE=$(echo "$DATABASE_URL" | sed "s|.*/\\([^?]*\\).*|\\1|")\n\
     \n\
+    # Utiliser uniquement les variables individuelles (pas DATABASE_URL)\n\
+    echo "DB_CONNECTION=pgsql" >> .env\n\
     echo "DB_HOST=$DB_HOST" >> .env\n\
     echo "DB_PORT=$DB_PORT" >> .env\n\
     echo "DB_DATABASE=$DB_DATABASE" >> .env\n\
