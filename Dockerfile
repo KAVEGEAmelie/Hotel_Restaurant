@@ -74,10 +74,16 @@ RUN echo '<VirtualHost *:${PORT}>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Définir les permissions
+# Définir les permissions et créer les répertoires nécessaires
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && mkdir -p /var/www/html/storage/app/public/chambres \
+    && mkdir -p /var/www/html/storage/app/public/plats-galerie \
+    && mkdir -p /var/www/html/storage/app/public/menus \
+    && mkdir -p /var/www/html/public/storage \
+    && chmod -R 775 /var/www/html/storage/app/public \
+    && chown -R www-data:www-data /var/www/html/storage/app/public
 
 # Script de démarrage avec configuration dynamique
 RUN echo '#!/bin/bash\n\
@@ -136,8 +142,17 @@ php artisan config:cache\n\
 php artisan route:cache\n\
 php artisan view:cache\n\
 \n\
-# Créer le lien de stockage\n\
-php artisan storage:link || true\n\
+# Créer le lien de stockage et vérifier\n\
+php artisan storage:link --force || true\n\
+\n\
+# Vérifier que les répertoires existent\n\
+mkdir -p storage/app/public/chambres\n\
+mkdir -p storage/app/public/plats-galerie\n\
+mkdir -p storage/app/public/menus\n\
+\n\
+# S'\''assurer des bonnes permissions\n\
+chown -R www-data:www-data storage/\n\
+chmod -R 775 storage/app/public/\n\
 \n\
 # Démarrer Apache\n\
 echo "🌐 Démarrage d'\''Apache sur le port ${PORT:-80}..."\n\
