@@ -79,7 +79,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Script de démarrage simple
+# Script de démarrage avec configuration dynamique
 RUN echo '#!/bin/bash\n\
 echo "🚀 Démarrage de l'\''application Laravel..."\n\
 \n\
@@ -89,12 +89,41 @@ if [ -f .env.production ]; then\n\
     echo "✅ Fichier .env.production copié vers .env"\n\
 fi\n\
 \n\
+# Configurer les variables d'\''environnement depuis Render\n\
+if [ -n "$DATABASE_URL" ]; then\n\
+    echo "DB_CONNECTION=pgsql" >> .env\n\
+    # Parser DATABASE_URL pour extraire les composants\n\
+    DB_FULL_URL="${DATABASE_URL}"\n\
+    DB_HOST=$(echo $DB_FULL_URL | sed "s/postgres:\\/\\/.*@\\([^:]*\\).*/\\1/")\n\
+    DB_PORT=$(echo $DB_FULL_URL | sed "s/.*:\\([0-9]\\+\\)\\/.*/\\1/")\n\
+    DB_DATABASE=$(echo $DB_FULL_URL | sed "s/.*\\/\\([^?]*\\).*/\\1/")\n\
+    DB_USERNAME=$(echo $DB_FULL_URL | sed "s/postgres:\\/\\/\\([^:]*\\).*/\\1/")\n\
+    DB_PASSWORD=$(echo $DB_FULL_URL | sed "s/postgres:\\/\\/[^:]*:\\([^@]*\\).*/\\1/")\n\
+    \n\
+    echo "DB_HOST=$DB_HOST" >> .env\n\
+    echo "DB_PORT=$DB_PORT" >> .env\n\
+    echo "DB_DATABASE=$DB_DATABASE" >> .env\n\
+    echo "DB_USERNAME=$DB_USERNAME" >> .env\n\
+    echo "DB_PASSWORD=$DB_PASSWORD" >> .env\n\
+    echo "✅ Configuration BDD extraite de DATABASE_URL"\n\
+fi\n\
+\n\
+# Ajouter les autres variables d'\''environnement\n\
+[ -n "$MAIL_USERNAME" ] && echo "MAIL_USERNAME=$MAIL_USERNAME" >> .env\n\
+[ -n "$MAIL_PASSWORD" ] && echo "MAIL_PASSWORD=$MAIL_PASSWORD" >> .env\n\
+[ -n "$CASHPAY_API_KEY" ] && echo "CASHPAY_API_KEY=$CASHPAY_API_KEY" >> .env\n\
+[ -n "$CASHPAY_SITE_ID" ] && echo "CASHPAY_SITE_ID=$CASHPAY_SITE_ID" >> .env\n\
+[ -n "$CASHPAY_SECRET_KEY" ] && echo "CASHPAY_SECRET_KEY=$CASHPAY_SECRET_KEY" >> .env\n\
+\n\
 # Configurer Apache pour le port dynamique\n\
 echo "Listen ${PORT:-80}" > /etc/apache2/ports.conf\n\
 sed -i "s/\${PORT}/${PORT:-80}/g" /etc/apache2/sites-available/000-default.conf\n\
 \n\
 # Générer la clé si nécessaire\n\
 php artisan key:generate --force\n\
+\n\
+# Exécuter les migrations\n\
+php artisan migrate --force || echo "⚠️  Migrations échouées"\n\
 \n\
 # Optimiser l'\''application\n\
 php artisan optimize:clear\n\
