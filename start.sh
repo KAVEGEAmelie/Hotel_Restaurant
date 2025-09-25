@@ -5,14 +5,14 @@ echo "🚀 Démarrage de l'application Laravel..."
 
 # Créer le fichier .env s'il n'existe pas
 if [ ! -f .env ]; then
-    if [ -f .env.production ]; then
-        cp .env.production .env
-        echo "✅ Fichier .env.production copié"
+    if [ -f .env.render ]; then
+        cp .env.render .env
+        echo "✅ Fichier .env.render copié"
     else
         echo "APP_ENV=production" > .env
         echo "APP_DEBUG=false" >> .env
         echo "APP_KEY=base64:Xmj2ol9FNXacWfCgPDNCNacKvWngXgbmrL2j6EUWc+0=" >> .env
-        echo "✅ Fichier .env créé"
+        echo "✅ Fichier .env créé avec clé par défaut"
     fi
 fi
 

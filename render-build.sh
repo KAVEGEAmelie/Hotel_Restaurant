@@ -30,10 +30,13 @@ sudo apt-get install -y \
 echo "🎼 Installation de Composer..."
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier .env.production vers .env
-if [ -f .env.production ]; then
-    cp .env.production .env
-    echo "✅ Configuration d'environnement copiée"
+# Copier .env.render vers .env pour la production
+if [ -f .env.render ]; then
+    cp .env.render .env
+    echo "✅ Configuration d'environnement copiée (.env.render -> .env)"
+else
+    echo "⚠️ Fichier .env.render non trouvé, création d'un .env basique"
+    echo "APP_ENV=production" > .env
 fi
 
 # Installer les dépendances PHP

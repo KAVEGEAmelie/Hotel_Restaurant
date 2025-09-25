@@ -95,8 +95,10 @@ return [
             'sslmode' => env('DB_SSLMODE', 'require'),
             'options' => [
                 PDO::ATTR_PERSISTENT => false,
-                PDO::ATTR_TIMEOUT => 30,
+                PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 30),
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                // Options SSL pour PostgreSQL (pour Render et autres services cloud)
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => true,
             ],
         ],
 
