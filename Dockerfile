@@ -87,23 +87,12 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Script de démarrage avec configuration dynamique
 RUN echo '#!/bin/bash\n\
-set -e\n\
-cd /var/www/html\n\
 echo "🚀 Démarrage de l'\''application Laravel..."\n\
-echo "📁 Répertoire actuel: $(pwd)"\n\
 \n\
 # Copier le fichier d'\''environnement de production\n\
 if [ -f .env.production ]; then\n\
     cp .env.production .env\n\
     echo "✅ Fichier .env.production copié vers .env"\n\
-else\n\
-    echo "❌ Fichier .env.production MANQUANT"\n\
-    # Créer un .env minimal\n\
-    echo "APP_NAME=\"Hotel Restaurant Le Printemps\"" > .env\n\
-    echo "APP_ENV=production" >> .env\n\
-    echo "APP_KEY=base64:biNLtRftMrheEP4oy25gKTrFFDD+N2EuNc+APzExiV8=" >> .env\n\
-    echo "APP_DEBUG=false" >> .env\n\
-    echo "APP_URL=https://hotel-restaurant-leprintemps.onrender.com" >> .env\n\
 fi\n\
 \n\
 # Configurer les variables d'\''environnement depuis Render\n\
@@ -124,20 +113,9 @@ if [ -n "$DATABASE_URL" ]; then\n\
     echo "DB_DATABASE=$DB_DATABASE" >> .env\n\
     echo "DB_USERNAME=$DB_USERNAME" >> .env\n\
     echo "DB_PASSWORD=$DB_PASSWORD" >> .env\n\
-    echo "DB_SSLMODE=prefer" >> .env\n\
+    echo "DB_SSLMODE=disable" >> .env\n\
     \n\
     echo "✅ Configuration BDD extraite: $DB_HOST:$DB_PORT/$DB_DATABASE"\n\
-else\n\
-    echo "❌ DATABASE_URL non trouvée"\n\
-fi\n\
-\n\
-# Vérifier que .env existe\n\
-if [ -f .env ]; then\n\
-    echo "✅ Fichier .env créé avec succès"\n\
-    echo "📋 Contenu .env:"\n\
-    head -10 .env\n\
-else\n\
-    echo "❌ ERREUR: Fichier .env introuvable après création"\n\
 fi\n\
 \n\
 # Ajouter les autres variables d'\''environnement\n\
@@ -152,19 +130,19 @@ echo "Listen ${PORT:-80}" > /etc/apache2/ports.conf\n\
 sed -i "s/\${PORT}/${PORT:-80}/g" /etc/apache2/sites-available/000-default.conf\n\
 \n\
 # Générer la clé si nécessaire\n\
-php artisan key:generate --force || echo "⚠️ Key generation failed"\n\
+php artisan key:generate --force\n\
 \n\
 # Exécuter les migrations\n\
 php artisan migrate --force || echo "⚠️  Migrations échouées"\n\
 \n\
 # Optimiser l'\''application\n\
-php artisan optimize:clear || echo "⚠️ Optimize clear failed"\n\
-php artisan config:cache || echo "⚠️ Config cache failed"\n\
-php artisan route:cache || echo "⚠️ Route cache failed"\n\
-php artisan view:cache || echo "⚠️ View cache failed"\n\
+php artisan optimize:clear\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
 \n\
 # Créer le lien de stockage et vérifier\n\
-php artisan storage:link --force || echo "⚠️ Storage link failed"\n\
+php artisan storage:link --force || true\n\
 \n\
 # Vérifier que les répertoires existent\n\
 mkdir -p storage/app/public/chambres\n\
@@ -172,10 +150,8 @@ mkdir -p storage/app/public/plats-galerie\n\
 mkdir -p storage/app/public/menus\n\
 \n\
 # S'\''assurer des bonnes permissions\n\
-chown -R www-data:www-data storage/ || echo "⚠️ Permission change failed"\n\
-chmod -R 775 storage/app/public/ || echo "⚠️ Chmod failed"\n\
-\n\
-echo "🎯 Script de démarrage terminé avec succès"\n\
+chown -R www-data:www-data storage/\n\
+chmod -R 775 storage/app/public/\n\
 \n\
 # Démarrer Apache\n\
 echo "🌐 Démarrage d'\''Apache sur le port ${PORT:-80}..."\n\
