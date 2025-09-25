@@ -92,14 +92,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'schema' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'require'),
-            'options' => [
+            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'options' => extension_loaded('pdo_pgsql') ? [
                 PDO::ATTR_PERSISTENT => false,
-                PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 30),
+                PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 60),
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                // Options SSL pour PostgreSQL (pour Render et autres services cloud)
+                // Configuration SSL plus permissive pour Render
                 PDO::PGSQL_ATTR_DISABLE_PREPARES => true,
-            ],
+            ] : [],
         ],
 
         'sqlsrv' => [
