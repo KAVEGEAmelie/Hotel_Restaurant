@@ -42,14 +42,17 @@ RUN composer install --no-dev --no-scripts --optimize-autoloader
 # Copier package.json et package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances Node.js
-RUN npm ci --only=production
+# Installer les dépendances Node.js (toutes, y compris dev pour build)
+RUN npm ci
 
 # Copier le reste des fichiers de l'application
 COPY . .
 
 # Compiler les assets
 RUN npm run build
+
+# Nettoyer les node_modules dev après build
+RUN npm ci --only=production && rm -rf node_modules/.cache
 
 # Exécuter les scripts Composer
 RUN composer dump-autoload --optimize
