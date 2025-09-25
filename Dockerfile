@@ -113,7 +113,7 @@ if [ -n "$DATABASE_URL" ]; then\n\
     echo "DB_DATABASE=$DB_DATABASE" >> .env\n\
     echo "DB_USERNAME=$DB_USERNAME" >> .env\n\
     echo "DB_PASSWORD=$DB_PASSWORD" >> .env\n\
-    echo "DB_SSLMODE=disable" >> .env\n\
+    echo "DB_SSLMODE=prefer" >> .env\n\
     \n\
     echo "✅ Configuration BDD extraite: $DB_HOST:$DB_PORT/$DB_DATABASE"\n\
 fi\n\
