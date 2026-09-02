@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Table déjà créée par 2025_06_18_185151 : ne rien faire si elle existe
+        if (Schema::hasTable('reservations')) {
+            return;
+        }
+
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
