@@ -49,12 +49,14 @@
                     </a>
                 </li>
 
+                @if(Auth::user()->canManageUsers())
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.utilisateurs.*') ? 'active' : '' }}"
                        href="{{ route('admin.utilisateurs.index') }}">
                         <i class="bi bi-people-fill"></i> Gestion Utilisateurs
                     </a>
                 </li>
+                @endif
 
                 <li class="nav-heading mt-4">Restaurant</li>
 
