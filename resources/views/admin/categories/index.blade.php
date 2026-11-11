@@ -169,7 +169,7 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                    onclick="AdminActionComponents.confirmDelete({{ $categorie->id }}, '{{ $categorie->nom }}', 'categories')"
+                                                    onclick="AdminActionComponents.confirmDelete({{ $categorie->id }}, @js($categorie->nom), 'categories')"
                                                     data-bs-toggle="tooltip" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>

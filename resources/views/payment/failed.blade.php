@@ -17,9 +17,12 @@
                     </div>
 
                     <div class="mt-4">
-                        <a href="{{ route('payment.initiate', $reservation->id) }}" class="btn btn-warning me-2">
-                            <i class="fas fa-redo me-1"></i> Réessayer le paiement
-                        </a>
+                        <form action="{{ route('payment.initiate', $reservation) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-warning me-2">
+                                <i class="fas fa-redo me-1"></i> Réessayer le paiement
+                            </button>
+                        </form>
                         <a href="{{ route('contact') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-headset me-1"></i> Support client
                         </a>

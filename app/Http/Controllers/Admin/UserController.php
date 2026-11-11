@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -37,14 +38,16 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', Rule::in(array_keys(User::ROLES))],
         ]);
 
-        User::create([
+        $user = new User([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => $request->has('is_admin'),
         ]);
+        $user->assignRole($request->role);
+        $user->save();
 
         return redirect()->route('admin.utilisateurs.index')
             ->with('success', '👤 Utilisateur créé avec succès !')
@@ -54,31 +57,32 @@ class UserController extends Controller
     /**
      * Affiche le formulaire de modification.
      */
-    public function edit(User $user) // CORRIGÉ
+    public function edit(User $user)
     {
-        return view('admin.users.form', compact('user')); // CORRIGÉ
+        return view('admin.users.form', compact('user'));
     }
 
     /**
      * Met à jour un utilisateur.
      */
-    public function update(Request $request, User $user) // CORRIGÉ
+    public function update(Request $request, User $user)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$user->id], // CORRIGÉ
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$user->id],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', Rule::in(array_keys(User::ROLES))],
         ]);
 
-        $user->name = $request->name; // CORRIGÉ
-        $user->email = $request->email; // CORRIGÉ
-        $user->is_admin = $request->has('is_admin'); // CORRIGÉ
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->assignRole($request->role);
 
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password); // CORRIGÉ
+            $user->password = Hash::make($request->password);
         }
 
-        $user->save(); // CORRIGÉ
+        $user->save();
 
         return redirect()->route('admin.utilisateurs.index')
             ->with('success', '✏️ Utilisateur mis à jour avec succès !')
@@ -88,13 +92,13 @@ class UserController extends Controller
     /**
      * Supprime un utilisateur.
      */
-    public function destroy(User $user) // CORRIGÉ
+    public function destroy(User $user)
     {
-        if (Auth::id() == $user->id) { // CORRIGÉ
+        if (Auth::id() == $user->id) {
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
         }
 
-        $user->delete(); // CORRIGÉ
+        $user->delete();
         return redirect()->route('admin.utilisateurs.index')
             ->with('warning', '🗑️ Utilisateur supprimé')
             ->with('info', 'Le compte utilisateur a été définitivement supprimé');

@@ -96,37 +96,4 @@ class AuthenticatedSessionController extends Controller
                 'duration' => 5000
             ]);
     }
-
-    /**
-     * Afficher la page de profil utilisateur
-     */
-    public function profile(): View
-    {
-        return view('auth.profile', [
-            'user' => Auth::user()
-        ]);
-    }
-
-    /**
-     * Mettre à jour le profil utilisateur
-     */
-    public function updateProfile(Request $request): RedirectResponse
-    {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-        ]);
-
-        $user->update($validated);
-
-        return redirect()->back()
-            ->with('notification', [
-                'type' => 'success',
-                'title' => '✅ Profil mis à jour',
-                'message' => 'Vos informations ont été sauvegardées avec succès',
-                'duration' => 4000
-            ]);
-    }
 }

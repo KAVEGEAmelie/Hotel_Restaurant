@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Reservation;
 
 // --- Contrôleurs ---
 use App\Http\Controllers\PageController;
@@ -46,23 +45,23 @@ Route::post('/contact', [PageController::class, 'handleContactForm'])->name('con
 */
 
 // Création et stockage de réservation
-Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+Route::post('/reservations', [ReservationController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('reservations.store');
 
-// Affichage confirmation avant paiement
-Route::get('/reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])->name('reservations.confirm');
+// Les URL publiques utilisent le jeton secret de la réservation (jamais l'id, qui se devine).
+Route::get('/reservations/{reservation:access_token}/confirm', [ReservationController::class, 'confirm'])->name('reservations.confirm');
 
 // Routes de paiement CinetPay
-Route::post('/payment/initiate/{reservation}', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
-Route::get('/payment/return/{reservation}', [PaymentController::class, 'returnFromPayment'])->name('payment.return');
-Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
-Route::get('/payment/check/{reservation}', [PaymentController::class, 'checkPaymentStatus'])->name('payment.check');
-Route::get('/payment/success/{reservation}', [PaymentController::class, 'success'])->name('payment.success');
-Route::get('/payment/receipt/{reservation}', [PaymentController::class, 'downloadReceipt'])->name('payment.receipt');
+Route::post('/payment/initiate/{reservation:access_token}', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+Route::match(['get', 'post'], '/payment/return/{reservation:access_token}', [PaymentController::class, 'returnFromPayment'])->name('payment.return');
+Route::get('/payment/check/{reservation:access_token}', [PaymentController::class, 'checkPaymentStatus'])->name('payment.check');
+Route::get('/payment/success/{reservation:access_token}', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/receipt/{reservation:access_token}', [PaymentController::class, 'downloadReceipt'])->name('payment.receipt');
 
-// Page de succès de réservation
-Route::get('/reservation/succes/{reservation}', function (Reservation $reservation) {
-    return view('reservation.success', compact('reservation'));
-})->name('reservation.success');
+// Notification serveur à serveur de CinetPay (GET = test de disponibilité de l'URL)
+Route::match(['get', 'post'], '/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+
 /*
 |--------------------------------------------------------------------------
 | 2. ROUTES D'AUTHENTIFICATION
@@ -104,7 +103,7 @@ Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->gr
 
     // Routes des réservations (accessible aux admin ET gérants)
     Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');
-    Route::resource('reservations', AdminReservationController::class)->except(['index']);
+    Route::delete('/reservations/{reservation}', [AdminReservationController::class, 'destroy'])->name('reservations.destroy');
     Route::get('/reservations/{reservation}/fiche-police', [AdminReservationController::class, 'downloadPoliceForm'])->name('reservations.police_form');
     Route::post('/reservations/bulk-action', [AdminReservationController::class, 'bulkAction'])->name('reservations.bulkAction');
     Route::patch('/reservations/{reservation}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.updateStatus');

@@ -126,13 +126,13 @@
             <div class="info-row">
                 <div class="info-label">Statut :</div>
                 <div class="info-value">
-                    <span class="status-badge">{{ strtoupper($reservation->statut) }}</span>
+                    <span class="status-badge">{{ mb_strtoupper($reservation->statut_label) }}</span>
                 </div>
             </div>
-            @if($reservation->transaction_ref)
+            @if($reservation->transaction_id)
             <div class="info-row">
                 <div class="info-label">Référence de transaction :</div>
-                <div class="info-value">{{ $reservation->transaction_ref }}</div>
+                <div class="info-value">{{ $reservation->transaction_id }}</div>
             </div>
             @endif
         </div>
@@ -178,10 +178,10 @@
                 {{ \Carbon\Carbon::parse($reservation->check_in_date)->diffInDays(\Carbon\Carbon::parse($reservation->check_out_date)) }}
             </div>
         </div>
-        @if($reservation->nombre_personnes)
+        @if($reservation->nombre_invites)
         <div class="info-row">
             <div class="info-label">Nombre de personnes :</div>
-            <div class="info-value">{{ $reservation->nombre_personnes }}</div>
+            <div class="info-value">{{ $reservation->nombre_invites }}</div>
         </div>
         @endif
     </div>

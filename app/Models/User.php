@@ -19,11 +19,21 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email', 
+        'email',
         'phone',
         'address',
         'password',
-        'is_admin',
+    ];
+
+    // Rôles possibles (colonne users.role). Jamais assignable en masse : à définir explicitement.
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_GERANT = 'gerant';
+    public const ROLE_CLIENT = 'client';
+
+    public const ROLES = [
+        self::ROLE_CLIENT => 'Client',
+        self::ROLE_GERANT => 'Gérant',
+        self::ROLE_ADMIN => 'Administrateur',
     ];
 
     /**
@@ -55,7 +65,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return (bool) $this->is_admin;
+        return $this->role === self::ROLE_ADMIN;
     }
 
     /**
@@ -63,7 +73,16 @@ class User extends Authenticatable
      */
     public function isGerant(): bool
     {
-        return str_contains($this->email, 'gerant') && !$this->is_admin;
+        return $this->role === self::ROLE_GERANT;
+    }
+
+    /**
+     * Change le rôle (garde la colonne historique is_admin synchronisée).
+     */
+    public function assignRole(string $role): void
+    {
+        $this->role = $role;
+        $this->is_admin = $role === self::ROLE_ADMIN;
     }
 
     /**

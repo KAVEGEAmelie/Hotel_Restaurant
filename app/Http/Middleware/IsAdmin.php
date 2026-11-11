@@ -16,8 +16,8 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // On vérifie si l'utilisateur est connecté ET si sa colonne is_admin est à true
-        if (Auth::check() && Auth::user()->is_admin) {
+        // On vérifie si l'utilisateur est connecté ET administrateur
+        if (Auth::check() && Auth::user()->isAdmin()) {
             return $next($request); // Si oui, on le laisse passer
         }
 

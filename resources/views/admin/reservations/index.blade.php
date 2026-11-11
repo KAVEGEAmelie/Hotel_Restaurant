@@ -102,7 +102,7 @@ function confirmReservation(id, clientName) {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ statut: 'confirmée' })
+                body: JSON.stringify({ statut: 'confirmee' })
             })
             .then(response => response.json())
             .then(data => {
@@ -111,7 +111,7 @@ function confirmReservation(id, clientName) {
                     showSuccessModal(`✅ Réservation de ${clientName} confirmée avec succès !`);
                     setTimeout(() => location.reload(), 2000);
                 } else {
-                    showErrorModal('Erreur lors de la confirmation de la réservation');
+                    showErrorModal(data.message || 'Erreur lors de la confirmation de la réservation');
                 }
             })
             .catch(error => {
@@ -142,7 +142,7 @@ function cancelReservation(id, clientName) {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ statut: 'annulée' })
+                body: JSON.stringify({ statut: 'annulee' })
             })
             .then(response => response.json())
             .then(data => {
@@ -409,9 +409,9 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                             <label for="statut" class="form-label">Statut</label>
                             <select name="statut" id="statut" class="form-select">
                                 <option value="all" @selected(request('statut') == 'all')>Tous les statuts</option>
-                                <option value="pending" @selected(request('statut') == 'pending')>En attente</option>
-                                <option value="confirmée" @selected(request('statut') == 'confirmée')>Confirmée</option>
-                                <option value="annulée" @selected(request('statut') == 'annulée')>Annulée</option>
+                                @foreach(\App\Models\Reservation::STATUTS as $value => $label)
+                                    <option value="{{ $value }}" @selected(request('statut') == $value)>{{ $label }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 col-lg-2 d-flex">
@@ -541,11 +541,12 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                     </td>
                                     <td>
                                         <span class="badge fs-6
-                                            @if($reservation->statut == 'confirmée') bg-success
-                                            @elseif($reservation->statut == 'pending') bg-warning text-dark
+                                            @if($reservation->statut == 'confirmee') bg-success
+                                            @elseif($reservation->statut == 'en_attente') bg-warning text-dark
+                                            @elseif($reservation->statut == 'terminee') bg-secondary
                                             @else bg-danger @endif">
-                                            <i class="bi bi-{{ $reservation->statut == 'confirmée' ? 'check-circle' : ($reservation->statut == 'pending' ? 'clock' : 'x-circle') }} me-1"></i>
-                                            {{ ucfirst($reservation->statut) }}
+                                            <i class="bi bi-{{ $reservation->statut == 'confirmee' ? 'check-circle' : ($reservation->statut == 'en_attente' ? 'clock' : 'x-circle') }} me-1"></i>
+                                            {{ $reservation->statut_label }}
                                         </span>
                                     </td>
                                     <td class="text-end">
@@ -560,18 +561,18 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                             </a>
 
                                             <!-- Bouton Confirmer (affiché seulement si pas confirmée) -->
-                                            @if($reservation->statut !== 'confirmée')
+                                            @if($reservation->statut !== 'confirmee')
                                                 <button type="button" class="btn btn-outline-success btn-sm"
-                                                        onclick="confirmReservation({{ $reservation->id }}, '{{ $reservation->client_nom }} {{ $reservation->client_prenom }}')"
+                                                        onclick="confirmReservation({{ $reservation->id }}, @js($reservation->client_nom.' '.$reservation->client_prenom))"
                                                         data-bs-toggle="tooltip" title="Confirmer la réservation">
                                                     <i class="bi bi-check-circle"></i>
                                                 </button>
                                             @endif
 
                                             <!-- Bouton Annuler (affiché seulement si pas annulée) -->
-                                            @if($reservation->statut !== 'annulée')
+                                            @if($reservation->statut !== 'annulee')
                                                 <button type="button" class="btn btn-outline-warning btn-sm"
-                                                        onclick="cancelReservation({{ $reservation->id }}, '{{ $reservation->client_nom }} {{ $reservation->client_prenom }}')"
+                                                        onclick="cancelReservation({{ $reservation->id }}, @js($reservation->client_nom.' '.$reservation->client_prenom))"
                                                         data-bs-toggle="tooltip" title="Annuler la réservation">
                                                     <i class="bi bi-x-circle"></i>
                                                 </button>
@@ -579,7 +580,7 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
 
                                             <!-- Bouton Supprimer (toujours affiché) -->
                                             <button type="button" class="btn btn-outline-danger btn-sm"
-                                                    onclick="deleteReservation({{ $reservation->id }}, '{{ $reservation->client_nom }} {{ $reservation->client_prenom }}')"
+                                                    onclick="deleteReservation({{ $reservation->id }}, @js($reservation->client_nom.' '.$reservation->client_prenom))"
                                                     data-bs-toggle="tooltip" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>

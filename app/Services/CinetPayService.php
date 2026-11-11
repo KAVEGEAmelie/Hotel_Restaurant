@@ -48,7 +48,7 @@ class CinetPayService
                 'currency' => $this->currency,
                 'description' => "Réservation Hôtel Le Printemps - Chambre {$reservation->chambre->nom}",
                 'notify_url' => route('payment.webhook'),
-                'return_url' => route('payment.return', $reservation->id),
+                'return_url' => route('payment.return', $reservation),
                 'channels' => 'ALL', // Tous les moyens de paiement
                 'lang' => 'fr',
                 
@@ -66,8 +66,8 @@ class CinetPayService
                 
                 // Données de facture personnalisées
                 'invoice_data' => [
-                    'Chambre' => "Chambre {$reservation->chambre->numero} - {$reservation->chambre->type}",
-                    'Période' => "Du {$reservation->date_arrivee} au {$reservation->date_depart}",
+                    'Chambre' => $reservation->chambre->nom,
+                    'Période' => 'Du '.$reservation->check_in_date->format('d/m/Y').' au '.$reservation->check_out_date->format('d/m/Y'),
                     'Durée' => "{$reservation->nombre_nuits} nuit(s)"
                 ],
                 
@@ -103,8 +103,7 @@ class CinetPayService
                     'transaction_id' => $transactionId,
                     'payment_url' => $result['data']['payment_url'],
                     'payment_token' => $result['data']['payment_token'],
-                    'cinetpay_data' => json_encode($paymentData),
-                    'statut_paiement' => 'en_attente'
+                    'statut_paiement' => \App\Models\Reservation::PAIEMENT_EN_ATTENTE,
                 ]);
 
                 Log::info('CinetPay: Paiement initié avec succès', [
@@ -175,25 +174,34 @@ class CinetPayService
                 'response_code' => $result['code'] ?? 'unknown'
             ]);
 
-            if ($response->successful() && isset($result['code']) && $result['code'] == '00') {
+            $code = (string) ($result['code'] ?? '');
+            $data = $result['data'] ?? [];
+
+            // Paiement accepté
+            if ($response->successful() && $code === '00') {
                 return [
                     'success' => true,
                     'status' => 'COMPLETED',
-                    'amount' => $result['data']['amount'],
-                    'currency' => $result['data']['currency'],
-                    'operator_id' => $result['data']['operator_id'] ?? null,
-                    'payment_method' => $result['data']['payment_method'] ?? null,
-                    'payment_date' => $result['data']['payment_date'] ?? null,
-                    'raw_data' => $result['data']
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'status' => 'FAILED',
-                    'message' => $result['message'] ?? 'Transaction non trouvée ou échouée',
-                    'error_code' => $result['code'] ?? 'unknown'
+                    'amount' => $data['amount'] ?? 0,
+                    'currency' => $data['currency'] ?? $this->currency,
+                    'operator_id' => $data['operator_id'] ?? null,
+                    'payment_method' => $data['payment_method'] ?? null,
+                    'payment_date' => $data['payment_date'] ?? null,
+                    'raw_data' => $data,
                 ];
             }
+
+            // Paiement refusé ou annulé : échec définitif
+            $refuse = in_array($code, ['600', '627'], true)
+                || in_array($data['status'] ?? null, ['REFUSED', 'CANCELED', 'CANCELLED'], true);
+
+            // Sinon (662 WAITING_CUSTOMER_PAYMENT, 623 WAITING_CUSTOMER_TO_VALIDATE, erreur réseau…) : en attente
+            return [
+                'success' => false,
+                'status' => $refuse ? 'FAILED' : 'PENDING',
+                'message' => $result['message'] ?? 'Transaction en attente ou introuvable',
+                'error_code' => $code ?: 'unknown',
+            ];
 
         } catch (Exception $e) {
             Log::error('CinetPay: Erreur vérification statut', [
@@ -215,7 +223,7 @@ class CinetPayService
     public function handleWebhook($requestData)
     {
         try {
-            Log::info('CinetPay: Webhook reçu', ['data' => $requestData]);
+            Log::info('CinetPay: Webhook reçu', ['transaction_id' => $requestData['cpm_trans_id'] ?? null]);
 
             // Vérifier la présence des données essentielles
             if (!isset($requestData['cpm_trans_id'])) {
@@ -235,30 +243,12 @@ class CinetPayService
                 return false;
             }
 
-            // Vérifier le statut de la transaction directement avec l'API
-            $status = $this->checkPaymentStatus($transactionId);
-
-            if ($status['success'] && $status['status'] === 'COMPLETED') {
-                Log::info('CinetPay: Paiement confirmé via webhook', [
-                    'transaction_id' => $transactionId,
-                    'amount' => $status['amount']
-                ]);
-
-                return [
-                    'transaction_id' => $transactionId,
-                    'status' => 'COMPLETED',
-                    'amount' => $status['amount'],
-                    'currency' => $status['currency'],
-                    'payment_data' => $status['raw_data']
-                ];
-            }
-
-            return false;
+            // Le statut réel est toujours revérifié auprès de l'API par le contrôleur.
+            return $transactionId;
 
         } catch (Exception $e) {
             Log::error('CinetPay: Erreur traitement webhook', [
                 'error' => $e->getMessage(),
-                'data' => $requestData
             ]);
 
             return false;
@@ -274,12 +264,12 @@ class CinetPayService
         $user = $reservation->user;
         
         return [
-            'name' => $reservation->nom_client ?? $user->name ?? 'Client',
-            'surname' => $reservation->prenom_client ?? $user->prenom ?? '',
-            'email' => $reservation->email_client ?? $user->email ?? 'client@hotel.com',
-            'phone' => $reservation->telephone_client ?? $user->telephone ?? '',
-            'address' => $reservation->adresse_client ?? 'Adresse non fournie',
-            'city' => $reservation->ville_client ?? 'Kpalimé',
+            'name' => $reservation->client_nom ?: ($user->name ?? 'Client'),
+            'surname' => $reservation->client_prenom ?: ($user->prenom ?? ''),
+            'email' => $reservation->client_email ?: ($user->email ?? ''),
+            'phone' => $reservation->client_telephone ?: ($user->telephone ?? ''),
+            'address' => $reservation->client_domicile ?: 'Adresse non fournie',
+            'city' => 'Kpalimé',
             'country' => 'TG', // Togo
             'state' => 'Plateaux',
             'zip_code' => '00000'
@@ -310,7 +300,7 @@ class CinetPayService
     public function generateTransactionId($reservationId)
     {
         // Format: PREFIX_RESERVATION_TIMESTAMP_RANDOM
-        return 'HP_' . str_pad($reservationId, 4, '0', STR_PAD_LEFT) . '_' . date('YmdHis') . '_' . rand(100, 999);
+        return 'HP_' . str_pad($reservationId, 4, '0', STR_PAD_LEFT) . '_' . date('YmdHis') . '_' . random_int(1000, 9999);
     }
 
     /**

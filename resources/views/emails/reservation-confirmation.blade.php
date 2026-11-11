@@ -12,15 +12,13 @@ Nous avons le plaisir de confirmer votre réservation à l'Hôtel Restaurant Le 
 **Date d'arrivée :** {{ \Carbon\Carbon::parse($reservation->check_in_date)->format('d/m/Y') }}  
 **Date de départ :** {{ \Carbon\Carbon::parse($reservation->check_out_date)->format('d/m/Y') }}  
 **Nombre de nuits :** {{ \Carbon\Carbon::parse($reservation->check_in_date)->diffInDays(\Carbon\Carbon::parse($reservation->check_out_date)) }}  
-@if($reservation->nombre_personnes)
-**Nombre de personnes :** {{ $reservation->nombre_personnes }}  
-@endif
+**Nombre de personnes :** {{ $reservation->nombre_invites }}  
 
 ## Montant payé
-**{{ number_format($reservation->prix_total, 0, ',', ' ') }} FCFA**
+**{{ number_format($reservation->montant_paye ?? $reservation->prix_total, 0, ',', ' ') }} FCFA**
 
-@if($reservation->transaction_ref)
-**Référence de transaction :** {{ $reservation->transaction_ref }}
+@if($reservation->transaction_id)
+**Référence de transaction :** {{ $reservation->transaction_id }}
 @endif
 
 <x-mail::button :url="route('payment.receipt', $reservation)" color="success">
@@ -32,10 +30,6 @@ Télécharger votre reçu
 - L'enregistrement se fait à partir de 14h00
 - Le départ doit se faire avant 12h00
 - Une pièce d'identité valide sera demandée à l'arrivée
-
-@if($reservation->notes)
-**Notes de réservation :** {{ $reservation->notes }}
-@endif
 
 Nous nous réjouissons de vous accueillir à l'Hôtel Restaurant Le Printemps !
 

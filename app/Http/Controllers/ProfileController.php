@@ -16,16 +16,6 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Afficher le profil
-     */
-    public function show(): View
-    {
-        $user = Auth::user();
-
-        return view('profile.show', compact('user'));
-    }
-
-    /**
      * Afficher le formulaire d'édition du profil
      */
     public function edit(): View

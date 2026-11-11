@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
-use App\Models\Chambre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 
@@ -35,7 +35,7 @@ class ReservationController extends Controller
             }
 
             // 📊 Filtre par statut
-            if ($request->filled('statut') && $request->statut !== 'all') {
+            if ($request->filled('statut') && array_key_exists($request->statut, Reservation::STATUTS)) {
                 $query->where('statut', $request->statut);
             }
 
@@ -58,126 +58,48 @@ class ReservationController extends Controller
     }
 
     /**
-     * 👁️ Afficher une réservation spécifique
-     */
-    public function show(Reservation $reservation)
-    {
-        try {
-            $reservation->load(['user', 'chambre']);
-
-            return view('admin.reservations.show', compact('reservation'));
-
-        } catch (Exception $e) {
-            Log::error('Erreur affichage réservation: ' . $e->getMessage());
-
-            return redirect()->route('admin.reservations.index')
-                ->with('error', '❌ Erreur lors de l\'affichage de la réservation');
-        }
-    }
-
-    /**
-     * ✏️ Afficher le formulaire d'édition
-     */
-    public function edit(Reservation $reservation)
-    {
-        try {
-            $reservation->load(['chambre']);
-            $chambres = Chambre::where('statut', 'disponible')->get();
-
-            return view('admin.reservations.edit', compact('reservation', 'chambres'));
-
-        } catch (Exception $e) {
-            Log::error('Erreur édition réservation: ' . $e->getMessage());
-
-            return redirect()->route('admin.reservations.index')
-                ->with('error', '❌ Erreur lors de l\'édition de la réservation');
-        }
-    }
-
-    /**
-     * 💾 Mettre à jour une réservation
-     */
-    public function update(Request $request, Reservation $reservation)
-    {
-        try {
-            $validated = $request->validate([
-                'client_nom' => 'required|string|max:255',
-                'client_prenom' => 'required|string|max:255',
-                'client_email' => 'required|email|max:255',
-                'client_telephone' => 'required|string|max:20',
-                'check_in_date' => 'required|date',
-                'check_out_date' => 'required|date|after:check_in_date',
-                'nombre_invites' => 'required|integer|min:1',
-                'statut' => 'required|string|in:pending,confirmée,annulée,payée',
-                'notes' => 'nullable|string|max:1000'
-            ]);
-
-            $reservation->update($validated);
-
-            Log::info('Réservation mise à jour par admin', [
-                'reservation_id' => $reservation->id,
-                'admin_id' => Auth::id(),
-                'changes' => $validated
-            ]);
-
-            return redirect()->route('admin.reservations.index')
-                ->with('success', "✅ Réservation #{$reservation->id} mise à jour avec succès !");
-
-        } catch (Exception $e) {
-            Log::error('Erreur mise à jour réservation: ' . $e->getMessage());
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', '❌ Erreur lors de la mise à jour de la réservation');
-        }
-    }
-
-    /**
      * 🔄 Met à jour le statut d'une réservation (AJAX)
      */
     public function updateStatus(Request $request, Reservation $reservation)
     {
-        try {
-            $validated = $request->validate([
-                'statut' => 'required|string|in:pending,confirmée,annulée,payée'
-            ]);
+        $validated = $request->validate([
+            'statut' => ['required', Rule::in(array_keys(Reservation::STATUTS))],
+        ]);
 
-            $oldStatus = $reservation->statut;
-            $reservation->update([
-                'statut' => $validated['statut'],
-                'updated_by_admin' => Auth::id(),
-                'status_updated_at' => now()
-            ]);
-
-            $statusEmojis = [
-                'pending' => '⏳',
-                'confirmée' => '✅',
-                'annulée' => '❌',
-                'payée' => '💳'
-            ];
-
-            Log::info('Statut réservation modifié via AJAX', [
-                'reservation_id' => $reservation->id,
-                'old_status' => $oldStatus,
-                'new_status' => $validated['statut'],
-                'admin_id' => Auth::id()
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => "{$statusEmojis[$validated['statut']]} Réservation de {$reservation->client_nom} {$reservation->client_prenom} mise à jour",
-                'new_status' => $validated['statut'],
-                'old_status' => $oldStatus
-            ]);
-
-        } catch (Exception $e) {
-            Log::error('Erreur AJAX mise à jour statut: ' . $e->getMessage());
-
+        // Remettre une réservation en "en attente"/"confirmée" ne doit pas créer de double réservation.
+        if (in_array($validated['statut'], Reservation::STATUTS_BLOQUANTS, true)
+            && ! in_array($reservation->statut, Reservation::STATUTS_BLOQUANTS, true)
+            && $this->aUnConflit($reservation)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la mise à jour du statut'
-            ], 500);
+                'message' => 'La chambre est déjà réservée sur ces dates.',
+            ], 422);
         }
+
+        $oldStatus = $reservation->statut;
+        $reservation->update(['statut' => $validated['statut']]);
+
+        Log::info('Statut réservation modifié', [
+            'reservation_id' => $reservation->id,
+            'old_status' => $oldStatus,
+            'new_status' => $validated['statut'],
+            'admin_id' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Réservation de {$reservation->client_nom} {$reservation->client_prenom} : {$reservation->statut_label}",
+            'new_status' => $validated['statut'],
+            'old_status' => $oldStatus,
+        ]);
+    }
+
+    private function aUnConflit(Reservation $reservation): bool
+    {
+        return Reservation::where('chambre_id', $reservation->chambre_id)
+            ->whereKeyNot($reservation->id)
+            ->chevauche($reservation->check_in_date, $reservation->check_out_date)
+            ->exists();
     }
 
     /**
@@ -204,20 +126,12 @@ class ReservationController extends Controller
 
             switch ($validated['action']) {
                 case 'confirm':
-                    $reservations->update([
-                        'statut' => 'confirmée',
-                        'confirmed_at' => now(),
-                        'confirmed_by' => Auth::id()
-                    ]);
+                    $reservations->update(['statut' => Reservation::STATUT_CONFIRMEE]);
                     $message = "✅ {$count} réservation(s) confirmée(s) avec succès";
                     break;
 
                 case 'cancel':
-                    $reservations->update([
-                        'statut' => 'annulée',
-                        'cancelled_at' => now(),
-                        'cancelled_by' => Auth::id()
-                    ]);
+                    $reservations->update(['statut' => Reservation::STATUT_ANNULEE]);
                     $message = "❌ {$count} réservation(s) annulée(s) avec succès";
                     break;
 
@@ -253,7 +167,7 @@ class ReservationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'action groupée: ' . $e->getMessage()
+                'message' => 'Erreur lors de l\'action groupée'
             ], 500);
         }
     }
@@ -261,47 +175,45 @@ class ReservationController extends Controller
     /**
      * 🗑️ Supprimer une réservation
      */
+    public function destroy(Request $request, Reservation $reservation)
+    {
+        try {
+            // Récupère les infos AVANT suppression
+            $reservationInfo = "#{$reservation->id} - {$reservation->client_nom} {$reservation->client_prenom}";
+            $clientNom = $reservation->client_nom;
+            $clientPrenom = $reservation->client_prenom;
 
+            $reservation->delete();
 
-public function destroy(Request $request, Reservation $reservation)
-{
-    try {
-        // Récupère les infos AVANT suppression
-        $reservationInfo = "#{$reservation->id} - {$reservation->client_nom} {$reservation->client_prenom}";
-        $clientNom = $reservation->client_nom;
-        $clientPrenom = $reservation->client_prenom;
-
-        $reservation->delete();
-
-        Log::warning('Réservation supprimée par admin', [
-            'reservation_id' => $reservation->id,
-            'client' => $clientNom . ' ' . $clientPrenom,
-            'admin_id' => Auth::id()
-        ]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => "🗑️ Réservation {$reservationInfo} supprimée avec succès"
+            Log::warning('Réservation supprimée par admin', [
+                'reservation_id' => $reservation->id,
+                'client' => $clientNom . ' ' . $clientPrenom,
+                'admin_id' => Auth::id()
             ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "🗑️ Réservation {$reservationInfo} supprimée avec succès"
+                ]);
+            }
+
+            return redirect()->route('admin.reservations.index')
+                ->with('success', "🗑️ Réservation {$reservationInfo} supprimée avec succès !");
+        } catch (Exception $e) {
+            Log::error('Erreur suppression réservation: ' . $e->getMessage());
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la suppression'
+                ], 500);
+            }
+
+            return redirect()->route('admin.reservations.index')
+                ->with('error', '❌ Erreur lors de la suppression de la réservation');
         }
-
-        return redirect()->route('admin.reservations.index')
-            ->with('success', "🗑️ Réservation {$reservationInfo} supprimée avec succès !");
-    } catch (Exception $e) {
-        Log::error('Erreur suppression réservation: ' . $e->getMessage());
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la suppression'
-            ], 500);
-        }
-
-        return redirect()->route('admin.reservations.index')
-            ->with('error', '❌ Erreur lors de la suppression de la réservation');
     }
-}
     /**
      * 🚔 Télécharger la fiche de police
      */
@@ -363,99 +275,6 @@ public function destroy(Request $request, Reservation $reservation)
 
             return redirect()->route('admin.reservations.index')
                 ->with('error', '❌ Erreur lors du téléchargement du reçu');
-        }
-    }
-
-    /**
-     * 📊 Exporter les réservations
-     */
-    public function export(Request $request, $format = 'pdf')
-    {
-        try {
-            // Récupérer les réservations selon les filtres
-            $query = Reservation::with(['user', 'chambre']);
-
-            // Appliquer les mêmes filtres que dans listAll
-            if ($request->filled('search')) {
-                $searchTerm = $request->search;
-                $query->where(function($q) use ($searchTerm) {
-                    $q->where('client_nom', 'like', "%{$searchTerm}%")
-                      ->orWhere('client_prenom', 'like', "%{$searchTerm}%")
-                      ->orWhere('client_email', 'like', "%{$searchTerm}%");
-                });
-            }
-
-            if ($request->filled('statut') && $request->statut !== 'all') {
-                $query->where('statut', $request->statut);
-            }
-
-            if ($request->filled('date')) {
-                $query->whereDate('check_in_date', $request->date);
-            }
-
-            $reservations = $query->orderBy('created_at', 'desc')->get();
-
-            $data = [
-                'reservations' => $reservations,
-                'date_export' => now(),
-                'admin_name' => Auth::user()->name,
-                'filtres' => $request->only(['search', 'statut', 'date'])
-            ];
-
-            switch ($format) {
-                case 'pdf':
-                    $pdf = Pdf::loadView('admin.reservations.export-pdf', $data)
-                        ->setPaper('a4', 'landscape');
-                    return $pdf->download("export-reservations-" . now()->format('Y-m-d') . ".pdf");
-
-                case 'excel':
-                    // Ici vous pourrez implémenter l'export Excel plus tard
-                    return redirect()->back()
-                        ->with('info', '📊 Export Excel sera disponible prochainement');
-
-                default:
-                    return redirect()->back()
-                        ->with('error', '❌ Format d\'export non supporté');
-            }
-
-        } catch (Exception $e) {
-            Log::error('Erreur export réservations: ' . $e->getMessage());
-
-            return redirect()->back()
-                ->with('error', '❌ Erreur lors de l\'export');
-        }
-    }
-
-    /**
-     * 📈 Statistiques des réservations
-     */
-    public function stats()
-    {
-        try {
-            $stats = [
-                'total' => Reservation::count(),
-                'en_attente' => Reservation::where('statut', 'pending')->count(),
-                'confirmees' => Reservation::where('statut', 'confirmée')->count(),
-                'annulees' => Reservation::where('statut', 'annulée')->count(),
-                'payees' => Reservation::where('statut', 'payée')->count(),
-                'ce_mois' => Reservation::whereMonth('created_at', now()->month)->count(),
-                'revenus_mois' => Reservation::whereMonth('created_at', now()->month)
-                    ->where('statut', 'payée')
-                    ->sum('prix_total'),
-            ];
-
-            return response()->json([
-                'success' => true,
-                'stats' => $stats
-            ]);
-
-        } catch (Exception $e) {
-            Log::error('Erreur statistiques réservations: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors du calcul des statistiques'
-            ], 500);
         }
     }
 }

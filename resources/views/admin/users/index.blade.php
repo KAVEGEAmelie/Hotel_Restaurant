@@ -180,9 +180,13 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                         @endif
                                     </td>
                                     <td>
-                                        @if($user->is_admin)
+                                        @if($user->isAdmin())
                                             <span class="badge bg-primary">
                                                 <i class="bi bi-shield-fill me-1"></i>Admin
+                                            </span>
+                                        @elseif($user->isGerant())
+                                            <span class="badge bg-info text-dark">
+                                                <i class="bi bi-briefcase-fill me-1"></i>Gérant
                                             </span>
                                         @else
                                             <span class="badge bg-secondary">
@@ -202,12 +206,12 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <button type="button" class="btn btn-outline-{{ $user->is_active ?? true ? 'secondary' : 'success' }} btn-sm" 
-                                                    onclick="AdminActionComponents.confirmStatusToggle({{ $user->id }}, '{{ $user->name }}', '{{ $user->is_active ?? true ? 'true' : 'false' }}')"
+                                                    onclick="AdminActionComponents.confirmStatusToggle({{ $user->id }}, @js($user->name), '{{ $user->is_active ?? true ? 'true' : 'false' }}')"
                                                     data-bs-toggle="tooltip" title="{{ $user->is_active ?? true ? 'Désactiver' : 'Activer' }} l'utilisateur">
                                                 <i class="bi bi-toggle-{{ $user->is_active ?? true ? 'on' : 'off' }}"></i>
                                             </button>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                    onclick="AdminActionComponents.confirmDelete({{ $user->id }}, '{{ $user->name }}', 'utilisateurs')"
+                                                    onclick="AdminActionComponents.confirmDelete({{ $user->id }}, @js($user->name), 'utilisateurs')"
                                                     data-bs-toggle="tooltip" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>

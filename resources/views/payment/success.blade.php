@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <p><strong>Montant payé :</strong> <span class="text-success fw-bold">{{ number_format($reservation->prix_total, 0, ',', ' ') }} FCFA</span></p>
                                 </div>
                             </div>
-                            @if($reservation->transaction_ref)
-                            <p><strong>Référence de transaction :</strong> {{ $reservation->transaction_ref }}</p>
+                            @if($reservation->transaction_id)
+                            <p><strong>Référence de transaction :</strong> {{ $reservation->transaction_id }}</p>
                             @endif
                         </div>
                     </div>

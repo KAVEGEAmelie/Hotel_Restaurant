@@ -33,7 +33,7 @@
 
                     <div class="mt-4 p-3 bg-light rounded">
                         <h5 class="text-center mb-3">Choisissez votre méthode de paiement</h5>
-                        <form action="{{ route('payment.initiate', $reservation->id) }}" method="POST">
+                        <form action="{{ route('payment.initiate', $reservation) }}" method="POST">
                             @csrf
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-success btn-lg">

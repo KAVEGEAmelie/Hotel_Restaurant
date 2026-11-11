@@ -60,17 +60,16 @@ class ChambreController extends Controller
 
             // On exclut les chambres qui ont des réservations qui se chevauchent
             // MAIS ON GARDE CELLES QUI SONT MARQUÉES COMME INDISPONIBLES PAR L'ADMIN
-            $query->where(function($q) use ($checkin, $checkout) {
-                // Chambres disponibles ET sans conflit de dates
-                $q->where('est_disponible', true)
-                  ->whereDoesntHave('reservations', function ($subQuery) use ($checkin, $checkout) {
-                      $subQuery->whereIn('statut', ['pending', 'confirmed'])
-                               ->where(function ($dateQuery) use ($checkin, $checkout) {
-                                   $dateQuery->where('check_in_date', '<', $checkout)
-                                            ->where('check_out_date', '>', $checkin);
-                               });
-                  });
-            })->orWhere('est_disponible', false); // Toujours afficher les indisponibles
+            // Le groupe englobant garde les autres filtres (prix, capacité…) actifs malgré le OR.
+            $query->where(function ($q) use ($checkin, $checkout) {
+                $q->where(function ($q) use ($checkin, $checkout) {
+                    // Chambres disponibles ET sans conflit de dates
+                    $q->where('est_disponible', true)
+                      ->whereDoesntHave('reservations', function ($subQuery) use ($checkin, $checkout) {
+                          $subQuery->chevauche($checkin, $checkout);
+                      });
+                })->orWhere('est_disponible', false); // Toujours afficher les indisponibles
+            });
         }
 
         // Tri des résultats

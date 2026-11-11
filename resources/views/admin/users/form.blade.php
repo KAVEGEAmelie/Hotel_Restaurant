@@ -55,10 +55,15 @@
 
                 <hr class="my-4">
 
-                <div class="form-check form-switch mb-4">
-                    <input class="form-check-input" type="checkbox" role="switch" id="is_admin" name="is_admin" value="1"
-                           @if(old('is_admin') || (isset($user) && $user->is_admin)) checked @endif>
-                    <label class="form-check-label" for="is_admin">Nommer Administrateur</label>
+                <div class="mb-4">
+                    <label for="role" class="form-label">Rôle</label>
+                    <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
+                        @foreach(\App\Models\User::ROLES as $value => $label)
+                            <option value="{{ $value }}" @selected(old('role', $user->role ?? 'client') === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-text">Gérant : chambres, réservations et restaurant. Administrateur : accès complet, y compris les utilisateurs.</div>
+                    @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="d-flex justify-content-end">

@@ -228,12 +228,12 @@ document.getElementById('bulk-actions-form').addEventListener('submit', function
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <button type="button" class="btn btn-outline-{{ $chambre->est_disponible ? 'secondary' : 'success' }} btn-sm" 
-                                                    onclick="AdminActionComponents.confirmStatusToggle({{ $chambre->id }}, '{{ $chambre->nom }}', {{ $chambre->est_disponible ? 'true' : 'false' }})"
+                                                    onclick="AdminActionComponents.confirmStatusToggle({{ $chambre->id }}, @js($chambre->nom), {{ $chambre->est_disponible ? 'true' : 'false' }})"
                                                     data-bs-toggle="tooltip" title="{{ $chambre->est_disponible ? 'Marquer indisponible' : 'Marquer disponible' }}">
                                                 <i class="bi bi-toggle-{{ $chambre->est_disponible ? 'on' : 'off' }}"></i>
                                             </button>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                    onclick="AdminActionComponents.confirmDelete({{ $chambre->id }}, '{{ $chambre->nom }}', 'chambres')"
+                                                    onclick="AdminActionComponents.confirmDelete({{ $chambre->id }}, @js($chambre->nom), 'chambres')"
                                                     data-bs-toggle="tooltip" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>

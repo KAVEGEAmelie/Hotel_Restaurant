@@ -103,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </td>
                                 <td>
                                     <span class="badge
-                                        @if($reservation->statut == 'confirmée') bg-success @elseif($reservation->statut == 'pending') bg-warning @else bg-danger @endif">
-                                        {{ ucfirst($reservation->statut) }}
+                                        @if($reservation->statut == 'confirmee') bg-success @elseif($reservation->statut == 'en_attente') bg-warning @elseif($reservation->statut == 'terminee') bg-secondary @else bg-danger @endif">
+                                        {{ $reservation->statut_label }}
                                     </span>
                                 </td>
                             </tr>

@@ -17,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.access' => \App\Http\Middleware\EnsureUserCanAccessAdmin::class,
             'admin.manage.users' => \App\Http\Middleware\EnsureUserCanManageUsers::class,
         ]);
+
+        // CinetPay appelle ces URL depuis ses serveurs (sans jeton CSRF).
+        $middleware->validateCsrfTokens(except: [
+            'payment/webhook',
+            'payment/return/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
