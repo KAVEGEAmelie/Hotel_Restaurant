@@ -58,6 +58,10 @@ php artisan serve
 
 Si `ADMIN_PASSWORD` est vide, un mot de passe aléatoire est généré et affiché une seule fois dans la console.
 
+## Mise en ligne
+
+Voir le guide pas à pas : [DEPLOIEMENT.md](DEPLOIEMENT.md) (alwaysdata). Mises à jour : `bash deploy.sh` sur le serveur.
+
 ## Paiement CinetPay
 
 Variables `.env` : `CINETPAY_API_KEY`, `CINETPAY_SITE_ID`, `CINETPAY_SECRET_KEY`, `CINETPAY_CURRENCY` (XOF).
