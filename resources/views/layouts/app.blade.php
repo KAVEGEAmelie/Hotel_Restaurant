@@ -32,6 +32,7 @@
 
     <!-- Système de notifications modernes -->
     <link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/form-modals.css') }}" rel="stylesheet">
 
     <!-- Styles pour boutons admin (CSS direct) -->
     <link href="{{ asset('css/admin-buttons.css') }}?v={{ time() }}" rel="stylesheet">
@@ -48,6 +49,7 @@
     </main>
 
     @include('partials.footer')
+    @include('partials.form-modal')
 
     <!-- Vendor JS Files -->
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -61,6 +63,7 @@
 
     <!-- Système de notifications modernes -->
     <script src="{{ asset('js/notifications.js') }}"></script>
+    <script src="{{ asset('js/form-modals.js') }}"></script>
 
     <!-- Messages Flash Laravel vers JavaScript -->
     <script>

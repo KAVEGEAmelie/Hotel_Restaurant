@@ -13,6 +13,7 @@
     <!-- Styles principaux -->
     <link href="{{ asset('assets/css/admin.css') }}" rel="stylesheet">
     <link href="{{ asset('css/notifications.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/form-modals.css') }}" rel="stylesheet">
 
     @stack('styles')
 </head>
@@ -108,6 +109,8 @@
         </div>
     </div>
 
+    @include('partials.form-modal')
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
@@ -115,6 +118,7 @@
     <script src="{{ asset('js/admin-actions.js') }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
     <script src="{{ asset('js/admin-actions.js') }}"></script>
+    <script src="{{ asset('js/form-modals.js') }}"></script>
 
     <!-- Flash Messages JS -->
     <script>

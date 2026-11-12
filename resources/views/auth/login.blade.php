@@ -128,6 +128,7 @@
             color: #555;
         }
     </style>
+    <link href="{{ asset('css/form-modals.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="login-container">
@@ -184,5 +185,7 @@
             </form>
         </div>
     </div>
+    @include('partials.form-modal')
+    <script src="{{ asset('js/form-modals.js') }}"></script>
 </body>
 </html>

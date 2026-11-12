@@ -23,7 +23,7 @@
             <a class="btn btn-brand" href="{{ route('chambres.index') }}">Réserver</a>
             
             <!-- Bouton admin toujours visible - juste l'icône -->
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm" title="Administration">
+            <a href="{{ Auth::check() ? route('admin.dashboard') : route('login') }}" class="btn btn-warning btn-sm" title="Administration">
                 <i class="bi bi-gear-fill"></i>
             </a>
         </div>
@@ -50,7 +50,7 @@
             <li><a href="{{ route('contact') }}">Contact</a></li>
             <!-- Lien admin toujours visible dans menu mobile -->
             <li>
-                <a href="{{ route('admin.dashboard') }}" style="color: #ffc107; font-weight: 600;">
+                <a href="{{ Auth::check() ? route('admin.dashboard') : route('login') }}" style="color: #ffc107; font-weight: 600;">
                     <i class="bi bi-gear-fill me-2"></i>Administration
                 </a>
             </li>

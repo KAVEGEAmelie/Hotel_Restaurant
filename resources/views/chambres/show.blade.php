@@ -113,57 +113,13 @@
                             @endif
 
                             @if($chambre->est_disponible)
-                                <!-- Formulaire de réservation normal -->
-                                <form action="{{ route('reservations.store') }}" method="POST" class="p-4">
-                                    @csrf
-                                    <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
-
-                                    <h4 class="form-title">Réservez vos dates</h4>
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label for="check_in_date" class="form-label">Arrivée</label>
-                                            <input type="date" name="check_in_date" id="check_in_date" class="form-control" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="check_out_date" class="form-label">Départ</label>
-                                            <input type="date" name="check_out_date" id="check_out_date" class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4">
-
-                                    <h4 class="form-title">Vos informations</h4>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="client_nom" class="form-label">Nom</label>
-                                            <input type="text" name="client_nom" id="client_nom" class="form-control" placeholder="Votre nom" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="client_prenom" class="form-label">Prénom</label>
-                                            <input type="text" name="client_prenom" id="client_prenom" class="form-control" placeholder="Votre prénom" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="client_email" class="form-label">Email</label>
-                                            <input type="email" name="client_email" id="client_email" class="form-control" placeholder="Votre email" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="client_telephone" class="form-label">Téléphone</label>
-                                            <input type="tel" name="client_telephone" id="client_telephone" class="form-control" placeholder="Votre téléphone" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label for="nombre_invites" class="form-label">Nombre de personnes (max: {{ $chambre->capacite }})</label>
-                                            <select name="nombre_invites" id="nombre_invites" class="form-select">
-                                                @for ($i = 1; $i <= $chambre->capacite; $i++)
-                                                    <option value="{{ $i }}">{{ $i }} personne(s)</option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-grid mt-4">
-                                        <button type="submit" class="btn btn-brand btn-lg">Procéder au Paiement</button>
-                                    </div>
-                                </form>
+                                <div class="p-4">
+                                    <h4 class="form-title">Prêt à réserver ?</h4>
+                                    <p class="text-muted">Choisissez vos dates et renseignez vos coordonnées.</p>
+                                    <button type="button" class="btn btn-brand btn-lg w-100" data-form-modal-template="reservation-form-template">
+                                        Réserver cette chambre
+                                    </button>
+                                </div>
                             @else
                                 <!-- Section indisponible -->
                                 <div class="p-4 text-center">
@@ -227,6 +183,57 @@
         </div>
     </section>
 </main>
+<template id="reservation-form-template" data-title="Réserver {{ $chambre->nom }}">
+    <form action="{{ route('reservations.store') }}" method="POST" class="p-2">
+        @csrf
+        <input type="hidden" name="chambre_id" value="{{ $chambre->id }}">
+
+        <h3 class="form-title">Vos dates</h3>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label for="modal_check_in_date" class="form-label">Arrivée</label>
+                <input type="date" name="check_in_date" id="modal_check_in_date" class="form-control" required>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="modal_check_out_date" class="form-label">Départ</label>
+                <input type="date" name="check_out_date" id="modal_check_out_date" class="form-control" required>
+            </div>
+        </div>
+
+        <hr class="my-4">
+        <h3 class="form-title">Vos coordonnées</h3>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label for="modal_client_nom" class="form-label">Nom</label>
+                <input type="text" name="client_nom" id="modal_client_nom" class="form-control" placeholder="Votre nom" required>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="modal_client_prenom" class="form-label">Prénom</label>
+                <input type="text" name="client_prenom" id="modal_client_prenom" class="form-control" placeholder="Votre prénom" required>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="modal_client_email" class="form-label">Email</label>
+                <input type="email" name="client_email" id="modal_client_email" class="form-control" placeholder="Votre email" required>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="modal_client_telephone" class="form-label">Téléphone</label>
+                <input type="tel" name="client_telephone" id="modal_client_telephone" class="form-control" placeholder="Votre téléphone" required>
+            </div>
+            <div class="col-12">
+                <label for="modal_nombre_invites" class="form-label">Nombre de personnes (max : {{ $chambre->capacite }})</label>
+                <select name="nombre_invites" id="modal_nombre_invites" class="form-select" required>
+                    @for ($i = 1; $i <= $chambre->capacite; $i++)
+                        <option value="{{ $i }}">{{ $i }} personne(s)</option>
+                    @endfor
+                </select>
+            </div>
+        </div>
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-brand btn-lg">Continuer vers le paiement</button>
+        </div>
+    </form>
+</template>
 @endsection
 
 @push('styles')

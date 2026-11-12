@@ -12,6 +12,7 @@
 
         <!-- Scripts -->
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<link rel="stylesheet" href="{{ asset('css/form-modals.css') }}">
 <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
@@ -26,5 +27,7 @@
                 {{ $slot }}
             </div>
         </div>
+        @include('partials.form-modal')
+        <script src="{{ asset('js/form-modals.js') }}"></script>
     </body>
 </html>

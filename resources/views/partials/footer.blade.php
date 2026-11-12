@@ -57,7 +57,7 @@
             
             <!-- Bouton admin toujours visible -->
             <div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm">
+                <a href="{{ Auth::check() ? route('admin.dashboard') : route('login') }}" class="btn btn-warning btn-sm">
                     <i class="bi bi-gear-fill me-1"></i>
                     Administration
                 </a>
