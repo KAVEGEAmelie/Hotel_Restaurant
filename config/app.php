@@ -97,6 +97,13 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    /*
+    | Compte administrateur créé par "php artisan db:seed".
+    | Lu ici (et non via env() dans le seeder) pour fonctionner aussi avec config:cache.
+    */
+    'admin_email' => env('ADMIN_EMAIL', 'admin@hotel.com'),
+    'admin_password' => env('ADMIN_PASSWORD'),
+
     'key' => env('APP_KEY'),
 
     'previous_keys' => [

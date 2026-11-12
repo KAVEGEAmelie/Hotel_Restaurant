@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@hotel.com');
+        $email = config('app.admin_email');
 
         if (! User::where('email', $email)->exists()) {
-            $password = env('ADMIN_PASSWORD') ?: Str::password(16);
+            $password = config('app.admin_password') ?: Str::password(16);
 
             $admin = new User([
                 'name' => 'Admin Le Printemps',
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             $admin->email_verified_at = now();
             $admin->save();
 
-            if (! env('ADMIN_PASSWORD')) {
+            if (! config('app.admin_password')) {
                 $this->command?->warn("Administrateur créé : {$email} / {$password} (changez-le après connexion)");
             }
         }
