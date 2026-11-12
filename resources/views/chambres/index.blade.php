@@ -331,6 +331,7 @@
     line-height: 1.6;
     margin-bottom: 20px;
     flex-grow: 1;
+    overflow-wrap: anywhere;
 }
 
 /* Boutons disponibles */

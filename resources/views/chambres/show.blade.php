@@ -241,7 +241,7 @@
 .room-details-section-final { padding: 80px 0; }
 .room-page-header { text-align: center; margin-bottom: 60px; }
 .room-page-header h1 { font-family: 'Playfair Display', serif; font-size: 52px; color: var(--color-marron-titre); }
-.room-page-header .lead { font-size: 20px; color: #777; max-width: 600px; margin: 10px auto 0 auto; }
+.room-page-header .lead { font-size: 20px; color: #777; max-width: 600px; margin: 10px auto 0 auto; overflow-wrap: anywhere; }
 
 /* === STYLES POUR L'INDISPONIBILITÉ === */
 .img-unavailable {
@@ -286,7 +286,7 @@
 }
 
 .room-description-final .section-heading { font-size: 24px; margin-bottom: 15px; }
-.room-description-final .text-content { font-size: 16px; line-height: 1.8; color: #555; }
+.room-description-final .text-content { font-size: 16px; line-height: 1.8; color: #555; overflow-wrap: anywhere; }
 
 /* === Colonne de droite (Formulaire) === */
 .booking-sidebar-final { position: sticky; top: 120px; }
