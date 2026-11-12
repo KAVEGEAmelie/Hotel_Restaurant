@@ -27,6 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Aperçu des images de galerie sélectionnées
+    const imagesInput = document.getElementById('images');
+    const preview = document.getElementById('images-preview');
+    if (imagesInput && preview) {
+        imagesInput.addEventListener('change', function() {
+            preview.innerHTML = '';
+            Array.from(this.files).forEach(file => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'img-thumbnail';
+                img.style.cssText = 'width: 120px; height: 90px; object-fit: cover;';
+                preview.appendChild(img);
+            });
+        });
+    }
 });
 </script>
 @endpush
@@ -88,13 +104,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Image Principale -->
                     <div class="mb-4">
                         <label for="image_principale" class="form-label">Image Principale</label>
-                        <input type="file" name="image_principale" id="image_principale" class="form-control">
+                        <input type="file" name="image_principale" id="image_principale" accept="image/*" class="form-control">
                         @if(isset($chambre) && $chambre->image_principale)
                             <div class="mt-3">
                                 <p class="small text-muted">Image actuelle :</p>
                                 <img src="{{ asset('storage/' . $chambre->image_principale) }}" alt="Image actuelle" class="img-thumbnail" style="max-height: 150px;">
                             </div>
                         @endif
+                    </div>
+
+                    <!-- Galerie d'images -->
+                    <div class="mb-4">
+                        <label for="images" class="form-label">Galerie d'images (plusieurs possibles)</label>
+                        <input type="file" name="images[]" id="images" accept="image/*" multiple class="form-control">
+                        <div class="form-text">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs images. Formats : jpeg, png, jpg, gif, webp — 2 Mo max par image.</div>
+                        <div id="images-preview" class="d-flex flex-wrap gap-2 mt-3"></div>
                     </div>
 
                     <!-- Boutons d'action -->
@@ -105,6 +129,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                     </div>
                 </form>
+
+                @if(isset($chambre) && $chambre->images->isNotEmpty())
+                    <div class="mt-4 pt-4 border-top">
+                        <h5 class="mb-3">Images de la galerie ({{ $chambre->images->count() }})</h5>
+                        <div class="d-flex flex-wrap gap-3">
+                            @foreach($chambre->images as $image)
+                                <div class="position-relative">
+                                    <img src="{{ asset('storage/' . $image->image) }}" alt="Image galerie" class="img-thumbnail" style="width: 150px; height: 110px; object-fit: cover;">
+                                    <form action="{{ route('admin.chambres.images.destroy', $image) }}" method="POST" class="position-absolute top-0 end-0 m-1" onsubmit="return confirm('Supprimer cette image ?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

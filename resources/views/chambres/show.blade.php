@@ -49,7 +49,8 @@
                         <div class="room-gallery-final mb-4 position-relative">
                             <img src="{{ asset('storage/' . $chambre->image_principale) }}"
                                  class="img-fluid {{ !$chambre->est_disponible ? 'img-unavailable' : '' }}"
-                                 alt="Image de la chambre {{ $chambre->nom }}">
+                                 alt="Image de la chambre {{ $chambre->nom }}"
+                                 id="main-room-image">
 
                             <!-- Overlay indisponible sur l'image -->
                             @if(!$chambre->est_disponible)
@@ -61,6 +62,29 @@
                                 </div>
                             @endif
                         </div>
+
+                        @if($chambre->images->isNotEmpty())
+                            <div class="d-flex flex-wrap gap-2 mb-4" id="room-thumbnails">
+                                <img src="{{ asset('storage/' . $chambre->image_principale) }}"
+                                     class="img-thumbnail room-thumb"
+                                     style="width: 90px; height: 70px; object-fit: cover; cursor: pointer;"
+                                     alt="Miniature principale">
+                                @foreach($chambre->images as $image)
+                                    <img src="{{ asset('storage/' . $image->image) }}"
+                                         class="img-thumbnail room-thumb"
+                                         style="width: 90px; height: 70px; object-fit: cover; cursor: pointer;"
+                                         alt="Photo supplémentaire de {{ $chambre->nom }}">
+                                @endforeach
+                            </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const mainImage = document.getElementById('main-room-image');
+                                    document.querySelectorAll('#room-thumbnails .room-thumb').forEach(thumb => {
+                                        thumb.addEventListener('click', () => { mainImage.src = thumb.src; });
+                                    });
+                                });
+                            </script>
+                        @endif
                         <div class="room-description-final {{ !$chambre->est_disponible ? 'content-unavailable' : '' }}">
                             <h3 class="section-heading">Description de la chambre</h3>
                             <div class="text-content">{!! nl2br(e($chambre->description_longue)) !!}</div>

@@ -100,6 +100,7 @@ Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->gr
     Route::resource('chambres', AdminChambreController::class);
     Route::post('/chambres/bulk-action', [AdminChambreController::class, 'bulkAction'])->name('chambres.bulk-action');
     Route::patch('/chambres/{chambre}/toggle-status', [AdminChambreController::class, 'toggleStatus'])->name('chambres.toggle-status');
+    Route::delete('/chambres/images/{image}', [AdminChambreController::class, 'destroyImage'])->name('chambres.images.destroy');
 
     // Routes des réservations (accessible aux admin ET gérants)
     Route::get('/reservations', [AdminReservationController::class, 'listAll'])->name('reservations.index');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chambre;
+use App\Models\ChambreImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -30,11 +31,13 @@ class ChambreController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:chambres,nom',
-            'description_courte' => 'required|string|max:255',
+            'description_courte' => 'required|string|max:500',
             'description_longue' => 'required|string',
             'prix_par_nuit' => 'required|numeric|min:0',
             'capacite' => 'required|integer|min:1',
             'image_principale' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
@@ -44,7 +47,16 @@ class ChambreController extends Controller
         $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
         }
 
-        Chambre::create($validated);
+        $chambre = Chambre::create(collect($validated)->except('images')->toArray());
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $i => $file) {
+                $chambre->images()->create([
+                    'image' => $file->store('chambres/galerie', 'public'),
+                    'ordre' => $i,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.chambres.index')
             ->with('success', '🏨 Chambre créée avec succès !')
@@ -60,11 +72,13 @@ class ChambreController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:chambres,nom,' . $chambre->id,
-            'description_courte' => 'required|string|max:255',
+            'description_courte' => 'required|string|max:500',
             'description_longue' => 'nullable|string',
             'prix_par_nuit' => 'required|numeric|min:0',
             'capacite' => 'required|integer|min:1',
             'image_principale' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $validated['slug'] = Str::slug($validated['nom']);
@@ -77,7 +91,17 @@ class ChambreController extends Controller
         $validated['image_principale'] = $request->file('image_principale')->store('chambres', 'public');
         }
 
-        $chambre->update($validated);
+        $chambre->update(collect($validated)->except('images')->toArray());
+
+        if ($request->hasFile('images')) {
+            $ordre = (int) $chambre->images()->max('ordre') + 1;
+            foreach ($request->file('images') as $file) {
+                $chambre->images()->create([
+                    'image' => $file->store('chambres/galerie', 'public'),
+                    'ordre' => $ordre++,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.chambres.index')
             ->with('success', '✏️ Chambre mise à jour avec succès !')
@@ -89,6 +113,10 @@ class ChambreController extends Controller
         if ($chambre->image_principale) {
             // Supprimer l'image en utilisant le système de stockage Laravel
          Storage::disk('public')->delete($chambre->image_principale);
+        }
+
+        foreach ($chambre->images as $image) {
+            Storage::disk('public')->delete($image->image);
         }
 
         $chambre->delete();
@@ -119,5 +147,16 @@ class ChambreController extends Controller
             'new_status' => $newStatus,
             'status_text' => $statusText
         ]);
+    }
+
+    /**
+     * Supprimer une image de la galerie d'une chambre
+     */
+    public function destroyImage(ChambreImage $image)
+    {
+        Storage::disk('public')->delete($image->image);
+        $image->delete();
+
+        return back()->with('success', '🗑️ Image supprimée de la galerie');
     }
 }

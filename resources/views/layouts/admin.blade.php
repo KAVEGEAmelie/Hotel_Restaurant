@@ -88,7 +88,7 @@
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-fill me-2"></i>{{ Auth::user()->name }}
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Mon Profil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
